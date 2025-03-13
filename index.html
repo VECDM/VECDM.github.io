@@ -17,7 +17,41 @@ document.getElementById("messageForm").addEventListener("submit", function(event
     var email = document.getElementById("email").value;
     var message = document.getElementById("message").value;
 
-    fetch("TUO_URL_WEBAPP", {
+    fetch("<form id="messageForm">
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+    
+    <label for="message">Messaggio:</label>
+    <textarea id="message" name="message" required></textarea>
+    
+    <button type="submit">Invia</button>
+</form>
+
+<p id="responseMessage"></p>
+
+<script>
+document.getElementById("messageForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+    
+    var email = document.getElementById("email").value;
+    var message = document.getElementById("message").value;
+
+    fetch("https://script.google.com/macros/s/AKfycbxob2y6kIQYhwzEP-MvJ0qjLmQHpc40FcUWiZDc9qoNFFKLQ6uWNsQKXA4hdeqwcCrw/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ "email": email, "message": message })
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById("responseMessage").innerText = "Messaggio inviato con successo!";
+        document.getElementById("messageForm").reset();
+    })
+    .catch(error => {
+        document.getElementById("responseMessage").innerText = "Errore nell'invio del messaggio.";
+    });
+});
+</script>
+", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ "email": email, "message": message })
