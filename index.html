@@ -44,7 +44,7 @@
 <body>
     <h1>Invia un Messaggio</h1>
     <form id="messageForm">
-        <input type="email" name="email" placeholder="Inserisci la tua email" required>
+        <input type="email" name="mail" placeholder="Inserisci la tua email" required>
         <textarea name="message" placeholder="Scrivi il tuo messaggio" required></textarea>
         <button type="submit">Invia</button>
     </form>
@@ -58,7 +58,7 @@
                 message: document.querySelector('textarea[name="message"]').value
             };
 
-            fetch("https://script.google.com/macros/s/AKfycbwvUAal5qb4n_8z1a5ImqdM4hbXDW28soFylLqu8pGbmAUAqFEJffqDc2ROYS74RZyF/exec", {
+            fetch("https://script.google.com/macros/s/AKfycbyMue9ueQ5Ill5A-cFXnbpiORGxytlW0Q8oQrllmyCoay95Rn08ZVHE2fjlJ2fJ7onr/exec", {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
