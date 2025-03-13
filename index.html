@@ -36,7 +36,7 @@ document.getElementById("messageForm").addEventListener("submit", function(event
     var email = document.getElementById("email").value;
     var message = document.getElementById("message").value;
 
-    fetch("https://script.google.com/macros/s/AKfycbxob2y6kIQYhwzEP-MvJ0qjLmQHpc40FcUWiZDc9qoNFFKLQ6uWNsQKXA4hdeqwcCrw/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbzJQpvOlH69khhpxkW9Xra9ToNR4673xdCZkoLFYz7E3BtpEzwOvBTVUUP2Ao6iYInt/exec", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ "email": email, "message": message })
