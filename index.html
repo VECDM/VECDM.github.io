@@ -1,60 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VECDM</title>
-    <style>
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-1px, 1px); }
-            40% { transform: translate(-1px, -1px); }
-            60% { transform: translate(1px, 1px); }
-            80% { transform: translate(1px, -1px); }
-            100% { transform: translate(0); }
-        }
+<form id="messageForm">
+    <input type="email" id="email" placeholder="La tua email" required>
+    <textarea id="message" placeholder="Il tuo messaggio" required></textarea>
+    <button type="submit">Invia</button>
+</form>
 
-        body {
-            background-color: black;
-            color: #b3a0b3; /* Rosa tenue/grigio */
-            font-family: 'Courier New', monospace;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+<script>
+document.getElementById("messageForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Evita il refresh della pagina
+    
+    const url = "URL_WEB_APP"; // Sostituisci con l'URL della tua Web App
+    const data = {
+        email: document.getElementById("email").value,
+        message: document.getElementById("message").value
+    };
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .accessing {
-            font-size: 16px;
-            opacity: 0.7;
-        }
-
-        .glitch {
-            font-size: 48px;
-            font-weight: bold;
-            position: relative;
-            display: inline-block;
-            animation: glitch 1s infinite alternate;
-        }
-
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="accessing">ACCESSING...</div>
-        <div class="glitch">VECDM</div>
-    </div>
-    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfGsY2ch24AA9mgJIko5mV_G6nVCjN2Wa7BhM0oBvW9tzMpeQ/viewform?embedded=true" width="640" height="800" frameborder="0" marginheight="0" marginwidth="0">Caricamento…</iframe>
-
-</body>
-</html>
+    fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.text())
+    .then(data => alert("Messaggio inviato!"))
+    .catch(error => alert("Errore nell'invio"));
+});
+</script>
