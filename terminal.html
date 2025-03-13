@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VECDM Terminal</title>
+    <style>
+        body {
+            background-color: black;
+            color: #c0a0c0; /* Viola-grigio tenue */
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+        }
+        #terminal {
+            width: 600px;
+            height: 300px;
+            background: black;
+            border: 2px solid #c0a0c0;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        .input-line {
+            color: #c0a0c0;
+            white-space: pre-wrap;
+        }
+        #input {
+            background: black;
+            border: none;
+            color: #c0a0c0;
+            font-size: 16px;
+            width: 100%;
+            font-family: 'Courier New', monospace;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>VECDM Terminal</h2>
+    <div id="terminal">
+        <div class="input-line">> Benvenuto nel terminale VECDM</div>
+        <div class="input-line">> Digita il tuo messaggio e premi INVIO</div>
+    </div>
+    <input type="text" id="input" autofocus>
+
+    <script>
+        const inputField = document.getElementById("input");
+        const terminal = document.getElementById("terminal");
+        const apiUrl = "LA_TUA_WEB_APP_URL"; // Verrà cambiato con l'URL della web app
+
+        let email = "anonimo@vecdm.com"; // Email predefinita o input successivo
+
+        inputField.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                let message = inputField.value.trim();
+                if (message.toLowerCase() === "send") {
+                    sendMessage();
+                } else {
+                    addToTerminal("> " + message);
+                }
+                inputField.value = "";
+            }
+        });
+
+        function addToTerminal(text) {
+            let newLine = document.createElement("div");
+            newLine.classList.add("input-line");
+            newLine.textContent = text;
+            terminal.appendChild(newLine);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function sendMessage() {
+            addToTerminal("> Inviando messaggio...");
+
+            fetch(apiUrl, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ mail: email, message: inputField.value })
+            }).then(() => {
+                addToTerminal("> Messaggio inviato con successo!");
+            }).catch(err => {
+                addToTerminal("> Errore nell'invio!");
+            });
+        }
+    </script>
+</body>
+</html>
