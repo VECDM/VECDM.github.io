@@ -1,0 +1,14 @@
+<html>
+<head></head>
+<body>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+  (function() {
+      emailjs.init("VECDM"); // <-- Sostituisci con il tuo User ID di EmailJS
+  })();
+</script>
+
+
+</body>
+</html>
