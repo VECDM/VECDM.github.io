@@ -21,6 +21,29 @@
 
 <p id="response-message"></p>
 
+  <script>
+document.getElementById("contact-form").addEventListener("submit", function(event) {
+    event.preventDefault(); // Evita il refresh della pagina
+
+    // Recupera i dati inseriti
+    var templateParams = {
+        user_email: document.getElementById("user_email").value,
+        user_message: document.getElementById("user_message").value
+    };
+
+    // Invia l'email con EmailJS
+    emailjs.send("service_phc57e8", "service_phc57e8", templateParams)
+    .then(function(response) {
+        console.log("Email inviata con successo!", response);
+        document.getElementById("response-message").innerText = "Messaggio inviato con successo!";
+    }, function(error) {
+        console.error("Errore nell'invio dell'email:", error);
+        document.getElementById("response-message").innerText = "Errore nell'invio. Riprova!";
+    });
+});
+</script>
+
+
 
 
 </body>
