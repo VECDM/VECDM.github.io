@@ -42,32 +42,7 @@
     </style>
 </head>
 <body>
-    <h1>Invia un Messaggio</h1>
-    <form id="messageForm">
-        <input type="email" name="mail" placeholder="Inserisci la tua email" required>
-        <textarea name="message" placeholder="Scrivi il tuo messaggio" required></textarea>
-        <button type="submit">Invia</button>
-    </form>
-
-    <script>
-        document.getElementById("messageForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-
-            var formData = {
-                mail: document.querySelector('input[name="mail"]').value,
-                message: document.querySelector('textarea[name="message"]').value
-            };
-
-            fetch("https://script.google.com/macros/s/AKfycbxArX5kDegxqQ4GDEynW8dzXVaQ9i03Aj0Mb8zqdnCYM4fZ1DKFV2C0NceM5P6nC65u-Q/exec", {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
-            }).then(() => {
-                alert("Messaggio inviato con successo!");
-            }).catch(error => console.error("Errore:", error));
-        });
-    </script>
+    
 <iframe src="https://script.google.com/macros/s/AKfycbxArX5kDegxqQ4GDEynW8dzXVaQ9i03Aj0Mb8zqdnCYM4fZ1DKFV2C0NceM5P6nC65u-Q/exec" width="100%" height="500px"></iframe>
     
 </body>
