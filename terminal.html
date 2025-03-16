@@ -6,6 +6,21 @@
     <title>Terminal</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
+        @keyframes glitch {
+            0% { transform: translate(0); opacity: 1; }
+            20% { transform: translate(-2px, 2px); opacity: 0.8; }
+            40% { transform: translate(2px, -2px); opacity: 1; }
+            60% { transform: translate(-2px, 2px); opacity: 0.9; }
+            80% { transform: translate(2px, -2px); opacity: 1; }
+            100% { transform: translate(0); opacity: 1; }
+        }
+
+        @keyframes flicker {
+            0% { opacity: 1; }
+            50% { opacity: 0.9; }
+            100% { opacity: 1; }
+        }
+
         body {
             background-color: black;
             color: #b8b8b8;
@@ -16,10 +31,12 @@
             align-items: center;
             height: 100vh;
         }
+
         .terminal-container {
             display: flex;
             gap: 20px;
         }
+
         .terminal {
             width: 400px;
             height: 300px;
@@ -28,7 +45,40 @@
             padding: 10px;
             overflow-y: auto;
             white-space: pre-line;
+            position: relative;
+            filter: contrast(1.2) brightness(0.9) saturate(1.1);
         }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            width: 100%;
+            color: #ff00ff; 
+            background: transparent;
+            overflow: hidden;
+            clip: rect(0, 900px, 0, 0);
+        }
+
+        .glitch::before {
+            top: 2px;
+            left: 2px;
+            text-shadow: -1px 0 red;
+            animation: glitch 0.3s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            top: -2px;
+            left: -2px;
+            text-shadow: 1px 0 blue;
+            animation: glitch 0.2s infinite linear alternate-reverse;
+        }
+
+        .flicker {
+            animation: flicker 0.15s infinite alternate;
+        }
+
         #command-input {
             width: 400px;
             padding: 5px;
@@ -42,15 +92,15 @@
 <body>
 
     <div class="terminal-container">
-        <div class="terminal" id="left-terminal"></div>
+        <div class="terminal glitch flicker" id="left-terminal" data-text="LEFT TERMINAL"></div>
 
         <div>
-            < - <h2>Terminal</h2> - >
-            <div class="terminal" id="main-terminal"></div>
+            <h2 class="glitch" data-text="Terminale Simulato">< - Terminal -></h2>
+            <div class="terminal glitch flicker" id="main-terminal" data-text="MAIN TERMINAL"></div>
             <input type="text" id="command-input" placeholder="Digita un comando e premi INVIO...">
         </div>
 
-        <div class="terminal" id="right-terminal"></div>
+        <div class="terminal glitch flicker" id="right-terminal" data-text="RIGHT TERMINAL"></div>
     </div>
 
     <script>
@@ -151,23 +201,8 @@
             const results = ["OK", "FAILED", "PENDING", "SUCCESS", "WARNING"];
             const randomNumber = Math.floor(Math.random() * 9999);
             const percentage = Math.floor(Math.random() * 100) + "%";
-            
-            let message = `> ${actions[Math.floor(Math.random() * actions.length)]} ${objects[Math.floor(Math.random() * objects.length)]}... ${results[Math.floor(Math.random() * results.length)]} [ID:${randomNumber}] (${percentage})`;
 
-            if (Math.random() > 0.9) { 
-                const hiddenMessages = [
-                    "> ATTENZIONE: ACCESSO IRREGOLARE RILEVATO",
-                    "> TRACCIAMENTO AVVIATO...",
-                    "> VECDM - CHI SEI?",
-                    "> ALERT: Override non autorizzato in corso...",
-                    "> USER NOT FOUND IN DATABASE...",
-                    "> PROTOCOLLO SHADOW-LINK ATTIVATO...",
-                    "> ERRORE 403: Livello accesso insufficiente."
-                ];
-                message = hiddenMessages[Math.floor(Math.random() * hiddenMessages.length)];
-            }
-
-            return message;
+            return `> ${actions[Math.floor(Math.random() * actions.length)]} ${objects[Math.floor(Math.random() * objects.length)]}... ${results[Math.floor(Math.random() * results.length)]} [ID:${randomNumber}] (${percentage})`;
         }
 
         function updateTerminal(terminal) {
