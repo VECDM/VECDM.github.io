@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminale Simulato</title>
+    <title>Terminal</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         body {
             background-color: black;
-            color: #b8b8b8; /* Grigio con un leggero accenno di rosa */
+            color: #b8b8b8;
             font-family: "Courier New", monospace;
             padding: 20px;
             display: flex;
@@ -45,7 +45,7 @@
         <div class="terminal" id="left-terminal"></div>
 
         <div>
-            <- <h2>Terminal</h2> ->
+            < - <h2>Terminal</h2> - >
             <div class="terminal" id="main-terminal"></div>
             <input type="text" id="command-input" placeholder="Digita un comando e premi INVIO...">
         </div>
@@ -77,17 +77,26 @@
         }
 
         let mainTerminal = document.getElementById("main-terminal");
-        typeEffect(mainTerminal, "> ACCESSO NON AUTORIZZATO...\n", function() {
-            typeEffect(mainTerminal, "> Override sistema...\n", function() {
-                typeEffect(mainTerminal, "> Connessione stabilita. Digitare comandi:\n", function() {
-                    typeEffect(mainTerminal, "> -email- TUAMAIL → Registra la tua email\n", function() {
-                        typeEffect(mainTerminal, "> -message- TUOMESSAGGIO → Scrivi il tuo messaggio\n", function() {
-                            typeEffect(mainTerminal, "> -send- → Invia il messaggio\n");
+
+        function bootSequence() {
+            mainTerminal.innerHTML = "> SYSTEM REBOOTING...\n";
+            setTimeout(() => {
+                mainTerminal.innerHTML = "";
+                typeEffect(mainTerminal, "> ACCESSO NON AUTORIZZATO...\n", function() {
+                    typeEffect(mainTerminal, "> Override sistema...\n", function() {
+                        typeEffect(mainTerminal, "> Connessione stabilita. Digitare comandi:\n", function() {
+                            typeEffect(mainTerminal, "> -email- TUAMAIL → Registra la tua email\n", function() {
+                                typeEffect(mainTerminal, "> -message- TUOMESSAGGIO → Scrivi il tuo messaggio\n", function() {
+                                    typeEffect(mainTerminal, "> -send- → Invia il messaggio\n");
+                                });
+                            });
                         });
                     });
                 });
-            });
-        });
+            }, 3000); 
+        }
+
+        bootSequence();
 
         document.getElementById("command-input").addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
@@ -121,7 +130,9 @@
                 emailjs.send("service_phc57e8", "template_zihqct9", templateParams)
                 .then(function(response) {
                     console.log("Email inviata con successo!", response);
-                    typeEffect(mainTerminal, "\n> Messaggio inviato correttamente!\n");
+                    typeEffect(mainTerminal, "\n> Messaggio inviato correttamente!\n", function() {
+                        setTimeout(bootSequence, 3000); 
+                    });
                 }, function(error) {
                     console.error("Errore nell'invio dell'email:", error);
                     typeEffect(mainTerminal, "\n> ERRORE nell'invio. Riprova!\n");
