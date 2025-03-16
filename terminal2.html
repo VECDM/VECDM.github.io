@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminal</title>
+    <title>Mainframe Terminal</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         @keyframes glitch {
@@ -30,55 +30,80 @@
             font-family: "Courier New", monospace;
             padding: 20px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
 
-        .terminal-container {
+        .mainframe {
             display: flex;
-            gap: 20px;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
         }
 
         .terminal {
-            width: 400px;
-            height: 300px;
+            width: 300px;
+            height: 200px;
             background-color: #111;
             border: 2px solid #b8b8b8;
             padding: 10px;
             overflow-y: auto;
             white-space: pre-line;
-            position: relative;
             filter: contrast(1.2) brightness(0.9) saturate(1.1);
             animation: flicker 1.5s infinite alternate;
         }
 
-        .blackout {
-            animation: blackout 2s ease-in-out;
+        .terminal-main {
+            width: 640px;
+            height: 260px;
+            background-color: #222;
+            border: 2px solid #b8b8b8;
+            padding: 10px;
+            overflow-y: auto;
+            white-space: pre-line;
+            filter: contrast(1.2) brightness(0.9) saturate(1.1);
+            animation: flicker 1.5s infinite alternate;
+        }
+
+        .glitch {
+            animation: glitch 0.5s infinite alternate;
         }
 
         #command-input {
-            width: 400px;
+            width: 640px;
             padding: 5px;
             background-color: black;
             color: #b8b8b8;
             border: 1px solid #b8b8b8;
             font-family: "Courier New", monospace;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
 
-    <div class="terminal-container">
-        <div class="terminal" id="left-terminal"></div>
-
-        <div>
-            <h2 class="glitch">< - Terminal - ></h2>
-            <div class="terminal" id="main-terminal"></div>
-            <input type="text" id="command-input" placeholder="Digita un comando e premi INVIO...">
+    <div class="mainframe">
+        <div class="row">
+            <div class="terminal" id="terminal-1"></div>
+            <div class="terminal" id="terminal-2"></div>
+            <div class="terminal" id="terminal-3"></div>
         </div>
 
-        <div class="terminal" id="right-terminal"></div>
+        <div class="terminal-main" id="main-terminal"></div>
+        <input type="text" id="command-input" placeholder="Digita un comando e premi INVIO...">
+
+        <div class="row">
+            <div class="terminal" id="terminal-4"></div>
+            <div class="terminal" id="terminal-5"></div>
+            <div class="terminal" id="terminal-6"></div>
+        </div>
     </div>
 
     <script>
@@ -104,89 +129,61 @@
             typeNextChar();
         }
 
-        let mainTerminal = document.getElementById("main-terminal");
-        let leftTerminal = document.getElementById("left-terminal");
-        let rightTerminal = document.getElementById("right-terminal");
-
         function bootSequence() {
+            let mainTerminal = document.getElementById("main-terminal");
             mainTerminal.innerHTML = "> SYSTEM REBOOTING...\n";
             setTimeout(() => {
                 mainTerminal.innerHTML = "";
                 typeEffect(mainTerminal, "> ACCESSO NON AUTORIZZATO...\n", function() {
                     typeEffect(mainTerminal, "> Override sistema...\n", function() {
-                        typeEffect(mainTerminal, "> Connessione stabilita. Digitare comandi:\n", function() {
-                            typeEffect(mainTerminal, "> -email- TUAMAIL → Registra la tua email\n", function() {
-                                typeEffect(mainTerminal, "> -message- TUOMESSAGGIO → Scrivi il tuo messaggio\n", function() {
-                                    typeEffect(mainTerminal, "> -send- → Invia il messaggio\n");
-                                });
-                            });
-                        });
+                        typeEffect(mainTerminal, "> Connessione stabilita. Digitare comandi:\n");
                     });
                 });
-            }, 3000); 
+            }, 3000);
         }
 
         bootSequence();
 
-        function generateRandomCode() {
-            const actions = ["Verifying", "Executing", "Loading", "Initializing", "Compiling", "Decrypting"];
-            const objects = ["kernel", "process", "module", "security log", "user session", "network request"];
-            const results = ["OK", "FAILED", "PENDING", "SUCCESS", "WARNING"];
-            const randomNumber = Math.floor(Math.random() * 9999);
-            const percentage = Math.floor(Math.random() * 100) + "%";
+        document.getElementById("command-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                let command = this.value.trim();
+                this.value = "";
+                processCommand(command);
+            }
+        });
 
-            return `> ${actions[Math.floor(Math.random() * actions.length)]} ${objects[Math.floor(Math.random() * objects.length)]}... ${results[Math.floor(Math.random() * results.length)]} [ID:${randomNumber}] (${percentage})`;
+        function processCommand(command) {
+            let mainTerminal = document.getElementById("main-terminal");
+            if (command.startsWith("-email- ")) {
+                email = command.replace("-email- ", "").trim();
+                typeEffect(mainTerminal, `\n> Email impostata: ${email}\n`);
+            } else if (command.startsWith("-message- ")) {
+                message = command.replace("-message- ", "").trim();
+                typeEffect(mainTerminal, `\n> Messaggio impostato: ${message}\n`);
+            } else if (command === "-send-") {
+                if (!email || !message) {
+                    typeEffect(mainTerminal, "\n> ERRORE: Email o messaggio mancante!\n");
+                    return;
+                }
+                typeEffect(mainTerminal, "\n> Invio in corso...\n");
+                emailjs.send("service_phc57e8", "template_zihqct9", { user_email: email, user_message: message })
+                .then(() => typeEffect(mainTerminal, "\n> Messaggio inviato correttamente!\n"), 
+                      () => typeEffect(mainTerminal, "\n> ERRORE nell'invio. Riprova!\n"));
+            } else {
+                typeEffect(mainTerminal, `\n> Comando sconosciuto: ${command}\n`);
+            }
         }
 
         function updateTerminal(terminal) {
             setInterval(() => {
-                typeEffect(terminal, `\n${generateRandomCode()}`);
+                terminal.innerHTML += `\n> SYSTEM LOG: Processo ${Math.floor(Math.random() * 9999)}`;
             }, Math.random() * 4000 + 2000);
         }
 
-        updateTerminal(leftTerminal);
-        updateTerminal(rightTerminal);
-
-        function applyGlitchEffect() {
-            let terminals = [mainTerminal, leftTerminal, rightTerminal];
-            let terminal = terminals[Math.floor(Math.random() * terminals.length)];
-            
-            let effects = [
-                distortText, 
-                showHackedMessage, 
-                showAsciiArt, 
-                blackoutEffect
-            ];
-
-            let effect = effects[Math.floor(Math.random() * effects.length)];
-            effect(terminal);
+        for (let i = 1; i <= 6; i++) {
+            updateTerminal(document.getElementById(`terminal-${i}`));
         }
-
-        function distortText(terminal) {
-            let text = terminal.innerHTML;
-            let distorted = text.replace(/[AEIOST]/g, char => ({A: "4", E: "3", I: "1", O: "0", S: "5", T: "7"}[char] || char));
-            terminal.innerHTML = distorted;
-            setTimeout(() => terminal.innerHTML = text, 2000);
-        }
-
-        function showHackedMessage(terminal) {
-            let originalText = terminal.innerHTML;
-            terminal.innerHTML = "> INTRUSIONE RILEVATA... ACCESSO NON AUTORIZZATO\n";
-            setTimeout(() => terminal.innerHTML = originalText, 3000);
-        }
-
-        function showAsciiArt(terminal) {
-            let originalText = terminal.innerHTML;
-            terminal.innerHTML = "   ,--.\n  (  💀 )\n   `--'";
-            setTimeout(() => terminal.innerHTML = originalText, 4000);
-        }
-
-        function blackoutEffect(terminal) {
-            terminal.classList.add("blackout");
-            setTimeout(() => terminal.classList.remove("blackout"), 2000);
-        }
-
-        setInterval(applyGlitchEffect, Math.random() * 30000 + 30000); 
     </script>
 
 </body>
