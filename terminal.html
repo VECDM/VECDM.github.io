@@ -11,9 +11,17 @@
             color: #b8b8b8; /* Grigio con un leggero accenno di rosa */
             font-family: "Courier New", monospace;
             padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        #terminal {
-            width: 600px;
+        .terminal-container {
+            display: flex;
+            gap: 20px;
+        }
+        .terminal {
+            width: 400px;
             height: 300px;
             background-color: #111;
             border: 2px solid #b8b8b8;
@@ -22,7 +30,7 @@
             white-space: pre-line;
         }
         #command-input {
-            width: 600px;
+            width: 400px;
             padding: 5px;
             background-color: black;
             color: #b8b8b8;
@@ -33,10 +41,20 @@
 </head>
 <body>
 
-    <h2>Terminal</h2>
-    <div id="terminal"></div>
-    
-    <input type="text" id="command-input" placeholder="Digita un comando e premi INVIO...">
+    <div class="terminal-container">
+        <!-- Schermo laterale sinistro -->
+        <div class="terminal" id="left-terminal"></div>
+
+        <!-- Terminale centrale -->
+        <div>
+            <h2>Terminal</h2>
+            <div class="terminal" id="main-terminal"></div>
+            <input type="text" id="command-input" placeholder="Digita un comando e premi INVIO...">
+        </div>
+
+        <!-- Schermo laterale destro -->
+        <div class="terminal" id="right-terminal"></div>
+    </div>
 
     <script>
         // Inizializza EmailJS
@@ -47,30 +65,27 @@
         let email = "";
         let message = "";
 
-        // Effetto di digitazione (senza audio)
-        function typeEffect(text, callback) {
-            let terminal = document.getElementById("terminal");
+        function typeEffect(element, text, callback) {
             let index = 0;
-
             function typeNextChar() {
                 if (index < text.length) {
-                    terminal.innerHTML += text[index];
+                    element.innerHTML += text[index];
                     index++;
-                    setTimeout(typeNextChar, 40); // Velocità di digitazione
+                    setTimeout(typeNextChar, 40);
                 } else if (callback) {
                     callback();
                 }
-                terminal.scrollTop = terminal.scrollHeight; // Scrolla in basso automaticamente
+                element.scrollTop = element.scrollHeight;
             }
-
             typeNextChar();
         }
 
-        // Messaggi iniziali con effetto digitazione
-        typeEffect("> Benvenuto nel terminale di VECDM. Inserisci i comandi:\n", function() {
-            typeEffect("> -email- TUAMAIL → Registra la tua email\n", function() {
-                typeEffect("> -message- TUOMESSAGGIO → Scrivi il tuo messaggio\n", function() {
-                    typeEffect("> -send- → Invia il messaggio\n");
+        // Messaggi iniziali
+        let mainTerminal = document.getElementById("main-terminal");
+        typeEffect(mainTerminal, "> Benvenuto nel terminale di VECMD. Inserisci i comandi:\n", function() {
+            typeEffect(mainTerminal, "> -email- TUAMAIL → Registra la tua email\n", function() {
+                typeEffect(mainTerminal, "> -message- TUOMESSAGGIO → Scrivi il tuo messaggio\n", function() {
+                    typeEffect(mainTerminal, "> -send- → Invia il messaggio\n");
                 });
             });
         });
@@ -87,35 +102,70 @@
         function processCommand(command) {
             if (command.startsWith("-email- ")) {
                 email = command.replace("-email- ", "").trim();
-                typeEffect(`\n> Email impostata: ${email}\n`);
+                typeEffect(mainTerminal, `\n> Email impostata: ${email}\n`);
             } else if (command.startsWith("-message- ")) {
                 message = command.replace("-message- ", "").trim();
-                typeEffect(`\n> Messaggio impostato: ${message}\n`);
+                typeEffect(mainTerminal, `\n> Messaggio impostato: ${message}\n`);
             } else if (command === "-send-") {
                 if (!email || !message) {
-                    typeEffect("\n> ERRORE: Email o messaggio mancante!\n");
+                    typeEffect(mainTerminal, "\n> ERRORE: Email o messaggio mancante!\n");
                     return;
                 }
-                
+
                 let templateParams = {
                     user_email: email,
                     user_message: message
                 };
 
-                typeEffect("\n> Invio in corso...\n");
+                typeEffect(mainTerminal, "\n> Invio in corso...\n");
 
                 emailjs.send("service_phc57e8", "template_zihqct9", templateParams)
                 .then(function(response) {
                     console.log("Email inviata con successo!", response);
-                    typeEffect("\n> Messaggio inviato correttamente!\n");
+                    typeEffect(mainTerminal, "\n> Messaggio inviato correttamente!\n");
                 }, function(error) {
                     console.error("Errore nell'invio dell'email:", error);
-                    typeEffect("\n> ERRORE nell'invio. Riprova!\n");
+                    typeEffect(mainTerminal, "\n> ERRORE nell'invio. Riprova!\n");
                 });
             } else {
-                typeEffect(`\n> Comando sconosciuto: ${command}\n`);
+                typeEffect(mainTerminal, `\n> Comando sconosciuto: ${command}\n`);
             }
         }
+
+        // Simulazione di codice casuale sugli schermi laterali
+        const leftTerminal = document.getElementById("left-terminal");
+        const rightTerminal = document.getElementById("right-terminal");
+
+        function generateRandomCode() {
+            const commands = [
+                "System Check: OK",
+                "Loading modules...",
+                "Executing process ID 2039...",
+                "Checking security logs...",
+                "User Authentication: PASSED",
+                "Connecting to server...",
+                "Fetching data...",
+                "Decoding binary stream...",
+                "Compiling script...",
+                "Kernel update in progress...",
+                "Encrypting session...",
+                "System rebooting...",
+                "Verifying access keys..."
+            ];
+            return commands[Math.floor(Math.random() * commands.length)];
+        }
+
+        function updateTerminal(terminal) {
+            setInterval(() => {
+                if (Math.random() > 0.9) { // 10% di probabilità di "riavviare"
+                    terminal.innerHTML = "> SYSTEM REBOOTING...\n";
+                }
+                typeEffect(terminal, `\n> ${generateRandomCode()}`);
+            }, Math.random() * 3000 + 2000); // Tra 2 e 5 secondi
+        }
+
+        updateTerminal(leftTerminal);
+        updateTerminal(rightTerminal);
     </script>
 
 </body>
