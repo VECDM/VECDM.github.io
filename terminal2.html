@@ -18,12 +18,6 @@
             100% { opacity: 1; }
         }
 
-        @keyframes blackout {
-            0% { background-color: #111; color: #b8b8b8; }
-            50% { background-color: black; color: black; }
-            100% { background-color: #111; color: #b8b8b8; }
-        }
-
         body {
             background-color: black;
             color: #b8b8b8;
@@ -70,10 +64,6 @@
             white-space: pre-line;
             filter: contrast(1.2) brightness(0.9) saturate(1.1);
             animation: flicker 1.5s infinite alternate;
-        }
-
-        .glitch {
-            animation: glitch 0.5s infinite alternate;
         }
 
         #command-input {
@@ -136,7 +126,13 @@
                 mainTerminal.innerHTML = "";
                 typeEffect(mainTerminal, "> ACCESSO NON AUTORIZZATO...\n", function() {
                     typeEffect(mainTerminal, "> Override sistema...\n", function() {
-                        typeEffect(mainTerminal, "> Connessione stabilita. Digitare comandi:\n");
+                        typeEffect(mainTerminal, "> Connessione stabilita. Digitare comandi:\n", function() {
+                            typeEffect(mainTerminal, "> -email- TUAMAIL → Registra la tua email\n", function() {
+                                typeEffect(mainTerminal, "> -message- TUOMESSAGGIO → Scrivi il tuo messaggio\n", function() {
+                                    typeEffect(mainTerminal, "> -send- → Invia il messaggio\n");
+                                });
+                            });
+                        });
                     });
                 });
             }, 3000);
@@ -175,10 +171,25 @@
             }
         }
 
+        function generateRandomMessage() {
+            const messages = [
+                "> SYSTEM ERROR: Connessione persa...",
+                "> ATTENZIONE: Protocollo di sicurezza violato!",
+                "> Processo in corso... [███▒▒▒▒▒▒▒]",
+                "> Kernel Panic: reboot in 30s...",
+                "> Autenticazione fallita. Tentativo 3/5.",
+                "> DECODIFICA... █ █ █ █ █ █ █ █ █ █ █",
+                "> SYSTEM LOG: Verifica ID: #A4F9X",
+                "> ATTENZIONE: Segnale corrotto █▓█▓█▓█",
+            ];
+            return messages[Math.floor(Math.random() * messages.length)];
+        }
+
         function updateTerminal(terminal) {
             setInterval(() => {
-                terminal.innerHTML += `\n> SYSTEM LOG: Processo ${Math.floor(Math.random() * 9999)}`;
-            }, Math.random() * 4000 + 2000);
+                let message = generateRandomMessage();
+                typeEffect(terminal, `\n${message}`);
+            }, Math.random() * 5000 + 3000);
         }
 
         for (let i = 1; i <= 6; i++) {
