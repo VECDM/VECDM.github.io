@@ -8,22 +8,22 @@
     <style>
         @keyframes glitch {
             0% { transform: translate(0); opacity: 1; }
-            50% { transform: translate(1px, -1px); opacity: 0.9; }
+            50% { transform: translate(1px, -1px); opacity: 0.95; }
             100% { transform: translate(0); opacity: 1; }
         }
 
         @keyframes flicker {
             0% { opacity: 1; }
-            50% { opacity: 0.97; }
+            50% { opacity: 0.98; }
             100% { opacity: 1; }
         }
 
         @keyframes intense-glitch {
-            0% { transform: skewX(0deg); opacity: 1; }
-            25% { transform: skewX(10deg) scale(1.05); opacity: 0.8; }
-            50% { transform: skewX(-15deg) scale(0.95); opacity: 0.6; }
-            75% { transform: skewX(5deg) scale(1.02); opacity: 0.9; }
-            100% { transform: skewX(0deg); opacity: 1; }
+            0% { transform: skewX(0deg); filter: hue-rotate(0deg); opacity: 1; }
+            25% { transform: skewX(15deg) scale(1.05); filter: hue-rotate(30deg); opacity: 0.7; }
+            50% { transform: skewX(-20deg) scale(0.95); filter: hue-rotate(-30deg); opacity: 0.6; }
+            75% { transform: skewX(10deg) scale(1.02); filter: hue-rotate(10deg); opacity: 0.8; }
+            100% { transform: skewX(0deg); filter: hue-rotate(0deg); opacity: 1; }
         }
 
         body {
@@ -61,7 +61,7 @@
         }
 
         .glitch-intense {
-            animation: intense-glitch 0.5s ease-in-out;
+            animation: intense-glitch 0.6s ease-in-out;
         }
 
         #command-input {
@@ -194,7 +194,7 @@
             setInterval(() => {
                 if (Math.random() > 0.98) { 
                     terminal.classList.add("glitch-intense");
-                    setTimeout(() => terminal.classList.remove("glitch-intense"), 500);
+                    setTimeout(() => terminal.classList.remove("glitch-intense"), 800);
                 }
                 typeEffect(terminal, `\n${generateRandomCode()}`);
             }, Math.random() * 4000 + 2000);
