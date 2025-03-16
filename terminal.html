@@ -8,7 +8,7 @@
     <style>
         body {
             background-color: black;
-            color: #d8a3e0; /* Grigio con tinta rosa */
+            color: #b8b8b8; /* Grigio con un leggero accenno di rosa */
             font-family: "Courier New", monospace;
             padding: 20px;
         }
@@ -16,7 +16,7 @@
             width: 600px;
             height: 300px;
             background-color: #111;
-            border: 2px solid #d8a3e0;
+            border: 2px solid #b8b8b8;
             padding: 10px;
             overflow-y: auto;
             white-space: pre-line;
@@ -25,8 +25,8 @@
             width: 600px;
             padding: 5px;
             background-color: black;
-            color: #d8a3e0;
-            border: 1px solid #d8a3e0;
+            color: #b8b8b8;
+            border: 1px solid #b8b8b8;
             font-family: "Courier New", monospace;
         }
     </style>
@@ -34,14 +34,11 @@
 <body>
 
     <h2>Terminale Simulato</h2>
-    <div id="terminal">
-        > Benvenuto nel terminale. Inserisci i comandi:<br>
-        > -email- TUAMAIL → Registra la tua email<br>
-        > -message- TUOMESSAGGIO → Scrivi il tuo messaggio<br>
-        > -send- → Invia il messaggio<br>
-    </div>
+    <div id="terminal"></div>
     
     <input type="text" id="command-input" placeholder="Digita un comando e premi INVIO...">
+
+    <audio id="type-sound" src="https://freesound.org/data/previews/151/151021_1529771-lq.mp3"></audio>
 
     <script>
         // Inizializza EmailJS
@@ -51,6 +48,37 @@
 
         let email = "";
         let message = "";
+
+        // Effetto di digitazione
+        function typeEffect(text, callback) {
+            let terminal = document.getElementById("terminal");
+            let index = 0;
+            let audio = document.getElementById("type-sound");
+
+            function typeNextChar() {
+                if (index < text.length) {
+                    terminal.innerHTML += text[index];
+                    index++;
+                    audio.currentTime = 0; // Resetta l'audio
+                    audio.play(); // Suona ogni carattere digitato
+                    setTimeout(typeNextChar, 40); // Velocità di digitazione
+                } else if (callback) {
+                    callback();
+                }
+                terminal.scrollTop = terminal.scrollHeight; // Scrolla in basso automaticamente
+            }
+
+            typeNextChar();
+        }
+
+        // Messaggi iniziali con effetto digitazione
+        typeEffect("> Benvenuto nel terminale. Inserisci i comandi:\n", function() {
+            typeEffect("> -email- TUAMAIL → Registra la tua email\n", function() {
+                typeEffect("> -message- TUOMESSAGGIO → Scrivi il tuo messaggio\n", function() {
+                    typeEffect("> -send- → Invia il messaggio\n");
+                });
+            });
+        });
 
         document.getElementById("command-input").addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
@@ -62,17 +90,15 @@
         });
 
         function processCommand(command) {
-            let terminal = document.getElementById("terminal");
-
             if (command.startsWith("-email- ")) {
                 email = command.replace("-email- ", "").trim();
-                terminal.innerHTML += `\n> Email impostata: ${email}`;
+                typeEffect(`\n> Email impostata: ${email}\n`);
             } else if (command.startsWith("-message- ")) {
                 message = command.replace("-message- ", "").trim();
-                terminal.innerHTML += `\n> Messaggio impostato: ${message}`;
+                typeEffect(`\n> Messaggio impostato: ${message}\n`);
             } else if (command === "-send-") {
                 if (!email || !message) {
-                    terminal.innerHTML += "\n> ERRORE: Email o messaggio mancante!";
+                    typeEffect("\n> ERRORE: Email o messaggio mancante!\n");
                     return;
                 }
                 
@@ -81,21 +107,19 @@
                     user_message: message
                 };
 
-                terminal.innerHTML += "\n> Invio in corso...";
-                
+                typeEffect("\n> Invio in corso...\n");
+
                 emailjs.send("service_phc57e8", "template_zihqct9", templateParams)
                 .then(function(response) {
                     console.log("Email inviata con successo!", response);
-                    terminal.innerHTML += "\n> Messaggio inviato correttamente!";
+                    typeEffect("\n> Messaggio inviato correttamente!\n");
                 }, function(error) {
                     console.error("Errore nell'invio dell'email:", error);
-                    terminal.innerHTML += "\n> ERRORE nell'invio. Riprova!";
+                    typeEffect("\n> ERRORE nell'invio. Riprova!\n");
                 });
             } else {
-                terminal.innerHTML += `\n> Comando sconosciuto: ${command}`;
+                typeEffect(`\n> Comando sconosciuto: ${command}\n`);
             }
-
-            terminal.scrollTop = terminal.scrollHeight; // Scrolla in basso automaticamente
         }
     </script>
 
