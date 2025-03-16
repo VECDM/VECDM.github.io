@@ -38,8 +38,6 @@
     
     <input type="text" id="command-input" placeholder="Digita un comando e premi INVIO...">
 
-    <audio id="type-sound" src="https://freesound.org/data/previews/151/151021_1529771-lq.mp3"></audio>
-
     <script>
         // Inizializza EmailJS
         (function() {
@@ -49,18 +47,15 @@
         let email = "";
         let message = "";
 
-        // Effetto di digitazione
+        // Effetto di digitazione (senza audio)
         function typeEffect(text, callback) {
             let terminal = document.getElementById("terminal");
             let index = 0;
-            let audio = document.getElementById("type-sound");
 
             function typeNextChar() {
                 if (index < text.length) {
                     terminal.innerHTML += text[index];
                     index++;
-                    audio.currentTime = 0; // Resetta l'audio
-                    audio.play(); // Suona ogni carattere digitato
                     setTimeout(typeNextChar, 40); // Velocità di digitazione
                 } else if (callback) {
                     callback();
