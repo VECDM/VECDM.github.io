@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mainframe Terminal</title>
+    <title>Terminal Mainframe</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         @keyframes glitch {
@@ -18,18 +18,11 @@
             100% { opacity: 1; }
         }
 
-        @keyframes intense-glitch {
-            0% { transform: skewX(0deg); filter: hue-rotate(0deg); opacity: 1; }
-            25% { transform: skewX(15deg) scale(1.05); filter: hue-rotate(30deg); opacity: 0.7; }
-            50% { transform: skewX(-20deg) scale(0.95); filter: hue-rotate(-30deg); opacity: 0.6; }
-            75% { transform: skewX(10deg) scale(1.02); filter: hue-rotate(10deg); opacity: 0.8; }
-            100% { transform: skewX(0deg); filter: hue-rotate(0deg); opacity: 1; }
-        }
-
         body {
             background-color: black;
             color: #b8b8b8;
             font-family: "Courier New", monospace;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -51,32 +44,25 @@
             padding: 10px;
             overflow-y: auto;
             white-space: pre-line;
+            font-size: 12px;
             position: relative;
-            filter: contrast(1.2) brightness(0.9) saturate(1.1);
             animation: flicker 1.5s infinite alternate;
         }
 
-        .glitch {
-            display: inline-block;
-            animation: glitch 0.5s infinite alternate;
-        }
-
-        .glitch-intense {
-            animation: intense-glitch 0.6s ease-in-out;
+        .main-terminal {
+            width: 400px;
+            height: 250px;
+            grid-column: 2;
+            grid-row: 2;
         }
 
         #command-input {
-            width: 300px;
+            width: 400px;
             padding: 5px;
             background-color: black;
             color: #b8b8b8;
             border: 1px solid #b8b8b8;
             font-family: "Courier New", monospace;
-        }
-        
-        .center {
-            grid-column: 2;
-            grid-row: 2;
         }
     </style>
 </head>
@@ -86,18 +72,14 @@
         <div class="terminal" id="t1"></div>
         <div class="terminal" id="t2"></div>
         <div class="terminal" id="t3"></div>
+        <div class="terminal main-terminal" id="main-terminal"></div>
         <div class="terminal" id="t4"></div>
-
-        <div class="terminal center" id="main-terminal">
-            <h2 class="glitch">< - Main Terminal - ></h2>
-        </div>
-
         <div class="terminal" id="t5"></div>
         <div class="terminal" id="t6"></div>
         <div class="terminal" id="t7"></div>
     </div>
 
-    <input type="text" id="command-input" placeholder="Type a command and press ENTER...">
+    <input type="text" id="command-input" placeholder="Digita un comando e premi INVIO...">
 
     <script>
         (function() {
@@ -106,7 +88,6 @@
 
         let email = "";
         let message = "";
-        let mainTerminal = document.getElementById("main-terminal");
 
         function typeEffect(element, text, callback) {
             let index = 0;
@@ -114,7 +95,7 @@
                 if (index < text.length) {
                     element.innerHTML += text[index];
                     index++;
-                    setTimeout(typeNextChar, 40);
+                    setTimeout(typeNextChar, 30);
                 } else if (callback) {
                     callback();
                 }
@@ -123,22 +104,24 @@
             typeNextChar();
         }
 
+        let mainTerminal = document.getElementById("main-terminal");
+
         function bootSequence() {
             mainTerminal.innerHTML = "> SYSTEM BOOTING...\n";
             setTimeout(() => {
                 mainTerminal.innerHTML = "";
-                typeEffect(mainTerminal, "> UNAUTHORIZED ACCESS DETECTED...\n", function() {
-                    typeEffect(mainTerminal, "> System override...\n", function() {
-                        typeEffect(mainTerminal, "> Connection established. Type commands:\n", function() {
-                            typeEffect(mainTerminal, "> -email- YOUR_EMAIL → Register email\n", function() {
-                                typeEffect(mainTerminal, "> -message- YOUR_MESSAGE → Write message\n", function() {
-                                    typeEffect(mainTerminal, "> -send- → Send the message\n");
+                typeEffect(mainTerminal, "> ACCESSO NEGATO...\n", function() {
+                    typeEffect(mainTerminal, "> Override in corso...\n", function() {
+                        typeEffect(mainTerminal, "> Connessione stabilita. Comandi disponibili:\n", function() {
+                            typeEffect(mainTerminal, "> -email- TUAMAIL → Registra la tua email\n", function() {
+                                typeEffect(mainTerminal, "> -message- TUOMESSAGGIO → Scrivi il tuo messaggio\n", function() {
+                                    typeEffect(mainTerminal, "> -send- → Invia il messaggio\n");
                                 });
                             });
                         });
                     });
                 });
-            }, 3000);
+            }, 2000);
         }
 
         bootSequence();
@@ -155,13 +138,13 @@
         function processCommand(command) {
             if (command.startsWith("-email- ")) {
                 email = command.replace("-email- ", "").trim();
-                typeEffect(mainTerminal, `\n> Email set: ${email}\n`);
+                typeEffect(mainTerminal, `\n> Email impostata: ${email}\n`);
             } else if (command.startsWith("-message- ")) {
                 message = command.replace("-message- ", "").trim();
-                typeEffect(mainTerminal, `\n> Message set: ${message}\n`);
+                typeEffect(mainTerminal, `\n> Messaggio impostato: ${message}\n`);
             } else if (command === "-send-") {
                 if (!email || !message) {
-                    typeEffect(mainTerminal, "\n> ERROR: Missing email or message!\n");
+                    typeEffect(mainTerminal, "\n> ERRORE: Email o messaggio mancante!\n");
                     return;
                 }
 
@@ -170,23 +153,56 @@
                     user_message: message
                 };
 
-                typeEffect(mainTerminal, "\n> Sending...\n");
+                typeEffect(mainTerminal, "\n> Invio in corso...\n");
 
                 emailjs.send("service_phc57e8", "template_zihqct9", templateParams)
-                .then(() => typeEffect(mainTerminal, "\n> Message sent successfully!\n"), 
-                      () => typeEffect(mainTerminal, "\n> ERROR in sending. Try again!\n"));
+                .then(function(response) {
+                    console.log("Email inviata!", response);
+                    typeEffect(mainTerminal, "\n> Messaggio inviato correttamente!\n", function() {
+                        setTimeout(bootSequence, 3000);
+                    });
+                }, function(error) {
+                    console.error("Errore invio email:", error);
+                    typeEffect(mainTerminal, "\n> ERRORE nell'invio. Riprova!\n");
+                });
             } else {
-                typeEffect(mainTerminal, `\n> Unknown command: ${command}\n`);
+                typeEffect(mainTerminal, `\n> Comando sconosciuto: ${command}\n`);
             }
         }
 
-        function updateTerminal(terminal) {
+        const terminals = ["t1", "t2", "t3", "t4", "t5", "t6", "t7"];
+
+        function getRandomMessage() {
+            const messages = [
+                "> PROCESSING...",
+                "> ERROR: DATA CORRUPTED",
+                "> Connection lost... retrying...",
+                "> Access Denied - Unauthorized User",
+                "> CRITICAL ERROR - System Overload",
+                "> Running system diagnostics...",
+                "> Encrypting logs...",
+                "> Searching for anomalies...",
+                "> WARNING: Intrusion detected!",
+                "> Boot sequence initialized...",
+                "> Kernel panic - reboot required",
+                "> Executing script: anomaly_detection.py",
+                "> Fetching data packets...",
+                "> Unknown signal received...",
+                "> ALERT: Firewall breach detected!"
+            ];
+            return messages[Math.floor(Math.random() * messages.length)];
+        }
+
+        function updateTerminal(terminalId) {
             setInterval(() => {
-                typeEffect(terminal, `\n> PROCESS ${Math.random().toString(36).substring(7)} EXECUTING...\n`);
+                const terminal = document.getElementById(terminalId);
+                if (terminal) {
+                    typeEffect(terminal, `\n${getRandomMessage()}`);
+                }
             }, Math.random() * 4000 + 2000);
         }
 
-        ["t1", "t2", "t3", "t4", "t5", "t6", "t7"].forEach(id => updateTerminal(document.getElementById(id)));
+        terminals.forEach(updateTerminal);
     </script>
 
 </body>
