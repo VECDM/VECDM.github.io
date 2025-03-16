@@ -82,7 +82,7 @@
 
         // Messaggi iniziali
         let mainTerminal = document.getElementById("main-terminal");
-        typeEffect(mainTerminal, "> Benvenuto nel terminale di VECMD. Inserisci i comandi:\n", function() {
+        typeEffect(mainTerminal, "> Benvenuto nel terminale di VECDM. Inserisci i comandi:\n", function() {
             typeEffect(mainTerminal, "> -email- TUAMAIL → Registra la tua email\n", function() {
                 typeEffect(mainTerminal, "> -message- TUOMESSAGGIO → Scrivi il tuo messaggio\n", function() {
                     typeEffect(mainTerminal, "> -send- → Invia il messaggio\n");
@@ -137,22 +137,13 @@
         const rightTerminal = document.getElementById("right-terminal");
 
         function generateRandomCode() {
-            const commands = [
-                "System Check: OK",
-                "Loading modules...",
-                "Executing process ID 2039...",
-                "Checking security logs...",
-                "User Authentication: PASSED",
-                "Connecting to server...",
-                "Fetching data...",
-                "Decoding binary stream...",
-                "Compiling script...",
-                "Kernel update in progress...",
-                "Encrypting session...",
-                "System rebooting...",
-                "Verifying access keys..."
-            ];
-            return commands[Math.floor(Math.random() * commands.length)];
+            const actions = ["Verifying", "Executing", "Loading", "Initializing", "Compiling", "Decrypting"];
+            const objects = ["kernel", "process", "module", "security log", "user session", "network request"];
+            const results = ["OK", "FAILED", "PENDING", "SUCCESS", "WARNING"];
+            const randomNumber = Math.floor(Math.random() * 9999);
+            const percentage = Math.floor(Math.random() * 100) + "%";
+            
+            return `> ${actions[Math.floor(Math.random() * actions.length)]} ${objects[Math.floor(Math.random() * objects.length)]}... ${results[Math.floor(Math.random() * results.length)]} [ID:${randomNumber}] (${percentage})`;
         }
 
         function updateTerminal(terminal) {
@@ -160,7 +151,7 @@
                 if (Math.random() > 0.9) { // 10% di probabilità di "riavviare"
                     terminal.innerHTML = "> SYSTEM REBOOTING...\n";
                 }
-                typeEffect(terminal, `\n> ${generateRandomCode()}`);
+                typeEffect(terminal, `\n${generateRandomCode()}`);
             }, Math.random() * 3000 + 2000); // Tra 2 e 5 secondi
         }
 
