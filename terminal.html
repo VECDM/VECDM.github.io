@@ -18,6 +18,14 @@
             100% { opacity: 1; }
         }
 
+        @keyframes intense-glitch {
+            0% { transform: skewX(0deg); opacity: 1; }
+            25% { transform: skewX(10deg) scale(1.05); opacity: 0.8; }
+            50% { transform: skewX(-15deg) scale(0.95); opacity: 0.6; }
+            75% { transform: skewX(5deg) scale(1.02); opacity: 0.9; }
+            100% { transform: skewX(0deg); opacity: 1; }
+        }
+
         body {
             background-color: black;
             color: #b8b8b8;
@@ -52,6 +60,10 @@
             animation: glitch 0.5s infinite alternate;
         }
 
+        .glitch-intense {
+            animation: intense-glitch 0.5s ease-in-out;
+        }
+
         #command-input {
             width: 400px;
             padding: 5px;
@@ -67,8 +79,8 @@
     <div class="terminal-container">
         <div class="terminal" id="left-terminal"></div>
 
-        <div align=center>
-            <h2 class="glitch"><- Terminal - ></h2>
+        <div>
+            <h2 class="glitch">< - Terminal - ></h2>
             <div class="terminal" id="main-terminal"></div>
             <input type="text" id="command-input" placeholder="Digita un comando e premi INVIO...">
         </div>
@@ -181,7 +193,8 @@
         function updateTerminal(terminal) {
             setInterval(() => {
                 if (Math.random() > 0.98) { 
-                    terminal.innerHTML = "> SYSTEM REBOOTING...\n";
+                    terminal.classList.add("glitch-intense");
+                    setTimeout(() => terminal.classList.remove("glitch-intense"), 500);
                 }
                 typeEffect(terminal, `\n${generateRandomCode()}`);
             }, Math.random() * 4000 + 2000);
