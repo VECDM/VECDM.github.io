@@ -1,204 +1,72 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Mainframe</title>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <title>Retro Mainframe</title>
     <style>
         body {
             background: black;
-            color: #b3b3ff; /* Viola molto chiaro per il testo */
+            color: #b3b3ff; /* Viola chiaro per il testo */
             font-family: 'Courier New', Courier, monospace;
             text-align: center;
             overflow: hidden;
-            position: relative;
-        }
-
-        body::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: repeating-linear-gradient(
-        to bottom, 
-        rgba(0, 0, 0, 0.2) 0px, 
-        rgba(255, 255, 255, 0.05) 1px, 
-        transparent 2px
-    );
-    opacity: 0.6; /* Aumentiamo l'opacità */
-    pointer-events: none;
-    z-index: 9999;
-}
-
-
-        /* Layout dei terminali */
-        .container {
             display: flex;
-            flex-direction: row;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
-            gap: 20px;
         }
 
-       .terminal {
-    background: rgba(10, 10, 10, 0.9);
-    border: 2px solid #555;
-    box-shadow: 0 0 25px rgba(179, 179, 255, 0.5); /* Glow più forte */
-    padding: 10px;
-    text-align: left;
-    overflow: hidden;
-    position: relative;
-}
+        /* Contenitore dei terminali */
+        .terminal-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
 
+        .terminal {
+            background: rgba(10, 10, 10, 0.9);
+            border: 2px solid #333;
+            box-shadow: 0 0 15px rgba(179, 179, 255, 0.2);
+            padding: 10px;
+            text-align: left;
+            overflow: hidden;
+            position: relative;
+            width: 30%;
+            height: 300px;
+            overflow-y: auto;
+            margin: 10px;
+        }
 
         /* Il terminale centrale è più grande */
-        #main-terminal {
+        #mainTerminal {
             width: 40%;
         }
 
-        /* Testo simulato nei terminali */
-        .output {
-            white-space: pre-line;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        /* Input comandi */
+        /* Casella di input */
         #commandInput {
-    position: relative;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    padding: 8px;
-    font-size: 16px;
-    background: rgba(0, 0, 0, 0.8);
-    color: #b3b3ff;
-    border: 1px solid #b3b3ff
-    display: block !important;
-    visibility: visible !important;
-    z-index: 1000;
-}
-
-
-        /* Effetto glitch */
-       @keyframes flicker {
-    0% { opacity: 1; transform: scaleY(1); }
-    30% { opacity: 0.95; transform: scaleY(1.02); }
-    50% { opacity: 1; transform: scaleY(1); }
-    80% { opacity: 0.97; transform: scaleY(1.01); }
-    100% { opacity: 1; transform: scaleY(1); }
-}
-.terminal {
-    animation: flicker 0.15s infinite alternate ease-in-out;
-}
+            width: 50%;
+            background: #222;
+            color: #b3b3ff;
+            border: 1px solid #444;
+            padding: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Terminale laterale sinistro -->
-        <div class="terminal" id="left-terminal">
-            <div class="output" id="left-output"></div>
+    <div class="terminal-container">
+        <div class="terminal" id="leftTerminal">[ LATERAL SYSTEM LOG ]</div>
+        <div class="terminal" id="mainTerminal">
+            <p>Welcome to the system. Type "help" for commands.</p>
         </div>
-
-        <!-- Terminale centrale -->
-        <div class="terminal" id="main-terminal">
-            <div class="output" id="main-output">
-                Benvenuto nel sistema. Usa i comandi:  
-                - "email [tuo@email.com]" per impostare l'email  
-                - "message [testo]" per scrivere il messaggio  
-                - "send" per inviare  
-            </div>
-        </div>
-
-        <!-- Terminale laterale destro -->
-        <div class="terminal" id="right-terminal">
-            <div class="output" id="right-output"></div>
-        </div>
+        <div class="terminal" id="rightTerminal">[ SECONDARY PROCESSING UNIT ]</div>
     </div>
 
-    <input type="text" id="command-input" placeholder="Inserisci comando e premi Invio...">
-
-    <script>
-        emailjs.init("cazIbL20VzJml_-nQ");  // Public Key EmailJS
-
-        let userEmail = "";
-        let userMessage = "";
-
-        function appendMessage(terminalId, message) {
-            let terminal = document.getElementById(terminalId);
-            let output = terminal.querySelector(".output");
-            let lines = output.innerHTML.split("\n");
-            if (lines.length > 20) {  // Mantiene massimo 20 righe visibili
-                lines.shift();
-            }
-            lines.push(message);
-            output.innerHTML = lines.join("\n");
-        }
-
-        function processCommand(command) {
-            let args = command.split(" ");
-            let cmd = args[0].toLowerCase();
-
-            if (cmd === "email" && args[1]) {
-                userEmail = args[1];
-                appendMessage("main-terminal", "[SISTEMA] Email impostata: " + userEmail);
-            } else if (cmd === "message" && args.slice(1).join(" ")) {
-                userMessage = args.slice(1).join(" ");
-                appendMessage("main-terminal", "[SISTEMA] Messaggio impostato.");
-            } else if (cmd === "send") {
-                if (userEmail && userMessage) {
-                    emailjs.send("service_phc57e8", "template_zihqct9", {
-                        user_email: userEmail,
-                        message: userMessage
-                    }).then(() => {
-                        appendMessage("main-terminal", "[SISTEMA] Email inviata con successo!");
-                    }).catch(() => {
-                        appendMessage("main-terminal", "[ERRORE] Invio fallito.");
-                    });
-                } else {
-                    appendMessage("main-terminal", "[ERRORE] Devi impostare email e messaggio.");
-                }
-            } else {
-                appendMessage("main-terminal", "[ERRORE] Comando sconosciuto.");
-            }
-        }
-
-        document.getElementById("command-input").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                let command = this.value.trim();
-                if (command) {
-                    appendMessage("main-terminal", "> " + command);
-                    processCommand(command);
-                }
-                this.value = "";
-            }
-        });
-
-        function randomProcessMessage() {
-            const messages = [
-                "[INFO] Connessione stabile.",
-                "[AVVISO] Latenza elevata.",
-                "[SISTEMA] Verifica completata.",
-                "[ERRORE] Pacchetto dati corrotto.",
-                "[LOG] Trasferimento 43% completato."
-            ];
-            return messages[Math.floor(Math.random() * messages.length)];
-        }
-
-        function updateSideTerminals() {
-            appendMessage("left-terminal", randomProcessMessage());
-            appendMessage("right-terminal", randomProcessMessage());
-        }
-
-        setInterval(updateSideTerminals, 3000);
-    </script>
-<input type="text" id="commandInput" placeholder="Type your command here..." style="width: 100%; padding: 10px; font-size: 16px; background: black; color: #b3b3ff; border: 1px solid #b3b3ff; text-align: center;">
+    <input type="text" id="commandInput" placeholder="Enter command...">
 
 </body>
 </html>
