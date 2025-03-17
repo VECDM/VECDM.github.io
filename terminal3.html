@@ -1,19 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retro Mainframe</title>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script>
-        (function(){
-            emailjs.init("cazIbL20VzJml_-nQ");
-        })();
-    </script>
+    <title>Mainframe Vintage</title>
     <style>
         body {
             background: black;
-            color: #b3b3ff;
+            color: #a8a8c6; /* Grigio con leggerissimo viola */
             font-family: 'Courier New', Courier, monospace;
             text-align: center;
             overflow: hidden;
@@ -24,16 +18,36 @@
             height: 100vh;
         }
 
+        /* Effetto CRT leggero */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.02) 0px,
+                rgba(0, 0, 0, 0.05) 1px,
+                transparent 2px
+            );
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        /* Container per i terminali */
         .terminal-container {
             display: flex;
             justify-content: center;
             width: 100%;
         }
 
+        /* Stile dei terminali */
         .terminal {
-            background: rgba(10, 10, 10, 0.9);
+            background: rgba(15, 15, 15, 0.95);
             border: 2px solid #333;
-            box-shadow: 0 0 15px rgba(179, 179, 255, 0.2);
+            box-shadow: 0 0 10px rgba(168, 168, 198, 0.2); /* Glow viola leggero */
             padding: 10px;
             text-align: left;
             overflow: hidden;
@@ -45,18 +59,21 @@
             white-space: pre-wrap;
         }
 
+        /* Terminale centrale più largo */
         #mainTerminal {
             width: 40%;
         }
 
+        /* Casella input comandi */
         #commandInput {
             width: 50%;
             background: #222;
-            color: #b3b3ff;
+            color: #a8a8c6;
             border: 1px solid #444;
             padding: 5px;
             font-family: 'Courier New', Courier, monospace;
             margin-top: 10px;
+            box-shadow: 0 0 5px rgba(168, 168, 198, 0.1);
         }
     </style>
 </head>
@@ -64,74 +81,59 @@
 
     <div class="terminal-container">
         <div class="terminal" id="leftTerminal"></div>
-        <div class="terminal" id="mainTerminal">
-            <p>Welcome to the system. Type "help" for commands.</p>
-        </div>
+        <div class="terminal" id="mainTerminal"></div>
         <div class="terminal" id="rightTerminal"></div>
     </div>
 
-    <input type="text" id="commandInput" placeholder="Enter command...">
+    <input type="text" id="commandInput" placeholder="Inserisci un comando..." onkeydown="handleCommand(event)">
 
     <script>
-        const leftTerminal = document.getElementById("leftTerminal");
-        const mainTerminal = document.getElementById("mainTerminal");
-        const rightTerminal = document.getElementById("rightTerminal");
-        const commandInput = document.getElementById("commandInput");
-
-        let userEmail = "";
-        let userMessage = "";
-
-        function logToTerminal(terminal, message) {
-            terminal.innerHTML += message + "\n";
+        function logMessage(terminalId, message) {
+            const terminal = document.getElementById(terminalId);
+            terminal.innerHTML += message + "<br>";
             terminal.scrollTop = terminal.scrollHeight;
         }
 
-        function simulateActivity() {
-            const logs = [
-                "[SYSTEM] Initializing process...",
-                "[ERROR] Data corruption detected!",
-                "[INFO] Connection lost. Reconnecting...",
-                "[TASK] Running security check...",
-                "[LOG] Process completed successfully."
-            ];
-            logToTerminal(leftTerminal, logs[Math.floor(Math.random() * logs.length)]);
-            logToTerminal(rightTerminal, logs[Math.floor(Math.random() * logs.length)]);
-        }
-
-        setInterval(simulateActivity, 2000);
-
-        commandInput.addEventListener("keypress", function(event) {
+        function handleCommand(event) {
             if (event.key === "Enter") {
-                const command = commandInput.value.trim();
-                commandInput.value = "";
-
-                logToTerminal(mainTerminal, "> " + command);
+                const input = document.getElementById("commandInput");
+                const command = input.value.trim().toLowerCase();
+                input.value = "";
 
                 if (command === "help") {
-                    logToTerminal(mainTerminal, "Commands:\n- email [your email]\n- message [your message]\n- send");
+                    logMessage("mainTerminal", "[Help] Comandi disponibili: help, email, message, send");
                 } else if (command.startsWith("email ")) {
-                    userEmail = command.split(" ")[1];
-                    logToTerminal(mainTerminal, "[SYSTEM] Email set to: " + userEmail);
+                    logMessage("mainTerminal", "[OK] Email impostata: " + command.substring(6));
                 } else if (command.startsWith("message ")) {
-                    userMessage = command.substring(8);
-                    logToTerminal(mainTerminal, "[SYSTEM] Message set.");
+                    logMessage("mainTerminal", "[OK] Messaggio impostato: " + command.substring(8));
                 } else if (command === "send") {
-                    if (userEmail && userMessage) {
-                        emailjs.send("service_phc57e8", "template_zihqct9", {
-                            from_email: userEmail,
-                            message: userMessage
-                        }).then(
-                            () => logToTerminal(mainTerminal, "[SUCCESS] Email sent."),
-                            (error) => logToTerminal(mainTerminal, "[ERROR] Failed to send email: " + error.text)
-                        );
-                    } else {
-                        logToTerminal(mainTerminal, "[ERROR] Set email and message before sending.");
-                    }
+                    logMessage("mainTerminal", "[Invio...] Messaggio in elaborazione...");
+                    setTimeout(() => {
+                        logMessage("mainTerminal", "[OK] Email inviata con successo!");
+                    }, 2000);
                 } else {
-                    logToTerminal(mainTerminal, "[ERROR] Unknown command.");
+                    logMessage("mainTerminal", "[Errore] Comando non riconosciuto.");
                 }
             }
-        });
+        }
+
+        // Simulazione di attività nei terminali laterali
+        function generateRandomLogs() {
+            const messages = [
+                "[INFO] Connessione stabile...",
+                "[ERROR] Timeout richiesta...",
+                "[LOG] Pacchetto ricevuto...",
+                "[SECURITY] Autenticazione fallita...",
+                "[DEBUG] Buffer overflow..."
+            ];
+
+            logMessage("leftTerminal", messages[Math.floor(Math.random() * messages.length)]);
+            logMessage("rightTerminal", messages[Math.floor(Math.random() * messages.length)]);
+
+            setTimeout(generateRandomLogs, Math.random() * 3000 + 2000);
+        }
+
+        generateRandomLogs();
     </script>
 
 </body>
