@@ -3,39 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mainframe Terminal</title>
+    <title>Cyber Terminal</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
-        /* Effetti di glitch */
         @keyframes glitch {
             0% { transform: translate(0); opacity: 1; }
             50% { transform: translate(1px, -1px); opacity: 0.95; }
             100% { transform: translate(0); opacity: 1; }
         }
 
-        /* Animazione leggera di flicker */
         @keyframes flicker {
             0% { opacity: 1; }
             50% { opacity: 0.98; }
             100% { opacity: 1; }
         }
 
-        /* Effetto distorsione caratteri */
-        @keyframes textDistortion {
-            0%, 100% { content: attr(data-text); }
-            50% { content: attr(data-text-alt); }
-        }
-
-        /* Stile di base */
         body {
             background-color: black;
-            color: #b8a8d0; /* Grigio con leggero tono viola */
+            color: #b0a0c0;
             font-family: "Courier New", monospace;
-            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            flex-direction: column;
         }
 
         .mainframe {
@@ -43,14 +34,15 @@
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, auto);
             gap: 10px;
-            text-align: center;
+            max-width: 900px;
+            justify-content: center;
         }
 
         .terminal {
-            width: 250px;
-            height: 180px;
+            width: 280px;
+            height: 200px;
             background-color: #111;
-            border: 2px solid #b8a8d0;
+            border: 2px solid #b0a0c0;
             padding: 10px;
             overflow-y: auto;
             white-space: pre-line;
@@ -59,28 +51,28 @@
             animation: flicker 1.5s infinite alternate;
         }
 
+        .terminal.main {
+            width: 380px;
+            height: 260px;
+            grid-column: 2 / 3;
+            grid-row: 2 / 3;
+        }
+
+        .command-input {
+            width: 380px;
+            padding: 8px;
+            background-color: black;
+            color: #b0a0c0;
+            border: 2px solid #b0a0c0;
+            font-family: "Courier New", monospace;
+            margin-top: 5px;
+            text-align: center;
+        }
+
         .glitch {
             display: inline-block;
             animation: glitch 0.5s infinite alternate;
         }
-
-        #command-input {
-            width: 250px;
-            padding: 5px;
-            background-color: black;
-            color: #b8a8d0;
-            border: 1px solid #b8a8d0;
-            font-family: "Courier New", monospace;
-        }
-
-        /* Disposizione piramidale */
-        .terminal:nth-child(1) { grid-column: 2; grid-row: 1; } /* Top */
-        .terminal:nth-child(2) { grid-column: 1; grid-row: 2; } /* Sinistra */
-        .terminal:nth-child(3) { grid-column: 2; grid-row: 2; } /* Centrale */
-        .terminal:nth-child(4) { grid-column: 3; grid-row: 2; } /* Destra */
-        .terminal:nth-child(5) { grid-column: 1; grid-row: 3; } /* Basso sinistra */
-        .terminal:nth-child(6) { grid-column: 2; grid-row: 3; } /* Basso centrale */
-        .terminal:nth-child(7) { grid-column: 3; grid-row: 3; } /* Basso destra */
     </style>
 </head>
 <body>
@@ -88,22 +80,25 @@
     <div class="mainframe">
         <div class="terminal" id="t1"></div>
         <div class="terminal" id="t2"></div>
-        <div class="terminal" id="t3"></div> <!-- Terminale principale -->
+        <div class="terminal" id="t3"></div>
         <div class="terminal" id="t4"></div>
-        <div class="terminal" id="t5"></div>
+        <div class="terminal main" id="t5"></div>
         <div class="terminal" id="t6"></div>
         <div class="terminal" id="t7"></div>
+        <div class="terminal" id="t8"></div>
+        <div class="terminal" id="t9"></div>
     </div>
 
-    <input type="text" id="command-input" placeholder="Digita un comando e premi INVIO...">
+    <input type="text" class="command-input" id="command-input" placeholder="Digita un comando e premi INVIO...">
 
     <script>
         (function() {
-            emailjs.init("cazIbL20VzJml_-nQ"); 
+            emailjs.init("cazIbL20VzJml_-nQ");
         })();
 
         let email = "";
         let message = "";
+        let mainTerminal = document.getElementById("t5");
 
         function typeEffect(element, text, callback) {
             let index = 0;
@@ -111,7 +106,7 @@
                 if (index < text.length) {
                     element.innerHTML += text[index];
                     index++;
-                    setTimeout(typeNextChar, 40);
+                    setTimeout(typeNextChar, 30);
                 } else if (callback) {
                     callback();
                 }
@@ -119,8 +114,6 @@
             }
             typeNextChar();
         }
-
-        let mainTerminal = document.getElementById("t3");
 
         function bootSequence() {
             mainTerminal.innerHTML = "> SYSTEM REBOOTING...\n";
@@ -137,37 +130,78 @@
                         });
                     });
                 });
-            }, 3000); 
+            }, 3000);
         }
 
         bootSequence();
 
-        function generateRandomMessage() {
-            const messages = [
-                "Checking security protocols...",
-                "Accessing database...",
-                "Decoding transmission...",
-                "Network instability detected...",
-                "Recalculating...",
-                "Brute-force detected, countermeasures activated...",
-                "Internal error, system reboot imminent...",
-                "Firewall breach attempt detected..."
-            ];
-            return "> " + messages[Math.floor(Math.random() * messages.length)];
-        }
+        document.getElementById("command-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                let command = this.value.trim();
+                this.value = "";
+                processCommand(command);
+            }
+        });
 
-        function updateTerminals() {
-            let terminals = document.querySelectorAll(".terminal");
-            setInterval(() => {
-                terminals.forEach(term => {
-                    if (Math.random() > 0.7) {
-                        term.innerHTML = generateRandomMessage();
-                    }
+        function processCommand(command) {
+            if (command.startsWith("-email- ")) {
+                email = command.replace("-email- ", "").trim();
+                typeEffect(mainTerminal, `\n> Email impostata: ${email}\n`);
+            } else if (command.startsWith("-message- ")) {
+                message = command.replace("-message- ", "").trim();
+                typeEffect(mainTerminal, `\n> Messaggio impostato: ${message}\n`);
+            } else if (command === "-send-") {
+                if (!email || !message) {
+                    typeEffect(mainTerminal, "\n> ERRORE: Email o messaggio mancante!\n");
+                    return;
+                }
+
+                let templateParams = {
+                    user_email: email,
+                    user_message: message
+                };
+
+                typeEffect(mainTerminal, "\n> Invio in corso...\n");
+
+                emailjs.send("service_phc57e8", "template_zihqct9", templateParams)
+                .then(function(response) {
+                    console.log("Email inviata con successo!", response);
+                    typeEffect(mainTerminal, "\n> Messaggio inviato correttamente!\n", function() {
+                        setTimeout(bootSequence, 3000);
+                    });
+                }, function(error) {
+                    console.error("Errore nell'invio dell'email:", error);
+                    typeEffect(mainTerminal, "\n> ERRORE nell'invio. Riprova!\n");
                 });
-            }, Math.random() * 5000 + 2000);
+            } else {
+                typeEffect(mainTerminal, `\n> Comando sconosciuto: ${command}\n`);
+            }
         }
 
-        updateTerminals();
+        const terminals = ["t1", "t2", "t3", "t4", "t6", "t7", "t8", "t9"].map(id => document.getElementById(id));
+
+        function generateRandomMessage() {
+            const actions = ["Verifying", "Executing", "Loading", "Initializing", "Compiling", "Decrypting"];
+            const objects = ["kernel", "process", "module", "security log", "user session", "network request"];
+            const results = ["OK", "FAILED", "PENDING", "SUCCESS", "WARNING"];
+            const randomNumber = Math.floor(Math.random() * 9999);
+            const percentage = Math.floor(Math.random() * 100) + "%";
+
+            return `> ${actions[Math.floor(Math.random() * actions.length)]} ${objects[Math.floor(Math.random() * objects.length)]}... ${results[Math.floor(Math.random() * results.length)]} [ID:${randomNumber}] (${percentage})`;
+        }
+
+        function updateTerminal(terminal) {
+            setInterval(() => {
+                if (Math.random() > 0.97) {
+                    terminal.classList.add("glitch");
+                    setTimeout(() => terminal.classList.remove("glitch"), 800);
+                }
+                typeEffect(terminal, `\n${generateRandomMessage()}`);
+            }, Math.random() * 4000 + 2000);
+        }
+
+        terminals.forEach(updateTerminal);
     </script>
 
 </body>
