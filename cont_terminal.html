@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Mainframe</title>
+    <style>
+        body {
+            background: black;
+            color: #a8a8c6; /* Grigio con leggero viola */
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* Container per i terminali */
+        .terminal-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* Stile dei terminali */
+        .terminal {
+            background: rgba(15, 15, 15, 0.95);
+            border: 2px solid #333;
+            box-shadow: 0 0 10px rgba(168, 168, 198, 0.2);
+            padding: 10px;
+            text-align: left;
+            overflow: hidden;
+            width: 30%;
+            height: 300px;
+            overflow-y: auto;
+            margin: 10px;
+            white-space: pre-wrap;
+        }
+
+        /* Terminale centrale più largo */
+        #mainTerminal {
+            width: 40%;
+        }
+
+        /* Casella input comandi */
+        #commandInput {
+            width: 50%;
+            background: #222;
+            color: #a8a8c6;
+            border: 1px solid #444;
+            padding: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="terminal-container">
+        <div class="terminal" id="leftTerminal"></div>
+        <div class="terminal" id="mainTerminal"></div>
+        <div class="terminal" id="rightTerminal"></div>
+    </div>
+
+    <input type="text" id="commandInput" placeholder="Inserisci un comando..." onkeydown="handleCommand(event)">
+
+    <script>
+        let emailSet = null;
+        let messageSet = null;
+
+        function logMessage(terminalId, message) {
+            console.log(`Scrivendo su ${terminalId}: ${message}`);
+            const terminal = document.getElementById(terminalId);
+            if (!terminal) {
+                console.error(`Terminale con ID ${terminalId} non trovato!`);
+                return;
+            }
+            terminal.innerHTML += message + "<br>";
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function handleCommand(event) {
+            if (event.key === "Enter") {
+                const input = document.getElementById("commandInput");
+                const command = input.value.trim();
+                input.value = "";
+
+                console.log("Comando inserito:", command);
+
+                if (command === "help") {
+                    logMessage("mainTerminal", "[Help] Comandi disponibili:");
+                    logMessage("mainTerminal", "- email [tuo@email.com] → Imposta il tuo indirizzo email");
+                    logMessage("mainTerminal", "- message [testo] → Scrivi il messaggio da inviare");
+                    logMessage("mainTerminal", "- send → Invia l'email");
+                } else if (command.startsWith("email ")) {
+                    emailSet = command.substring(6);
+                    logMessage("mainTerminal", "[OK] Email impostata: " + emailSet);
+                } else if (command.startsWith("message ")) {
+                    messageSet = command.substring(8);
+                    logMessage("mainTerminal", "[OK] Messaggio impostato: " + messageSet);
+                } else if (command === "send") {
+                    if (!emailSet) {
+                        logMessage("mainTerminal", "[Errore] Devi prima impostare un'email.");
+                    } else if (!messageSet) {
+                        logMessage("mainTerminal", "[Errore] Devi prima scrivere un messaggio.");
+                    } else {
+                        logMessage("mainTerminal", "[Invio...] Messaggio in elaborazione...");
+                        setTimeout(() => {
+                            logMessage("mainTerminal", "[OK] Email inviata con successo!");
+                        }, 2000);
+                    }
+                } else {
+                    logMessage("mainTerminal", "[Errore] Comando non riconosciuto.");
+                }
+            }
+        }
+
+        // Stampa la guida iniziale nei terminali
+        function initializeTerminals() {
+            logMessage("mainTerminal", "            █████████████████████████████████");
+            logMessage("mainTerminal", "            █          MAINFRAME            █");
+            logMessage("mainTerminal", "            █████████████████████████████████");
+            logMessage("mainTerminal", "[INFO] Digita 'help' per vedere i comandi disponibili.");
+        }
+
+        // Simulazione di attività nei terminali laterali
+        function generateRandomLogs() {
+            const messages = [
+                "[INFO] Connessione stabile...",
+                "[ERROR] Timeout richiesta...",
+                "[LOG] Pacchetto ricevuto...",
+                "[SECURITY] Autenticazione fallita...",
+                "[DEBUG] Buffer overflow..."
+            ];
+
+            logMessage("leftTerminal", messages[Math.floor(Math.random() * messages.length)]);
+            logMessage("rightTerminal", messages[Math.floor(Math.random() * messages.length)]);
+
+            setTimeout(generateRandomLogs, Math.random() * 3000 + 2000);
+        }
+
+        // Avvio
+        initializeTerminals();
+        generateRandomLogs();
+    </script>
+
+</body>
+</html>
