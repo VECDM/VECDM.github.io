@@ -56,6 +56,44 @@
             margin-top: 10px;
         }
     </style>
+
+    <style>
+    body {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a3a 100%);
+        color: #b3b3ff; /* Testo grigio con leggero tocco di viola */
+        font-family: 'Courier New', Courier, monospace;
+        text-align: center;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* Effetto vetroso leggero */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.02); /* Trasparenza molto bassa */
+        backdrop-filter: blur(2px); /* Leggerissimo effetto di vetro */
+        pointer-events: none;
+    }
+
+    /* Effetto bagliore leggero */
+    body::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, rgba(179, 179, 255, 0.05) 10%, transparent 60%);
+        opacity: 0.5;
+        pointer-events: none;
+    }
+</style>
+
 </head>
 <body>
 
