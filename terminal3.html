@@ -4,10 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retro Mainframe</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        (function(){
+            emailjs.init("cazIbL20VzJml_-nQ");
+        })();
+    </script>
     <style>
         body {
             background: black;
-            color: #b3b3ff; /* Viola chiaro per il testo */
+            color: #b3b3ff;
             font-family: 'Courier New', Courier, monospace;
             text-align: center;
             overflow: hidden;
@@ -18,7 +24,6 @@
             height: 100vh;
         }
 
-        /* Contenitore dei terminali */
         .terminal-container {
             display: flex;
             justify-content: center;
@@ -37,14 +42,13 @@
             height: 300px;
             overflow-y: auto;
             margin: 10px;
+            white-space: pre-wrap;
         }
 
-        /* Il terminale centrale è più grande */
         #mainTerminal {
             width: 40%;
         }
 
-        /* Casella di input */
         #commandInput {
             width: 50%;
             background: #222;
@@ -59,14 +63,76 @@
 <body>
 
     <div class="terminal-container">
-        <div class="terminal" id="leftTerminal">[ LATERAL SYSTEM LOG ]</div>
+        <div class="terminal" id="leftTerminal"></div>
         <div class="terminal" id="mainTerminal">
             <p>Welcome to the system. Type "help" for commands.</p>
         </div>
-        <div class="terminal" id="rightTerminal">[ SECONDARY PROCESSING UNIT ]</div>
+        <div class="terminal" id="rightTerminal"></div>
     </div>
 
     <input type="text" id="commandInput" placeholder="Enter command...">
+
+    <script>
+        const leftTerminal = document.getElementById("leftTerminal");
+        const mainTerminal = document.getElementById("mainTerminal");
+        const rightTerminal = document.getElementById("rightTerminal");
+        const commandInput = document.getElementById("commandInput");
+
+        let userEmail = "";
+        let userMessage = "";
+
+        function logToTerminal(terminal, message) {
+            terminal.innerHTML += message + "\n";
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function simulateActivity() {
+            const logs = [
+                "[SYSTEM] Initializing process...",
+                "[ERROR] Data corruption detected!",
+                "[INFO] Connection lost. Reconnecting...",
+                "[TASK] Running security check...",
+                "[LOG] Process completed successfully."
+            ];
+            logToTerminal(leftTerminal, logs[Math.floor(Math.random() * logs.length)]);
+            logToTerminal(rightTerminal, logs[Math.floor(Math.random() * logs.length)]);
+        }
+
+        setInterval(simulateActivity, 2000);
+
+        commandInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                const command = commandInput.value.trim();
+                commandInput.value = "";
+
+                logToTerminal(mainTerminal, "> " + command);
+
+                if (command === "help") {
+                    logToTerminal(mainTerminal, "Commands:\n- email [your email]\n- message [your message]\n- send");
+                } else if (command.startsWith("email ")) {
+                    userEmail = command.split(" ")[1];
+                    logToTerminal(mainTerminal, "[SYSTEM] Email set to: " + userEmail);
+                } else if (command.startsWith("message ")) {
+                    userMessage = command.substring(8);
+                    logToTerminal(mainTerminal, "[SYSTEM] Message set.");
+                } else if (command === "send") {
+                    if (userEmail && userMessage) {
+                        emailjs.send("service_phc57e8", "template_zihqct9", {
+                            from_email: userEmail,
+                            message: userMessage
+                        }).then(
+                            () => logToTerminal(mainTerminal, "[SUCCESS] Email sent."),
+                            (error) => logToTerminal(mainTerminal, "[ERROR] Failed to send email: " + error.text)
+                        );
+                    } else {
+                        logToTerminal(mainTerminal, "[ERROR] Set email and message before sending.");
+                    }
+                } else {
+                    logToTerminal(mainTerminal, "[ERROR] Unknown command.");
+                }
+            }
+        });
+    </script>
 
 </body>
 </html>
