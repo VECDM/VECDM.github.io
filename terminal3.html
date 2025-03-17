@@ -7,7 +7,7 @@
     <style>
         body {
             background: black;
-            color: #a8a8c6; /* Grigio con leggerissimo viola */
+            color: #a8a8c6; /* Grigio con leggero viola */
             font-family: 'Courier New', Courier, monospace;
             text-align: center;
             overflow: hidden;
@@ -16,24 +16,6 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-        }
-
-        /* Effetto CRT leggero */
-        body::after {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                to bottom,
-                rgba(255, 255, 255, 0.02) 0px,
-                rgba(0, 0, 0, 0.05) 1px,
-                transparent 2px
-            );
-            opacity: 0.2;
-            pointer-events: none;
         }
 
         /* Container per i terminali */
@@ -47,11 +29,10 @@
         .terminal {
             background: rgba(15, 15, 15, 0.95);
             border: 2px solid #333;
-            box-shadow: 0 0 10px rgba(168, 168, 198, 0.2); /* Glow viola leggero */
+            box-shadow: 0 0 10px rgba(168, 168, 198, 0.2);
             padding: 10px;
             text-align: left;
             overflow: hidden;
-            position: relative;
             width: 30%;
             height: 300px;
             overflow-y: auto;
@@ -73,7 +54,6 @@
             padding: 5px;
             font-family: 'Courier New', Courier, monospace;
             margin-top: 10px;
-            box-shadow: 0 0 5px rgba(168, 168, 198, 0.1);
         }
     </style>
 </head>
@@ -92,7 +72,12 @@
         let messageSet = null;
 
         function logMessage(terminalId, message) {
+            console.log(`Scrivendo su ${terminalId}: ${message}`);
             const terminal = document.getElementById(terminalId);
+            if (!terminal) {
+                console.error(`Terminale con ID ${terminalId} non trovato!`);
+                return;
+            }
             terminal.innerHTML += message + "<br>";
             terminal.scrollTop = terminal.scrollHeight;
         }
@@ -102,6 +87,8 @@
                 const input = document.getElementById("commandInput");
                 const command = input.value.trim();
                 input.value = "";
+
+                console.log("Comando inserito:", command);
 
                 if (command === "help") {
                     logMessage("mainTerminal", "[Help] Comandi disponibili:");
@@ -155,6 +142,7 @@
             setTimeout(generateRandomLogs, Math.random() * 3000 + 2000);
         }
 
+        // Avvio
         initializeTerminals();
         generateRandomLogs();
     </script>
