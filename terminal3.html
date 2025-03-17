@@ -26,14 +26,16 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            gap: 10px;
+            flex-direction: column;
         }
 
         .terminal-container {
             display: flex;
-            width: 90%;
-            height: 90vh;
+            justify-content: center;
+            align-items: center;
             gap: 10px;
+            width: 90%;
+            height: 80vh;
         }
 
         .terminal {
@@ -56,6 +58,13 @@
             height: 100%;
         }
 
+        .input-container {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
         #command-input {
             width: 100%;
             padding: 10px;
@@ -63,7 +72,6 @@
             color: #b8b8b8;
             border: 1px solid #b8b8b8;
             font-family: "Courier New", monospace;
-            margin-top: 5px;
         }
     </style>
 </head>
@@ -74,7 +82,10 @@
         <div class="terminal main-terminal" id="main-terminal"></div>
         <div class="terminal side-terminal" id="right-terminal"></div>
     </div>
-    <input type="text" id="command-input" placeholder="Digita un comando e premi INVIO...">
+    
+    <div class="input-container">
+        <input type="text" id="command-input" placeholder="Digita un comando e premi INVIO...">
+    </div>
 
     <script>
         (function() {
