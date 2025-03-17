@@ -3,105 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mainframe Simulato</title>
+    <title>Mainframe Simulation</title>
     <style>
         body {
             background-color: #222;
             color: #ccc;
             font-family: "Courier New", monospace;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
-            margin: 0;
+            flex-direction: column;
         }
         .mainframe {
             display: flex;
-            flex-direction: row;
-            justify-content: center;
             gap: 10px;
         }
         .terminal {
-            background-color: #111;
-            border: 2px solid #666;
-            padding: 10px;
             width: 300px;
-            height: 300px;
-            overflow: hidden; /* Evita la barra di scorrimento */
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
+            height: 400px;
+            background-color: black;
+            color: #8f8fff;
+            padding: 10px;
+            overflow: hidden;
+            border: 2px solid #444;
         }
-        .terminal-main {
-            width: 400px; /* Il terminale centrale è più largo */
-        }
-        .input-container {
-            margin-top: 10px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
+        #terminal-central {
+            width: 400px;
         }
         input {
-            background-color: #111;
-            color: #ccc;
-            border: 2px solid #666;
+            margin-top: 10px;
             padding: 5px;
+            width: 420px;
+            background-color: #111;
+            color: #8f8fff;
+            border: 2px solid #444;
             font-family: "Courier New", monospace;
-            width: 300px;
         }
     </style>
 </head>
 <body>
 
-<div class="mainframe">
-    <div class="terminal" id="terminal-left"></div>
-    <div class="terminal terminal-main" id="terminal-main"></div>
-    <div class="terminal" id="terminal-right"></div>
-</div>
+    <div class="mainframe">
+        <div id="terminal-left" class="terminal"></div>
+        <div id="terminal-central" class="terminal"></div>
+        <div id="terminal-right" class="terminal"></div>
+    </div>
+    <input type="text" id="commandInput" placeholder="> Inserisci comando...">
 
-<div class="input-container">
-    <input type="text" id="commandInput" placeholder="Digita un comando...">
-</div>
+    <script>
+        const leftTerminal = document.getElementById("terminal-left");
+        const centralTerminal = document.getElementById("terminal-central");
+        const rightTerminal = document.getElementById("terminal-right");
+        const commandInput = document.getElementById("commandInput");
 
-<script>
-    function addMessage(terminalId, message) {
-        let terminal = document.getElementById(terminalId);
-        let lines = terminal.innerHTML.split("<br>");
-        
-        if (lines.length >= 20) {
-            lines.shift(); // Rimuove la prima riga se superiamo il limite
+        function addMessage(terminal, message) {
+            terminal.innerHTML += message + "<br>";
+            const lines = terminal.innerHTML.split("<br>");
+            if (lines.length > 20) {
+                lines.shift();
+                terminal.innerHTML = lines.join("<br>");
+            }
         }
-        
-        lines.push(message);
-        terminal.innerHTML = lines.join("<br>");
-    }
 
-    function generateRandomMessages() {
-        const messages = [
-            "PROCESS 1: Running...",
-            "PROCESS 2: Checking connections...",
-            "ERROR: Connection lost. Reconnecting...",
-            "DATA ANALYSIS: 43% complete...",
-            "WARNING: Memory usage high!",
-            "SECURITY CHECK: No anomalies found."
-        ];
-        setInterval(() => {
-            addMessage("terminal-left", messages[Math.floor(Math.random() * messages.length)]);
-            addMessage("terminal-right", messages[Math.floor(Math.random() * messages.length)]);
-        }, 2000);
-    }
-
-    document.getElementById("commandInput").addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            let command = event.target.value;
-            addMessage("terminal-main", `> ${command}`);
-            event.target.value = "";
+        function generateRandomProcess() {
+            const processes = [
+                "Analyzing data...",
+                "Connecting to mainframe...",
+                "Decoding packets...",
+                "Encrypting transmission...",
+                "Error: Data corruption detected!",
+                "Attempting system repair...",
+                "Signal lost... Reconnecting...",
+                "Executing background task...",
+                "Fetching encrypted logs..."
+            ];
+            return processes[Math.floor(Math.random() * processes.length)];
         }
-    });
 
-    generateRandomMessages();
-</script>
+        function updateTerminal(terminal) {
+            addMessage(terminal, `[${new Date().toLocaleTimeString()}] ${generateRandomProcess()}`);
+        }
+
+        function updateLeftTerminal() {
+            updateTerminal(leftTerminal);
+            setTimeout(updateLeftTerminal, Math.random() * 3000 + 1000);
+        }
+
+        function updateRightTerminal() {
+            updateTerminal(rightTerminal);
+            setTimeout(updateRightTerminal, Math.random() * 3000 + 1000);
+        }
+
+        commandInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                addMessage(centralTerminal, `> ${commandInput.value}`);
+                commandInput.value = "";
+            }
+        });
+
+        updateLeftTerminal();
+        updateRightTerminal();
+    </script>
 
 </body>
 </html>
