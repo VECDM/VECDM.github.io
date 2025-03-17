@@ -131,8 +131,8 @@
                 }
 
                 emailjs.send("service_phc57e8", "template_zihqct9", {
-                    user_email: user_email,
-                    message: user_message
+                    user_email: userEmail,
+                    user_message: userMessage
                 }).then(() => {
                     logToTerminal(mainTerminal, "Messaggio inviato con successo!");
                 }).catch(() => {
