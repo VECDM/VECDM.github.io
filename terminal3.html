@@ -1,3 +1,217 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Mainframe</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        body {
+            background-color: #222;
+            color: #ccc;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .mainframe {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .terminal {
+            width: 300px;
+            height: 400px;
+            background-color: #111;
+            border: 2px solid #666;
+            padding: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        .terminal.main {
+            width: 400px;
+        }
+        .input-container {
+            margin-top: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 5px;
+            font-family: 'Courier New', monospace;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #666;
+        }
+
+        body {
+    background: black;
+    color: #b3b3ff; /* Viola molto chiaro per il testo */
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Effetto scanlines leggere */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-linear-gradient(
+            to bottom, 
+            rgba(0, 0, 0, 0.1) 0px, 
+            rgba(0, 0, 0, 0.3) 1px, 
+            transparent 2px
+        );
+    opacity: 0.3; /* Intensità effetto */
+    pointer-events: none;
+}
+
+/* Glow effetto leggero per i terminali */
+.terminal {
+    background: rgba(10, 10, 10, 0.9);
+    border: 2px solid #333;
+    box-shadow: 0 0 15px rgba(179, 179, 255, 0.2); /* Leggero alone viola */
+    padding: 10px;
+    text-align: left;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Effetto leggero di distorsione ogni tanto */
+@keyframes flicker {
+    0% { opacity: 1; }
+    50% { opacity: 0.98; transform: scaleY(1.01); }
+    100% { opacity: 1; }
+}
+.terminal {
+    animation: flicker 2s infinite alternate ease-in-out;
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="mainframe">
+        <div class="terminal" id="left-terminal"></div>
+        <div class="terminal main" id="main-terminal"></div>
+        <div class="terminal" id="right-terminal"></div>
+    </div>
+
+    <div class="input-container">
+        <input type="text" id="command-input" placeholder="Digita un comando e premi Invio...">
+    </div>
+
+    <script>
+        // Configura EmailJS
+        emailjs.init("cazIbL20VzJml_-nQ");
+
+        const leftTerminal = document.getElementById("left-terminal");
+        const mainTerminal = document.getElementById("main-terminal");
+        const rightTerminal = document.getElementById("right-terminal");
+        const commandInput = document.getElementById("command-input");
+
+        let userEmail = "";
+        let userMessage = "";
+
+        function logToTerminal(terminal, message) {
+            const lines = terminal.innerHTML.split("<br>");
+            if (lines.length > 15) lines.shift();
+            lines.push(message);
+            terminal.innerHTML = lines.join("<br>");
+        }
+
+        function generateRandomActivity(terminal) {
+            const messages = [
+                "Processing data...",
+                "Establishing connection...",
+                "Retrieving system logs...",
+                "Error detected in sector 7G.",
+                "Decoding transmission...",
+                "Encrypting files...",
+                "WARNING: Unstable signal detected.",
+                "Executing subprocess #"+ Math.floor(Math.random() * 1000),
+            ];
+            logToTerminal(terminal, messages[Math.floor(Math.random() * messages.length)]);
+        }
+
+        setInterval(() => generateRandomActivity(leftTerminal), 2000);
+        setInterval(() => generateRandomActivity(rightTerminal), 2500);
+
+        function processCommand(command) {
+            const parts = command.split(" ");
+            const cmd = parts[0];
+            const arg = parts.slice(1).join(" ");
+
+            if (cmd === "help") {
+                logToTerminal(mainTerminal, "Comandi disponibili:");
+                logToTerminal(mainTerminal, "email [tuo@email.com] - Imposta la tua email.");
+                logToTerminal(mainTerminal, "message [testo] - Imposta il messaggio.");
+                logToTerminal(mainTerminal, "send - Invia il messaggio via EmailJS.");
+            } 
+            else if (cmd === "email") {
+                if (arg) {
+                    userEmail = arg;
+                    logToTerminal(mainTerminal, "Email impostata: " + userEmail);
+                } else {
+                    logToTerminal(mainTerminal, "Errore: specificare un'email.");
+                }
+            } 
+            else if (cmd === "message") {
+                if (arg) {
+                    userMessage = arg;
+                    logToTerminal(mainTerminal, "Messaggio impostato.");
+                } else {
+                    logToTerminal(mainTerminal, "Errore: specificare un messaggio.");
+                }
+            } 
+            else if (cmd === "send") {
+                if (userEmail === "" || userMessage === "") {
+                    logToTerminal(mainTerminal, "Errore: email o messaggio non impostati.");
+                    return;
+                }
+
+                emailjs.send("service_phc57e8", "template_zihqct9", {
+                    user_email: userEmail,
+                    message: userMessage
+                }).then(() => {
+                    logToTerminal(mainTerminal, "Messaggio inviato con successo!");
+                }).catch(() => {
+                    logToTerminal(mainTerminal, "Errore nell'invio del messaggio.");
+                });
+            } 
+            else {
+                logToTerminal(mainTerminal, "Comando non riconosciuto. Digita 'help' per assistenza.");
+            }
+        }
+
+        commandInput.addEventListener("keypress", (event) => {
+            if (event.key === "Enter") {
+                const command = commandInput.value.trim();
+                if (command) {
+                    logToTerminal(mainTerminal, "> " + command);
+                    processCommand(command);
+                    commandInput.value = "";
+                }
+            }
+        });
+
+        logToTerminal(mainTerminal, "Benvenuto nel sistema.");
+        logToTerminal(mainTerminal, "Digita 'help' per vedere i comandi disponibili.");
+
+    </script>
+
+</body>
+</html>
 body {
     background: black;
     color: #b3b3ff; /* Viola molto chiaro per il testo */
