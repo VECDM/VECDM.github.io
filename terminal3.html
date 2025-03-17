@@ -81,14 +81,16 @@
         }
 
         /* Effetto glitch */
-        @keyframes flicker {
-            0% { opacity: 1; }
-            50% { opacity: 0.98; transform: scaleY(1.01); }
-            100% { opacity: 1; }
-        }
-        .terminal {
-            animation: flicker 2s infinite alternate ease-in-out;
-        }
+       @keyframes flicker {
+    0% { opacity: 1; transform: scaleY(1); }
+    30% { opacity: 0.95; transform: scaleY(1.02); }
+    50% { opacity: 1; transform: scaleY(1); }
+    80% { opacity: 0.97; transform: scaleY(1.01); }
+    100% { opacity: 1; transform: scaleY(1); }
+}
+.terminal {
+    animation: flicker 0.15s infinite alternate ease-in-out;
+}
     </style>
 </head>
 <body>
