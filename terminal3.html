@@ -3,6 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Mainframe</title>
+    <style>
+        body {
+            background-color: #222;
+            color: #ccc;
+            font-family: "Courier New", monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .mainframe {
+            display: flex;
+            gap: 10px;
+        }
+        .terminal {
+            width: 300px;
+            height: 400px;
+            background-color: black;
+            color: #8f8fff;
+            padding: 10px;
+            overflow: hidden;
+            border: 2px solid #444;
+        }
+        #terminal-central {
+            width: 400px;
+        }
+        input {
+            margin-top: 10px;
+            padding: 5px;
+            width: 420px;
+            background-color: #111;
+            color: #8f8fff;
+            border: 2px solid #444;
+            font-family: "Courier New", monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mainframe">
+        <div id="terminal-left" class="terminal"></div>
+        <div id="terminal-central" class="terminal"></div>
+        <div id="terminal-right" class="terminal"></div>
+    </div>
+    <input type="text" id="commandInput" placeholder="> Inserisci comando...">
+
+    <script>
+        const leftTerminal = document.getElementById("terminal-left");
+        const centralTerminal = document.getElementById("terminal-central");
+        const rightTerminal = document.getElementById("terminal-right");
+        const commandInput = document.getElementById("commandInput");
+
+        // Inizializzazione con la guida comandi
+        centralTerminal.innerHTML = `
+            <strong>MAINFRAME COMMANDS:</strong><br>
+            - <code>STATUS</code> : Controlla lo stato del sistema<br>
+            - <code>REBOOT</code> : Riavvia il sistema<br>
+            - <code>CONNECT</code> : Tenta di connettersi al server<br>
+            - <code>HELP</code> : Mostra questa guida<br>
+            ---------------------------------------<br>
+        `;
+
+        function addMessage(terminal, message) {
+            terminal.innerHTML += message + "<br>";
+            const lines = terminal.innerHTML.split("<br>");
+            if (lines.length > 20) {
+                lines.shift();
+                terminal.innerHTML = lines.join("<br>");
+            }
+        }
+
+        function generateRandomProcess() {
+            const processes = [
+                "Analyzing data...",
+                "Connecting to mainframe...",
+                "Decoding packets...",
+                "Encrypting transmission...",
+                "Error: Data corruption detected!",
+                "Attempting system repair...",
+                "Signal lost... Reconnecting...",
+                "Executing background task...",
+                "Fetching encrypted logs..."
+            ];
+            return processes[Math.floor(Math.random() * processes.length)];
+        }
+
+        function updateTerminal(terminal) {
+            addMessage(terminal, `[${new Date().toLocaleTimeString()}] ${generateRandomProcess()}`);
+        }
+
+        function updateLeftTerminal() {
+            updateTerminal(leftTerminal);
+            setTimeout(updateLeftTerminal, Math.random() * 3000 + 1000);
+        }
+
+        function updateRightTerminal() {
+            updateTerminal(rightTerminal);
+            setTimeout(updateRightTerminal, Math.random() * 3000 + 1000);
+        }
+
+        commandInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                const command = commandInput.value.trim().toUpperCase();
+                addMessage(centralTerminal, `> ${command}`);
+
+                switch (command) {
+                    case "STATUS":
+                        addMessage(centralTerminal, "[STATUS] Sistema operativo: ONLINE");
+                        addMessage(centralTerminal, "[STATUS] Connessione: STABILE");
+                        break;
+                    case "REBOOT":
+                        addMessage(centralTerminal, "[REBOOT] Riavvio in corso...");
+                        setTimeout(() => addMessage(centralTerminal, "[REBOOT] Riavvio completato!"), 3000);
+                        break;
+                    case "CONNECT":
+                        addMessage(centralTerminal, "[CONNECT] Tentativo di connessione...");
+                        setTimeout(() => addMessage(centralTerminal, "[CONNECT] Connessione riuscita!"), 2000);
+                        break;
+                    case "HELP":
+                        addMessage(centralTerminal, `
+                            <strong>MAINFRAME COMMANDS:</strong><br>
+                            - <code>STATUS</code> : Controlla lo stato del sistema<br>
+                            - <code>REBOOT</code> : Riavvia il sistema<br>
+                            - <code>CONNECT</code> : Tenta di connettersi al server<br>
+                            - <code>HELP</code> : Mostra questa guida<br>
+                            ---------------------------------------<br>
+                        `);
+                        break;
+                    default:
+                        addMessage(centralTerminal, `[ERROR] Comando non riconosciuto: ${command}`);
+                        break;
+                }
+
+                commandInput.value = "";
+            }
+        });
+
+        updateLeftTerminal();
+        updateRightTerminal();
+    </script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mainframe Simulation</title>
     <style>
         body {
