@@ -68,17 +68,19 @@
         }
 
         /* Input comandi */
-        #command-input {
-            width: 60%;
-            padding: 10px;
-            font-size: 16px;
-            font-family: 'Courier New', Courier, monospace;
-            background: black;
-            color: #b3b3ff;
-            border: 2px solid #444;
-            text-align: center;
-            margin-top: 10px;
-        }
+        #commandInput {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    padding: 8px;
+    font-size: 16px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #b3b3ff;
+    border: 1px solid #b3b3ff;
+}
+
 
         /* Effetto glitch */
        @keyframes flicker {
