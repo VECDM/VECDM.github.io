@@ -3,184 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminale & Oscilloscopio</title>
+    <title>Schermo Terminale</title>
     <style>
         body {
-            background: black;
-            color: #b3b3b3;
-            font-family: 'Courier New', Courier, monospace;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 0;
+            padding: 0;
             height: 100vh;
-        }
-
-        .container {
-            display: flex;
-            width: 90%;
-            max-width: 900px;
-            height: 500px;
-            background: rgba(10, 10, 10, 0.9);
-            border: 2px solid #222;
-            box-shadow: 0 0 15px rgba(179, 179, 255, 0.2);
-            padding: 10px;
-        }
-
-        .terminal, .oscilloscope {
-            flex: 1;
-            padding: 10px;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .terminal {
-            border-right: 2px solid #222;
-            text-align: left;
-        }
-
-        #output {
-            white-space: pre-wrap;
-            font-size: 14px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-        }
-
-        .oscilloscope {
+            background-color: black;
+            color: #ccc;
+            font-family: "Courier New", Courier, monospace;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: rgba(15, 15, 15, 0.8);
-            border-left: 2px solid #333;
+            flex-direction: column;
         }
 
-        canvas {
+        .screen {
             width: 100%;
             height: 100%;
-            filter: blur(0.6px);
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
         }
 
-        .glitch {
-            display: none;
-            font-weight: bold;
-            color: #b32233;
+        .left {
+            width: 70%;
+            height: 100%;
+            overflow: hidden;
+            padding: 20px;
+            position: relative;
         }
 
-        .links {
+        .right {
+            width: 30%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #00ff00;
+            font-size: 18px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
+            padding: 20px;
+        }
+
+        .message {
+            white-space: nowrap;
+            overflow: hidden;
+            font-size: 18px;
+        }
+
+        .message span {
+            display: inline-block;
+            opacity: 0;
+            animation: typing 0.5s steps(30) forwards, blink 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .waveform {
             position: absolute;
-            bottom: 10px;
+            bottom: 30px;
+            left: 0;
+            width: 100%;
+            height: 100px;
+        }
+
+        .hidden-message {
+            position: absolute;
+            color: #6600cc;
+            font-size: 16px;
+            font-weight: bold;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            font-size: 14px;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            animation: revealMessage 2s infinite alternate;
         }
 
-        .links a {
-            color: #888;
-            text-decoration: none;
-            margin: 0 10px;
+        @keyframes revealMessage {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
         }
 
-        .links a:hover {
-            color: white;
+        .neon {
+            color: #9b59b6;
         }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Terminale a sinistra -->
-        <div class="terminal">
-            <div id="output"></div>
-            <div class="glitch">[ERROR] Data Corruption Detected</div>
-        </div>
 
-        <!-- Oscilloscopio a destra -->
-        <div class="oscilloscope">
-            <canvas id="oscilloscopeCanvas"></canvas>
+    <div class="screen">
+        <div class="left">
+            <div class="message">
+                <span>Programma in esecuzione...</span>
+            </div>
+            <canvas class="waveform" id="waveform"></canvas>
         </div>
-    </div>
-
-    <div class="links">
-        <a href="404_m3m0.html">404: M3M0</a>
-        <a href="about.html">About</a>
+        <div class="right">
+            <div class="hidden-message" id="hiddenMessage">VECDM</div>
+        </div>
     </div>
 
     <script>
-        const output = document.getElementById("output");
-        const glitchText = document.querySelector(".glitch");
-        const maxLines = 18;
-        const canvas = document.getElementById("oscilloscopeCanvas");
-        const ctx = canvas.getContext("2d");
+        // Funzione per generare una forma d'onda casuale
+        function generateWaveform(ctx, width, height) {
+            ctx.clearRect(0, 0, width, height);
 
-        // Adatta il canvas alla dimensione della finestra
-        function resizeCanvas() {
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-        }
-        window.addEventListener("resize", resizeCanvas);
-        resizeCanvas();
-
-        let t = 0;
-        let hasAnomaly = false;
-
-        function drawOscilloscope() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = hasAnomaly ? "#ff4444" : "#b3b3b3"; // Cambia colore se c'è VECDM
-            ctx.lineWidth = 2;
-            ctx.shadowBlur = 8;
-            ctx.shadowColor = "#b3b3b3";
+            let yOffset = height / 2;
+            let waveAmplitude = height / 4;
+            let noiseFactor = Math.random() * 10;
 
             ctx.beginPath();
-            for (let i = 0; i < canvas.width; i++) {
-                let y = canvas.height / 2 + Math.sin(i * 0.02 + t) * (hasAnomaly ? 40 : 20);
-                ctx.lineTo(i, y);
+            ctx.moveTo(0, yOffset);
+
+            for (let x = 0; x < width; x++) {
+                let y = yOffset + waveAmplitude * Math.sin(x * 0.05 + noiseFactor);
+                ctx.lineTo(x, y);
             }
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 1;
             ctx.stroke();
-            t += 0.1;
-            requestAnimationFrame(drawOscilloscope);
         }
 
-        function getRandomString(length) {
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            let result = "";
-            for (let i = 0; i < length; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
+        // Funzione per generare la forma d'onda "Neon"
+        function generateNeonWaveform(ctx, width, height) {
+            ctx.clearRect(0, 0, width, height);
+
+            let yOffset = height / 2;
+            let waveAmplitude = height / 4;
+            let noiseFactor = Math.random() * 10;
+
+            ctx.beginPath();
+            ctx.moveTo(0, yOffset);
+
+            for (let x = 0; x < width; x++) {
+                let y = yOffset + waveAmplitude * Math.sin(x * 0.05 + noiseFactor);
+                ctx.lineTo(x, y);
             }
-            return result;
+
+            ctx.strokeStyle = '#9b59b6'; // Neon Violet
+            ctx.lineWidth = 2;
+            ctx.stroke();
         }
 
-        function addRandomLine() {
-            let text = `SCANNING: ${getRandomString(20)} [OK]`;
-            hasAnomaly = false;
-
-            if (Math.random() < 0.02) {
-                let insertPos = Math.floor(Math.random() * text.length);
-                text = text.slice(0, insertPos) + "VECDM" + text.slice(insertPos);
-                hasAnomaly = true;
-            }
-
-            const newLine = document.createElement("div");
-            newLine.textContent = text;
-            if (Math.random() < 0.1) newLine.classList.add("flicker");
-            output.appendChild(newLine);
-
-            while (output.children.length > maxLines) {
-                output.removeChild(output.firstChild);
-            }
-
-            if (Math.random() < 0.01) {
-                glitchText.style.display = "block";
-                setTimeout(() => glitchText.style.display = "none", 1000);
-            }
+        // Funzione per gestire il messaggio e gli effetti
+        function typeMessage(message) {
+            const messageElement = document.querySelector('.message span');
+            messageElement.innerHTML = '';
+            let index = 0;
+            let typingInterval = setInterval(() => {
+                messageElement.innerHTML += message.charAt(index);
+                index++;
+                if (index === message.length) {
+                    clearInterval(typingInterval);
+                }
+            }, 100);
         }
 
-        function startLoop() {
-            setInterval(addRandomLine, 200);
+        // Animazione di schermo e forme d'onda
+        function startScreen() {
+            const canvas = document.getElementById('waveform');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth * 0.7;
+            canvas.height = window.innerHeight;
+
+            typeMessage("Analizzando segnali...");
+
+            let interval = setInterval(() => {
+                generateWaveform(ctx, canvas.width, canvas.height);
+                if (Math.random() < 0.05) {
+                    generateNeonWaveform(ctx, canvas.width, canvas.height);
+                    document.getElementById('hiddenMessage').style.opacity = 1;  // Mostra VECDM
+                } else {
+                    document.getElementById('hiddenMessage').style.opacity = 0; // Nascondi VECDM
+                }
+            }, 200);
+
+            // Stop after a certain time (for demo purposes)
+            setTimeout(() => clearInterval(interval), 10000);
         }
 
-        drawOscilloscope();
-        startLoop();
+        // Avvia la simulazione
+        window.onload = startScreen;
     </script>
 </body>
 </html>
