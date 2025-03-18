@@ -3,136 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Terminal</title>
+    <title>Terminal</title>
     <style>
-        /* Stili di base */
         body {
             background: black;
-            color: #c5b3d6; /* Grigio con un accenno di viola */
+            color: #b3b3b3;
             font-family: 'Courier New', Courier, monospace;
             text-align: center;
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             overflow: hidden;
         }
 
-        /* Orologio */
-        #clock {
-            font-size: 2em;
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+        .terminal {
+            width: 90%;
+            max-width: 800px;
+            height: 500px;
+            margin: 40px auto;
+            background: rgba(10, 10, 10, 0.9);
+            border: 2px solid #333;
+            box-shadow: 0 0 15px rgba(179, 179, 255, 0.2);
+            padding: 15px;
+            text-align: left;
+            overflow: hidden;
+            position: relative;
         }
 
-        /* Messaggi randomici */
-        #message {
-            margin-top: 10px;
-            font-size: 1.2em;
-            opacity: 0;
-            animation: fadeIn 2s ease-in-out forwards;
-        }
-
-        /* Animazione caricamento con scansione a righe */
-        .scanlines {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
+        #output {
+            white-space: pre-wrap;
+            font-size: 14px;
             height: 100%;
-            background: repeating-linear-gradient(
-                to bottom,
-                rgba(0, 0, 0, 0.1) 0px,
-                rgba(0, 0, 0, 0.3) 1px,
-                transparent 2px
-            );
-            opacity: 0.2;
-            pointer-events: none;
+            overflow-y: auto;
         }
 
-        /* Effetto di digitazione */
-        .typing::after {
-            content: "|";
-            animation: blink 0.8s infinite alternate;
+        .ascii-art {
+            color: #ff3355;
+            font-weight: bold;
+            display: none;
         }
 
-        @keyframes blink {
-            0% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        /* Effetto glitch ogni tanto */
-        @keyframes glitch {
-            0%, 100% { text-shadow: none; }
-            50% { text-shadow: 2px 2px 4px rgba(255, 0, 255, 0.8), -2px -2px 4px rgba(0, 255, 255, 0.8); }
-        }
         .glitch {
-            animation: glitch 0.2s ease-in-out infinite alternate;
+            color: rgba(255, 255, 255, 0.6);
+            display: none;
         }
 
-        /* Fade-in per i messaggi */
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+        .hidden-text {
+            color: rgba(255, 255, 255, 0.1);
+        }
+
+        .links {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+        }
+
+        .links a {
+            color: #888;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .links a:hover {
+            color: white;
         }
     </style>
 </head>
 <body>
-
-    <div id="clock" class="glitch"></div>
-    <div id="message" class="typing"></div>
-    <div class="scanlines"></div>
+    <div class="terminal">
+        <div id="output"></div>
+        <div class="ascii-art">   ▄███████████▄ </div>
+        <div class="glitch">[ERROR] Data Corruption Detected</div>
+    </div>
+    <div class="links">
+        <a href="404_m3m0.html">404: M3M0</a>
+        <a href="about.html">About</a>
+    </div>
 
     <script>
-        // Orologio in tempo reale
-        function updateClock() {
-            const now = new Date();
-            let hours = now.getHours().toString().padStart(2, '0');
-            let minutes = now.getMinutes().toString().padStart(2, '0');
-            let seconds = now.getSeconds().toString().padStart(2, '0');
-            document.getElementById("clock").textContent = `${hours}:${minutes}:${seconds}`;
+        const output = document.getElementById("output");
+
+        function addLine(text, delay = 100) {
+            setTimeout(() => {
+                output.innerHTML += text + "<br>";
+                output.scrollTop = output.scrollHeight;
+            }, delay);
         }
-        setInterval(updateClock, 1000);
-        updateClock(); // Esegui subito
 
-        // Messaggi randomici
-        const messages = [
-            "Sistema in attesa di input...",
-            "Analizzando il rumore di fondo...",
-            "Decodifica dati in corso...",
-            "Connessione instabile...",
-            "Protocollo attivato...",
-            "█████ dati in arrivo...",
-            "Accesso negato... ritentare?",
-            "Segnale debole rilevato...",
-            "Errore 0x3F... riprovare?",
-            "Cifratura in corso..."
-        ];
-
-        function typeMessage(text, element, speed = 50) {
-            element.textContent = "";
-            let i = 0;
-            function typingEffect() {
-                if (i < text.length) {
-                    element.textContent += text[i];
-                    i++;
-                    setTimeout(typingEffect, speed);
-                }
+        function generateRandomData() {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let line = "";
+            for (let i = 0; i < 20; i++) {
+                line += chars.charAt(Math.floor(Math.random() * chars.length));
             }
-            typingEffect();
+            return line;
         }
 
-        function showRandomMessage() {
-            const messageEl = document.getElementById("message");
-            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
-            typeMessage(randomMsg, messageEl);
+        function scanData() {
+            output.innerHTML = "";
+            for (let i = 0; i < 10; i++) {
+                addLine(`SCANNING: ${generateRandomData()} [OK]`, i * 200);
+            }
+            addLine("Analysis in progress...", 2200);
+            addLine("Searching for hidden signals...", 2800);
+            setTimeout(() => {
+                document.querySelector(".ascii-art").style.display = "block";
+            }, 3500);
+            setTimeout(() => {
+                document.querySelector(".glitch").style.display = "block";
+            }, 5000);
+            addLine("VECDM detected... Processing...", 6000);
         }
 
-        setInterval(showRandomMessage, 5000);
-        showRandomMessage(); // Esegui subito
-
+        setInterval(scanData, 12000);
+        scanData();
     </script>
-
 </body>
 </html>
