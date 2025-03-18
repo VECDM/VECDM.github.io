@@ -3,20 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminal Access</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Home - Terminal</title>
+    <style>
+        /* Stili di base */
+        body {
+            background: black;
+            color: #c5b3d6; /* Grigio con un accenno di viola */
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Orologio */
+        #clock {
+            font-size: 2em;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+        }
+
+        /* Messaggi randomici */
+        #message {
+            margin-top: 10px;
+            font-size: 1.2em;
+            opacity: 0;
+            animation: fadeIn 2s ease-in-out forwards;
+        }
+
+        /* Animazione caricamento con scansione a righe */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0.1) 0px,
+                rgba(0, 0, 0, 0.3) 1px,
+                transparent 2px
+            );
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        /* Effetto di digitazione */
+        .typing::after {
+            content: "|";
+            animation: blink 0.8s infinite alternate;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Effetto glitch ogni tanto */
+        @keyframes glitch {
+            0%, 100% { text-shadow: none; }
+            50% { text-shadow: 2px 2px 4px rgba(255, 0, 255, 0.8), -2px -2px 4px rgba(0, 255, 255, 0.8); }
+        }
+        .glitch {
+            animation: glitch 0.2s ease-in-out infinite alternate;
+        }
+
+        /* Fade-in per i messaggi */
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
 </head>
 <body>
 
-    <div class="terminal">
-        <p id="access-text"></p><span class="cursor">█</span>
-    </div>
+    <div id="clock" class="glitch"></div>
+    <div id="message" class="typing"></div>
+    <div class="scanlines"></div>
 
-    <div class="links">
-        <a href="contact.html" class="glitch">Contatti</a>
-        <a href="404_m3m0.html" class="glitch">404: M3M0</a>
-    </div>
+    <script>
+        // Orologio in tempo reale
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours().toString().padStart(2, '0');
+            let minutes = now.getMinutes().toString().padStart(2, '0');
+            let seconds = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById("clock").textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock(); // Esegui subito
 
-    <script src="script.js"></script>
+        // Messaggi randomici
+        const messages = [
+            "Sistema in attesa di input...",
+            "Analizzando il rumore di fondo...",
+            "Decodifica dati in corso...",
+            "Connessione instabile...",
+            "Protocollo attivato...",
+            "█████ dati in arrivo...",
+            "Accesso negato... ritentare?",
+            "Segnale debole rilevato...",
+            "Errore 0x3F... riprovare?",
+            "Cifratura in corso..."
+        ];
+
+        function typeMessage(text, element, speed = 50) {
+            element.textContent = "";
+            let i = 0;
+            function typingEffect() {
+                if (i < text.length) {
+                    element.textContent += text[i];
+                    i++;
+                    setTimeout(typingEffect, speed);
+                }
+            }
+            typingEffect();
+        }
+
+        function showRandomMessage() {
+            const messageEl = document.getElementById("message");
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+            typeMessage(randomMsg, messageEl);
+        }
+
+        setInterval(showRandomMessage, 5000);
+        showRandomMessage(); // Esegui subito
+
+    </script>
+
 </body>
 </html>
