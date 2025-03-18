@@ -9,7 +9,6 @@
             background: black;
             color: #b3b3b3;
             font-family: 'Courier New', Courier, monospace;
-            text-align: center;
             overflow: hidden;
         }
 
@@ -19,25 +18,60 @@
             height: 500px;
             margin: 40px auto;
             background: rgba(10, 10, 10, 0.9);
-            border: 2px solid #333;
+            border: 2px solid #222;
             box-shadow: 0 0 15px rgba(179, 179, 255, 0.2);
             padding: 15px;
             text-align: left;
-            overflow: hidden;
             position: relative;
+            overflow: hidden;
         }
 
         #output {
             white-space: pre-wrap;
             font-size: 14px;
             height: 100%;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
         }
 
         .ascii-art, .glitch {
             display: none;
             font-weight: bold;
             color: #ff3355;
+        }
+
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            top: 0;
+            animation: scan 5s linear infinite;
+        }
+
+        @keyframes scan {
+            from { top: 0; }
+            to { top: 100%; }
+        }
+
+        .glitch-effect {
+            animation: glitch 0.2s infinite alternate;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 red, -2px 0 cyan; }
+            100% { text-shadow: -2px 0 red, 2px 0 cyan; }
+        }
+
+        .flicker {
+            animation: flicker 1.5s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
         }
 
         .links {
@@ -61,6 +95,7 @@
 </head>
 <body>
     <div class="terminal">
+        <div class="scan-line"></div>
         <div id="output"></div>
         <div class="ascii-art">   ▄███████████▄ </div>
         <div class="glitch">[ERROR] Data Corruption Detected</div>
@@ -74,6 +109,7 @@
         const output = document.getElementById("output");
         const asciiArt = document.querySelector(".ascii-art");
         const glitchText = document.querySelector(".glitch");
+        const maxLines = 18; // Numero massimo di righe visibili
 
         function getRandomString(length) {
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -87,14 +123,26 @@
         function addRandomLine() {
             let text = `SCANNING: ${getRandomString(20)} [OK]`;
 
-            // Con una piccola probabilità, inserisce "VECDM" in modo casuale
+            // Probabilità di inserire "VECDM"
             if (Math.random() < 0.02) {
                 let insertPos = Math.floor(Math.random() * text.length);
                 text = text.slice(0, insertPos) + "VECDM" + text.slice(insertPos);
             }
 
-            output.innerHTML += text + "<br>";
-            output.scrollTop = output.scrollHeight;
+            const newLine = document.createElement("div");
+            newLine.textContent = text;
+
+            // Effetto flickering su alcune righe
+            if (Math.random() < 0.1) {
+                newLine.classList.add("flicker");
+            }
+
+            output.appendChild(newLine);
+
+            // Manteniamo solo maxLines righe
+            while (output.children.length > maxLines) {
+                output.removeChild(output.firstChild);
+            }
 
             // Ogni tanto attiva la glitch screen
             if (Math.random() < 0.01) {
