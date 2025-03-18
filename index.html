@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulazione Tracker</title>
+    <title>Simulazione Tracker Esadecimale</title>
     <style>
         body {
             margin: 0;
@@ -35,28 +35,29 @@
             flex-direction: column;
             width: 100%;
             margin-top: 20px;
+            font-size: 18px;
+            color: #00ff00;
         }
 
         .tracker-row {
             display: flex;
             justify-content: space-evenly;
-            font-size: 16px;
         }
 
         .tracker-cell {
-            width: 50px;
-            height: 40px;
+            width: 80px;
+            height: 30px;
             display: flex;
             justify-content: center;
             align-items: center;
             border: 1px solid #00ff00;
             color: #000;
             background-color: #333;
+            font-weight: bold;
         }
 
         .highlight {
-            background-color: #9b59b6;
-            color: white;
+            color: #ff00ff;
         }
 
         .hidden-message {
@@ -75,41 +76,41 @@
 
     <div class="screen">
         <div class="tracker">
-            <!-- Tracker Rows (simulating a tracker with 10 rows) -->
+            <!-- Tracker Rows (simulando un tracker con 10 righe) -->
             <div class="tracker-row">
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
+                <div class="tracker-cell">0x1A</div>
+                <div class="tracker-cell">0xB4</div>
+                <div class="tracker-cell">0xD7</div>
+                <div class="tracker-cell">0x5E</div>
+                <div class="tracker-cell">0x9C</div>
             </div>
             <div class="tracker-row">
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
+                <div class="tracker-cell">0x6F</div>
+                <div class="tracker-cell">0x4D</div>
+                <div class="tracker-cell">0xF0</div>
+                <div class="tracker-cell">0xA3</div>
+                <div class="tracker-cell">0xC7</div>
             </div>
             <div class="tracker-row">
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
+                <div class="tracker-cell">0x9D</div>
+                <div class="tracker-cell">0xB2</div>
+                <div class="tracker-cell">0xF4</div>
+                <div class="tracker-cell">0x58</div>
+                <div class="tracker-cell">0x73</div>
             </div>
             <div class="tracker-row">
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
+                <div class="tracker-cell">0x33</div>
+                <div class="tracker-cell">0x7F</div>
+                <div class="tracker-cell">0xA1</div>
+                <div class="tracker-cell">0xD9</div>
+                <div class="tracker-cell">0x0F</div>
             </div>
             <div class="tracker-row">
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
-                <div class="tracker-cell">----</div>
+                <div class="tracker-cell">0x2E</div>
+                <div class="tracker-cell">0x61</div>
+                <div class="tracker-cell">0x5B</div>
+                <div class="tracker-cell">0x8F</div>
+                <div class="tracker-cell">0xC4</div>
             </div>
         </div>
 
@@ -117,21 +118,27 @@
     </div>
 
     <script>
-        // Funzione per cambiare il contenuto delle celle con i messaggi
+        // Lista di messaggi "subliminali" variabili
+        const messages = ["VECDM", "V3C_M", "VCDM_", "_M_VC", "VEC_DM"];
+        
+        // Funzione per cambiare il contenuto delle celle con valori esadecimali
         function updateTracker() {
             const rows = document.querySelectorAll('.tracker-row');
             const hiddenMessage = document.getElementById('hiddenMessage');
-
+            
             rows.forEach(row => {
                 const cells = row.querySelectorAll('.tracker-cell');
                 cells.forEach(cell => {
-                    // 10% probabilità di cambiare il contenuto della cella
-                    if (Math.random() < 0.1) {
-                        cell.textContent = "VECDM";
+                    // 10% probabilità di cambiare il contenuto della cella in un messaggio subliminale
+                    if (Math.random() < 0.05) {  // 5% di probabilità
+                        // Se il messaggio appare, lo scegliamo casualmente
+                        const message = messages[Math.floor(Math.random() * messages.length)];
+                        cell.textContent = message;
                         cell.classList.add('highlight');
-                        hiddenMessage.style.opacity = 1;
+                        hiddenMessage.style.opacity = 1;  // Mostriamo il messaggio in basso a destra
                     } else {
-                        cell.textContent = "----";
+                        // 95% di probabilità di mantenere un valore esadecimale
+                        cell.textContent = `0x${Math.floor(Math.random() * 255).toString(16).toUpperCase()}`;
                         cell.classList.remove('highlight');
                     }
                 });
