@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminal</title>
+    <title>Terminale & Oscilloscopio</title>
     <style>
         body {
             background: black;
@@ -49,25 +49,17 @@
         }
 
         .oscilloscope {
-            text-align: center;
-            font-size: 14px;
-            white-space: pre;
-            color: #b3b3b3; /* Grigio fosforo */
-            text-shadow: 0 0 5px #666, 0 0 10px #444; /* Bagliore tenue */
-            filter: blur(0.5px); /* Effetto CRT più leggero */
-            background: rgba(15, 15, 15, 0.8); /* Sfondo più scuro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(15, 15, 15, 0.8);
             border-left: 2px solid #333;
-            padding: 10px;
         }
 
-        .flicker {
-            animation: flicker 1.5s infinite alternate;
-        }
-
-        @keyframes flicker {
-            0% { opacity: 1; }
-            50% { opacity: 0.85; }
-            100% { opacity: 1; }
+        canvas {
+            width: 100%;
+            height: 100%;
+            filter: blur(0.6px);
         }
 
         .glitch {
@@ -104,8 +96,8 @@
         </div>
 
         <!-- Oscilloscopio a destra -->
-        <div class="oscilloscope" id="oscilloscope">
-            <!-- Generazione del segnale -->
+        <div class="oscilloscope">
+            <canvas id="oscilloscopeCanvas"></canvas>
         </div>
     </div>
 
@@ -116,9 +108,38 @@
 
     <script>
         const output = document.getElementById("output");
-        const oscilloscope = document.getElementById("oscilloscope");
         const glitchText = document.querySelector(".glitch");
         const maxLines = 18;
+        const canvas = document.getElementById("oscilloscopeCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Adatta il canvas alla dimensione della finestra
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        let t = 0;
+        let hasAnomaly = false;
+
+        function drawOscilloscope() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = hasAnomaly ? "#ff4444" : "#b3b3b3"; // Cambia colore se c'è VECDM
+            ctx.lineWidth = 2;
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = "#b3b3b3";
+
+            ctx.beginPath();
+            for (let i = 0; i < canvas.width; i++) {
+                let y = canvas.height / 2 + Math.sin(i * 0.02 + t) * (hasAnomaly ? 40 : 20);
+                ctx.lineTo(i, y);
+            }
+            ctx.stroke();
+            t += 0.1;
+            requestAnimationFrame(drawOscilloscope);
+        }
 
         function getRandomString(length) {
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -129,55 +150,24 @@
             return result;
         }
 
-        function generateOscilloscope(hasAnomaly) {
-            const width = 30;  // Maggiore larghezza per grafico più grande
-            let signal = "";
-            let baseWave = [
-                "__      __      __",
-                "_/\\_    _/\\_    _/\\_",
-                "_/  \\__/_  \\__/_  \\_",
-                "__  __  __  __  __",
-                "__/‾\\__ __/‾\\__ __/‾\\__"
-            ];
-
-            for (let i = 0; i < 12; i++) {  // Più righe = grafico più grande
-                let wave = baseWave[Math.floor(Math.random() * baseWave.length)];
-
-                if (hasAnomaly && Math.random() < 0.3) {
-                    wave = "__/‾‾‾\\__/‾‾‾\\__";
-                }
-
-                signal += wave.padEnd(width, " ") + "\n";
-            }
-
-            oscilloscope.textContent = signal;
-        }
-
         function addRandomLine() {
             let text = `SCANNING: ${getRandomString(20)} [OK]`;
+            hasAnomaly = false;
 
-            let containsVecdm = false;
             if (Math.random() < 0.02) {
                 let insertPos = Math.floor(Math.random() * text.length);
                 text = text.slice(0, insertPos) + "VECDM" + text.slice(insertPos);
-                containsVecdm = true;
+                hasAnomaly = true;
             }
 
             const newLine = document.createElement("div");
             newLine.textContent = text;
-
-            if (Math.random() < 0.1) {
-                newLine.classList.add("flicker");
-            }
-
+            if (Math.random() < 0.1) newLine.classList.add("flicker");
             output.appendChild(newLine);
 
             while (output.children.length > maxLines) {
                 output.removeChild(output.firstChild);
             }
-
-            // Allineare il grafico con il messaggio
-            generateOscilloscope(containsVecdm);
 
             if (Math.random() < 0.01) {
                 glitchText.style.display = "block";
@@ -189,7 +179,7 @@
             setInterval(addRandomLine, 200);
         }
 
-        generateOscilloscope(false);
+        drawOscilloscope();
         startLoop();
     </script>
 </body>
