@@ -1,17 +1,15 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const textElement = document.getElementById("main-text");
-    const text = "Accessing VECDM Network...";
-    
+document.addEventListener("DOMContentLoaded", function () {
+    const textElement = document.getElementById("access-text");
+    const message = "Accesso al terminale in corso...\nCaricamento completato.";
     let index = 0;
-    function type() {
-        if (index < text.length) {
-            textElement.innerHTML = text.substring(0, index + 1) + "_";
+
+    function typeText() {
+        if (index < message.length) {
+            textElement.textContent += message.charAt(index);
             index++;
-            setTimeout(type, 100);
-        } else {
-            textElement.innerHTML = text;
+            setTimeout(typeText, 50);
         }
     }
-    
-    type();
+
+    setTimeout(typeText, 1000); // Ritardo iniziale
 });
