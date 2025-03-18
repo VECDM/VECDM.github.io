@@ -34,19 +34,10 @@
             overflow-y: auto;
         }
 
-        .ascii-art {
-            color: #ff3355;
+        .ascii-art, .glitch {
+            display: none;
             font-weight: bold;
-            display: none;
-        }
-
-        .glitch {
-            color: rgba(255, 255, 255, 0.6);
-            display: none;
-        }
-
-        .hidden-text {
-            color: rgba(255, 255, 255, 0.1);
+            color: #ff3355;
         }
 
         .links {
@@ -81,41 +72,48 @@
 
     <script>
         const output = document.getElementById("output");
+        const asciiArt = document.querySelector(".ascii-art");
+        const glitchText = document.querySelector(".glitch");
 
-        function addLine(text, delay = 100) {
-            setTimeout(() => {
-                output.innerHTML += text + "<br>";
-                output.scrollTop = output.scrollHeight;
-            }, delay);
-        }
-
-        function generateRandomData() {
+        function getRandomString(length) {
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            let line = "";
-            for (let i = 0; i < 20; i++) {
-                line += chars.charAt(Math.floor(Math.random() * chars.length));
+            let result = "";
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
             }
-            return line;
+            return result;
         }
 
-        function scanData() {
-            output.innerHTML = "";
-            for (let i = 0; i < 10; i++) {
-                addLine(`SCANNING: ${generateRandomData()} [OK]`, i * 200);
+        function addRandomLine() {
+            let text = `SCANNING: ${getRandomString(20)} [OK]`;
+
+            // Con una piccola probabilità, inserisce "VECDM" in modo casuale
+            if (Math.random() < 0.02) {
+                let insertPos = Math.floor(Math.random() * text.length);
+                text = text.slice(0, insertPos) + "VECDM" + text.slice(insertPos);
             }
-            addLine("Analysis in progress...", 2200);
-            addLine("Searching for hidden signals...", 2800);
-            setTimeout(() => {
-                document.querySelector(".ascii-art").style.display = "block";
-            }, 3500);
-            setTimeout(() => {
-                document.querySelector(".glitch").style.display = "block";
-            }, 5000);
-            addLine("VECDM detected... Processing...", 6000);
+
+            output.innerHTML += text + "<br>";
+            output.scrollTop = output.scrollHeight;
+
+            // Ogni tanto attiva la glitch screen
+            if (Math.random() < 0.01) {
+                glitchText.style.display = "block";
+                setTimeout(() => glitchText.style.display = "none", 1000);
+            }
+
+            // ASCII Art casuale
+            if (Math.random() < 0.007) {
+                asciiArt.style.display = "block";
+                setTimeout(() => asciiArt.style.display = "none", 2000);
+            }
         }
 
-        setInterval(scanData, 12000);
-        scanData();
+        function startLoop() {
+            setInterval(addRandomLine, 200);
+        }
+
+        startLoop();
     </script>
 </body>
 </html>
