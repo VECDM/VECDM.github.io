@@ -10,20 +10,39 @@
             color: #b3b3b3;
             font-family: 'Courier New', Courier, monospace;
             overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
-        .terminal {
+        .container {
+            display: flex;
             width: 90%;
-            max-width: 800px;
+            max-width: 900px;
             height: 500px;
-            margin: 40px auto;
             background: rgba(10, 10, 10, 0.9);
             border: 2px solid #222;
             box-shadow: 0 0 15px rgba(179, 179, 255, 0.2);
-            padding: 15px;
-            text-align: left;
-            position: relative;
+            padding: 10px;
+        }
+
+        .terminal, .oscilloscope {
+            flex: 1;
+            padding: 10px;
+            height: 100%;
             overflow: hidden;
+        }
+
+        .terminal {
+            border-right: 2px solid #222;
+            text-align: left;
+        }
+
+        .oscilloscope {
+            text-align: center;
+            font-size: 12px;
+            white-space: pre;
         }
 
         #output {
@@ -35,35 +54,6 @@
             justify-content: flex-end;
         }
 
-        .ascii-art, .glitch {
-            display: none;
-            font-weight: bold;
-            color: #ff3355;
-        }
-
-        .scan-line {
-            position: absolute;
-            width: 100%;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.2);
-            top: 0;
-            animation: scan 5s linear infinite;
-        }
-
-        @keyframes scan {
-            from { top: 0; }
-            to { top: 100%; }
-        }
-
-        .glitch-effect {
-            animation: glitch 0.2s infinite alternate;
-        }
-
-        @keyframes glitch {
-            0% { text-shadow: 2px 0 red, -2px 0 cyan; }
-            100% { text-shadow: -2px 0 red, 2px 0 cyan; }
-        }
-
         .flicker {
             animation: flicker 1.5s infinite alternate;
         }
@@ -72,6 +62,12 @@
             0% { opacity: 1; }
             50% { opacity: 0.8; }
             100% { opacity: 1; }
+        }
+
+        .glitch {
+            display: none;
+            font-weight: bold;
+            color: #b32233;
         }
 
         .links {
@@ -94,12 +90,19 @@
     </style>
 </head>
 <body>
-    <div class="terminal">
-        <div class="scan-line"></div>
-        <div id="output"></div>
-        <div class="ascii-art">   ▄███████████▄ </div>
-        <div class="glitch">[ERROR] Data Corruption Detected</div>
+    <div class="container">
+        <!-- Terminale a sinistra -->
+        <div class="terminal">
+            <div id="output"></div>
+            <div class="glitch">[ERROR] Data Corruption Detected</div>
+        </div>
+
+        <!-- Oscilloscopio ASCII a destra -->
+        <div class="oscilloscope" id="oscilloscope">
+            <!-- Generazione del segnale -->
+        </div>
     </div>
+
     <div class="links">
         <a href="404_m3m0.html">404: M3M0</a>
         <a href="about.html">About</a>
@@ -107,9 +110,9 @@
 
     <script>
         const output = document.getElementById("output");
-        const asciiArt = document.querySelector(".ascii-art");
+        const oscilloscope = document.getElementById("oscilloscope");
         const glitchText = document.querySelector(".glitch");
-        const maxLines = 18; // Numero massimo di righe visibili
+        const maxLines = 18;
 
         function getRandomString(length) {
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -120,40 +123,56 @@
             return result;
         }
 
+        function generateOscilloscope(hasAnomaly) {
+            const width = 25;
+            let signal = "";
+            let baseWave = ["_   _", "_/\\_", "_/  \\_", "_   _", "_   _"];
+            
+            for (let i = 0; i < 10; i++) {
+                let wave = baseWave[Math.floor(Math.random() * baseWave.length)];
+                
+                if (hasAnomaly && Math.random() < 0.2) {
+                    wave = "_/‾‾‾\\__";
+                }
+
+                signal += wave.padEnd(width, " ") + "\n";
+            }
+
+            oscilloscope.textContent = signal;
+        }
+
         function addRandomLine() {
             let text = `SCANNING: ${getRandomString(20)} [OK]`;
 
-            // Probabilità di inserire "VECDM"
+            let containsVecdm = false;
             if (Math.random() < 0.02) {
                 let insertPos = Math.floor(Math.random() * text.length);
                 text = text.slice(0, insertPos) + "VECDM" + text.slice(insertPos);
+                containsVecdm = true;
             }
 
             const newLine = document.createElement("div");
             newLine.textContent = text;
 
-            // Effetto flickering su alcune righe
             if (Math.random() < 0.1) {
                 newLine.classList.add("flicker");
             }
 
             output.appendChild(newLine);
 
-            // Manteniamo solo maxLines righe
             while (output.children.length > maxLines) {
                 output.removeChild(output.firstChild);
             }
 
-            // Ogni tanto attiva la glitch screen
+            if (containsVecdm) {
+                generateOscilloscope(true);
+            } else {
+                generateOscilloscope(false);
+            }
+
             if (Math.random() < 0.01) {
                 glitchText.style.display = "block";
                 setTimeout(() => glitchText.style.display = "none", 1000);
-            }
-
-            // ASCII Art casuale
-            if (Math.random() < 0.007) {
-                asciiArt.style.display = "block";
-                setTimeout(() => asciiArt.style.display = "none", 2000);
             }
         }
 
@@ -161,6 +180,7 @@
             setInterval(addRandomLine, 200);
         }
 
+        generateOscilloscope(false);
         startLoop();
     </script>
 </body>
