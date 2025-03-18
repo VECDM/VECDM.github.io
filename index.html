@@ -39,12 +39,6 @@
             text-align: left;
         }
 
-        .oscilloscope {
-            text-align: center;
-            font-size: 12px;
-            white-space: pre;
-        }
-
         #output {
             white-space: pre-wrap;
             font-size: 14px;
@@ -52,6 +46,18 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
+        }
+
+        .oscilloscope {
+            text-align: center;
+            font-size: 12px;
+            white-space: pre;
+            color: #00FF00; /* Verde fosforo */
+            text-shadow: 0 0 5px #00FF00, 0 0 10px #008000; /* Bagliore */
+            filter: blur(0.7px); /* Effetto CRT */
+            background: rgba(0, 20, 0, 0.8); /* Sfondo verde scuro tipo monitor */
+            border-left: 2px solid #003300;
+            padding: 10px;
         }
 
         .flicker {
@@ -97,7 +103,7 @@
             <div class="glitch">[ERROR] Data Corruption Detected</div>
         </div>
 
-        <!-- Oscilloscopio ASCII a destra -->
+        <!-- Oscilloscopio a destra -->
         <div class="oscilloscope" id="oscilloscope">
             <!-- Generazione del segnale -->
         </div>
@@ -127,10 +133,10 @@
             const width = 25;
             let signal = "";
             let baseWave = ["_   _", "_/\\_", "_/  \\_", "_   _", "_   _"];
-            
+
             for (let i = 0; i < 10; i++) {
                 let wave = baseWave[Math.floor(Math.random() * baseWave.length)];
-                
+
                 if (hasAnomaly && Math.random() < 0.2) {
                     wave = "_/‾‾‾\\__";
                 }
