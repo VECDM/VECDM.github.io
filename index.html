@@ -3,80 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tracker VECDM</title>
+    <title>Analisi Dati</title>
     <style>
         body {
-            background-color: #111; /* Nero profondo */
-            color: #b3a6c9; /* Viola molto desaturato */
-            font-family: monospace;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background-color: black;
+            color: #ccc;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            padding: 20px;
             overflow: hidden;
         }
-
-        .tracker-container {
-            width: 90%;
-            height: 90%;
-            background-color: #181818;
-            border: 2px solid #444;
-            padding: 10px;
+        .console {
+            width: 100%;
+            height: 80vh;
             overflow: hidden;
-        }
-
-        pre {
             white-space: pre-wrap;
-            word-wrap: break-word;
-            font-size: 16px;
             line-height: 1.2;
-            max-height: 100%;
+        }
+        .graph {
+            width: 100%;
+            height: 20vh;
+            display: flex;
+            align-items: center;
+        }
+        .bar {
+            width: 2px;
+            background-color: #888;
+            display: inline-block;
+            margin-right: 2px;
+            transition: height 0.2s;
         }
     </style>
 </head>
 <body>
-    <div class="tracker-container">
-        <pre id="tracker-output"></pre>
-    </div>
+
+    <div class="console" id="console"></div>
+    <div class="graph" id="graph"></div>
 
     <script>
-        const trackerOutput = document.getElementById("tracker-output");
+        const consoleElement = document.getElementById("console");
+        const graphElement = document.getElementById("graph");
 
-        const hexChars = "0123456789ABCDEF";
-        const vecdmVariants = ["V3C_M", "V-CDM", "V E C D M", "VC_DM", "VEC_DM"];
-        let trackerLines = [];
-
-        function randomHex() {
-            return hexChars[Math.floor(Math.random() * hexChars.length)];
-        }
-
-        function generateLine() {
-            let line = "";
-            let insertVECDM = Math.random() < 0.1; // 10% di possibilità di comparire
-
-            for (let i = 0; i < 16; i++) {
-                if (insertVECDM && Math.random() < 0.3) { // Sostituisce casualmente alcuni caratteri con VECDM
-                    let vecdmStr = vecdmVariants[Math.floor(Math.random() * vecdmVariants.length)];
-                    let pos = Math.floor(Math.random() * (16 - vecdmStr.length));
-                    line = line.substring(0, pos) + vecdmStr + line.substring(pos + vecdmStr.length);
-                    insertVECDM = false; // Assicura che VECDM venga inserito solo una volta per riga
-                } else {
-                    line += randomHex() + randomHex() + " ";
-                }
+        function addLogLine() {
+            let log = "[SYS] Analyzing data... ";
+            if (Math.random() < 0.1) {
+                let variations = ["VECDM", "V3C_M", "VC_DM", "V_ECDM"];
+                log += variations[Math.floor(Math.random() * variations.length)];
+            } else {
+                log += "No anomalies detected.";
             }
-
-            return line.trim();
+            consoleElement.innerHTML += log + "\n";
+            consoleElement.scrollTop = consoleElement.scrollHeight;
         }
 
-        function updateTracker() {
-            if (trackerLines.length > 25) trackerLines.shift();
-            trackerLines.push(generateLine());
-            trackerOutput.innerText = trackerLines.join("\n");
+        function generateGraph() {
+            graphElement.innerHTML = "";
+            for (let i = 0; i < 50; i++) {
+                let bar = document.createElement("div");
+                bar.classList.add("bar");
+                bar.style.height = Math.random() * 100 + "px";
+                if (Math.random() < 0.05) bar.style.backgroundColor = "#c40"; 
+                graphElement.appendChild(bar);
+            }
         }
 
-        setInterval(updateTracker, 150);
+        setInterval(() => {
+            addLogLine();
+            generateGraph();
+        }, 1000);
     </script>
+
 </body>
 </html>
