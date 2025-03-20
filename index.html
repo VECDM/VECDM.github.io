@@ -11,21 +11,30 @@
             font-family: monospace;
             text-align: center;
             padding-top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
         }
         .terminal {
-            display: inline-block;
             background-color: #111;
             padding: 15px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(255, 0, 255, 0.2);
             text-align: left;
-            min-width: 40%;
-            max-width: 60%;
-            height: 200px; /* Altezza fissa */
-            overflow: hidden; /* Evita che si allarghi */
+            width: 60%;
+            height: 200px;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end; /* I messaggi partono dal basso e si spostano verso l'alto */
+            justify-content: flex-end;
         }
         .message {
             white-space: nowrap;
@@ -39,23 +48,26 @@
             flex-grow: 1;
         }
         .vecdm {
-            color: #807090; /* Molto più vicino al grigio */
+            color: #908890; /* Molto più vicino al grigio */
         }
         .graph {
-            margin-top: 10px;
+            background-color: #111;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.2);
+            width: 60%;
+            text-align: center;
             font-size: 12px;
             white-space: pre;
-            color: #505050;
-            text-align: center;
-        }
-        .highlight {
-            color: #A090B0;
+            color: #707070;
         }
     </style>
 </head>
 <body>
-    <div class="terminal">
-        <div id="messages"></div>
+    <div class="container">
+        <div class="terminal">
+            <div id="messages"></div>
+        </div>
         <div class="graph" id="graph"></div>
     </div>
 
@@ -106,7 +118,7 @@
             return graph;
         }
 
-        function typeEffect(element, text, speed = 50, callback = null) {
+        function typeEffect(element, text, speed = 30, callback = null) {
             let i = 0;
             function type() {
                 if (i < text.length) {
