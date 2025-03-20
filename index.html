@@ -7,154 +7,133 @@
     <style>
         body {
             background-color: black;
-            color: #C0C0C0;
+            color: #bbb;
             font-family: monospace;
-            text-align: center;
-            padding-top: 50px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
+            overflow: hidden;
         }
         .terminal {
-            background-color: #111;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(255, 0, 255, 0.2);
-            text-align: left;
-            width: 60%;
-            height: 200px;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border: 1px solid #444;
+            width: 600px;
+            height: 250px;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-        }
-        .message {
             white-space: nowrap;
-            overflow: hidden;
+            position: relative;
+        }
+        .line {
             display: flex;
             justify-content: space-between;
-            opacity: 0;
+            white-space: nowrap;
         }
-        .message .data {
-            color: #808080;
-            flex-grow: 1;
+        .code {
+            color: #888;
         }
-        .vecdm {
-            color: #908890; /* Molto più vicino al grigio */
+        .glitch {
+            color: #777;
         }
-        .graph {
-            background-color: #111;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(255, 0, 255, 0.2);
-            width: 60%;
-            text-align: center;
-            font-size: 12px;
-            white-space: pre;
-            color: #707070;
+        .veccdm {
+            color: #a08fb9;
+        }
+        .oscilloscope {
+            width: 600px;
+            height: 100px;
+            background: black;
+            border: 1px solid #444;
+            margin-top: 10px;
+        }
+        .typing::after {
+            content: "|";
+            display: inline-block;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="terminal">
-            <div id="messages"></div>
-        </div>
-        <div class="graph" id="graph"></div>
-    </div>
+
+    <div class="terminal" id="terminal"></div>
+    <canvas class="oscilloscope" id="oscilloscope"></canvas>
 
     <script>
+        const terminal = document.getElementById("terminal");
         const messages = [
-            "Analyzing data...",
-            "Processing input stream...",
-            "Decoding sequences...",
-            "Checking error logs...",
-            "Parsing anomalies...",
-            "Scanning memory sectors...",
-            "Retrieving lost signals...",
-            "Cross-checking logs...",
-            "Reconstructing fragments...",
-            "Searching for patterns..."
+            "ANALYSIS COMPLETE...",
+            "SEARCHING DATABASE...",
+            "ERROR: DATA FRAGMENT MISSING...",
+            "SIGNAL DECAY DETECTED...",
+            "ALGORITHM EXECUTION IN PROGRESS..."
         ];
-        const vecdmVariants = ["V_CDM", "V3C_M", "VE_DM", "VEC_M", "V_C_M"];
+        const glitches = ["V3C_M", "V_CDM", "VE_CD", "VEC_M"];
+        
+        function typeMessage(element, text, index = 0) {
+            if (index < text.length) {
+                element.innerHTML = text.substring(0, index + 1) + "<span class='typing'></span>";
+                setTimeout(() => typeMessage(element, text, index + 1), 50);
+            } else {
+                element.innerHTML = text; // Rimuove il cursore dopo il completamento
+            }
+        }
+        
+        function generateMessage() {
+            const line = document.createElement("div");
+            line.classList.add("line");
+            
+            const codePart = document.createElement("span");
+            codePart.classList.add("code");
+            codePart.textContent = generateHexCode();
+            
+            const textPart = document.createElement("span");
+            textPart.classList.add("glitch");
+            
+            let msg = messages[Math.floor(Math.random() * messages.length)];
+            if (Math.random() < 0.2) { // 20% di probabilità di glitch
+                msg = msg.replace("DATA", glitches[Math.floor(Math.random() * glitches.length)]);
+                textPart.classList.add("veccdm");
+            }
+            
+            line.appendChild(codePart);
+            line.appendChild(textPart);
+            terminal.appendChild(line);
+            
+            typeMessage(textPart, msg);
 
-        function getRandomHex(size) {
+            if (terminal.children.length > 10) {
+                terminal.removeChild(terminal.firstChild);
+            }
+        }
+
+        function generateHexCode() {
             let hex = "";
-            const chars = "0123456789ABCDEF";
-            for (let i = 0; i < size; i++) {
-                hex += chars[Math.floor(Math.random() * chars.length)];
+            for (let i = 0; i < 8; i++) {
+                hex += Math.random() < 0.5 ? Math.floor(Math.random() * 10) : String.fromCharCode(65 + Math.floor(Math.random() * 6));
             }
             return hex;
         }
 
-        function generateMessage() {
-            let msg = messages[Math.floor(Math.random() * messages.length)];
-            let hexData = getRandomHex(16);
-            let fullMessage = `<span class="data">${msg}</span> ${hexData}`;
-            if (Math.random() < 0.2) { 
-                let corrupted = vecdmVariants[Math.floor(Math.random() * vecdmVariants.length)];
-                fullMessage = `<span class="data">${msg}</span> <span class="vecdm">${corrupted}</span>`;
-            }
-            return fullMessage;
-        }
-
-        function generateGraph() {
-            let graph = "";
-            for (let i = 0; i < 8; i++) {
-                let line = "";
-                for (let j = 0; j < 40; j++) {  
-                    line += (Math.random() > 0.7) ? "*" : " ";
-                }
-                graph += line + "\n";
-            }
-            return graph;
-        }
-
-        function typeEffect(element, text, speed = 30, callback = null) {
-            let i = 0;
-            function type() {
-                if (i < text.length) {
-                    element.innerHTML += text.charAt(i);
-                    i++;
-                    setTimeout(type, speed);
-                } else if (callback) {
-                    callback();
-                }
-            }
-            type();
-        }
-
-        function updateTerminal() {
-            let msgDiv = document.getElementById("messages");
-            let graphDiv = document.getElementById("graph");
-
-            let newMessage = document.createElement("div");
-            newMessage.classList.add("message");
-            newMessage.innerHTML = `<span class="data"></span>`; 
+        function updateOscilloscope() {
+            const canvas = document.getElementById("oscilloscope");
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            msgDiv.appendChild(newMessage);
-
-            let fullMessage = generateMessage();
-            let dataElement = newMessage.querySelector(".data");
-
-            typeEffect(dataElement, fullMessage, 30, () => {
-                newMessage.style.opacity = 1;
-            });
-
-            if (msgDiv.children.length > 10) msgDiv.removeChild(msgDiv.firstChild);
-
-            graphDiv.textContent = generateGraph();
+            ctx.strokeStyle = "#777";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < canvas.width; i += 5) {
+                ctx.lineTo(i, 50 + Math.sin(i * 0.05) * 30);
+            }
+            ctx.stroke();
         }
 
-        setInterval(updateTerminal, 1200);
+        setInterval(generateMessage, 3000);
+        setInterval(updateOscilloscope, 100);
     </script>
 </body>
 </html>
