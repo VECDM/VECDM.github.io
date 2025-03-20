@@ -27,13 +27,14 @@
             overflow: hidden;
             display: flex;
             justify-content: space-between;
+            opacity: 0;
         }
         .message .data {
             color: #808080;
             flex-grow: 1;
         }
         .vecdm {
-            color: #A020F0;
+            color: #807090; /* Molto più vicino al grigio */
         }
         .graph {
             margin-top: 10px;
@@ -42,7 +43,7 @@
             color: #505050;
         }
         .highlight {
-            color: #C040F0;
+            color: #A090B0;
         }
     </style>
 </head>
@@ -99,21 +100,43 @@
             return graph;
         }
 
+        function typeEffect(element, text, speed = 50, callback = null) {
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else if (callback) {
+                    callback();
+                }
+            }
+            type();
+        }
+
         function updateTerminal() {
             let msgDiv = document.getElementById("messages");
             let graphDiv = document.getElementById("graph");
 
             let newMessage = document.createElement("div");
             newMessage.classList.add("message");
-            newMessage.innerHTML = generateMessage();
-
+            newMessage.innerHTML = `<span class="data"></span>`; 
+            
             msgDiv.appendChild(newMessage);
+
+            let fullMessage = generateMessage();
+            let dataElement = newMessage.querySelector(".data");
+
+            typeEffect(dataElement, fullMessage, 30, () => {
+                newMessage.style.opacity = 1;
+            });
+
             if (msgDiv.children.length > 10) msgDiv.removeChild(msgDiv.firstChild);
 
             graphDiv.textContent = generateGraph();
         }
 
-        setInterval(updateTerminal, 1000);
+        setInterval(updateTerminal, 1200);
     </script>
 </body>
 </html>
