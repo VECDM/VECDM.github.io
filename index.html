@@ -3,156 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulazione Tracker Esadecimale</title>
+    <title>Tracker VECDM</title>
     <style>
         body {
+            background-color: #111; /* Nero profondo */
+            color: #b3a6c9; /* Viola molto desaturato */
+            font-family: monospace;
             margin: 0;
             padding: 0;
-            height: 100vh;
-            background-color: black;
-            color: #ccc;
-            font-family: "Courier New", Courier, monospace;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
-        }
-
-        .screen {
-            width: 80%;
-            height: 80%;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            background-color: #111;
-            border: 2px solid #00ff00;
+            height: 100vh;
             overflow: hidden;
         }
 
-        .tracker {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            margin-top: 20px;
-            font-size: 18px;
-            color: #00ff00;
+        .tracker-container {
+            width: 90%;
+            height: 90%;
+            background-color: #181818;
+            border: 2px solid #444;
+            padding: 10px;
+            overflow: hidden;
         }
 
-        .tracker-row {
-            display: flex;
-            justify-content: space-evenly;
-        }
-
-        .tracker-cell {
-            width: 80px;
-            height: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid #00ff00;
-            color: #000;
-            background-color: #333;
-            font-weight: bold;
-        }
-
-        .highlight {
-            color: #ff00ff;
-        }
-
-        .hidden-message {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            color: #6600cc;
-            font-size: 20px;
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 1s;
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 16px;
+            line-height: 1.2;
+            max-height: 100%;
         }
     </style>
 </head>
 <body>
-
-    <div class="screen">
-        <div class="tracker">
-            <!-- Tracker Rows (simulando un tracker con 10 righe) -->
-            <div class="tracker-row">
-                <div class="tracker-cell">0x1A</div>
-                <div class="tracker-cell">0xB4</div>
-                <div class="tracker-cell">0xD7</div>
-                <div class="tracker-cell">0x5E</div>
-                <div class="tracker-cell">0x9C</div>
-            </div>
-            <div class="tracker-row">
-                <div class="tracker-cell">0x6F</div>
-                <div class="tracker-cell">0x4D</div>
-                <div class="tracker-cell">0xF0</div>
-                <div class="tracker-cell">0xA3</div>
-                <div class="tracker-cell">0xC7</div>
-            </div>
-            <div class="tracker-row">
-                <div class="tracker-cell">0x9D</div>
-                <div class="tracker-cell">0xB2</div>
-                <div class="tracker-cell">0xF4</div>
-                <div class="tracker-cell">0x58</div>
-                <div class="tracker-cell">0x73</div>
-            </div>
-            <div class="tracker-row">
-                <div class="tracker-cell">0x33</div>
-                <div class="tracker-cell">0x7F</div>
-                <div class="tracker-cell">0xA1</div>
-                <div class="tracker-cell">0xD9</div>
-                <div class="tracker-cell">0x0F</div>
-            </div>
-            <div class="tracker-row">
-                <div class="tracker-cell">0x2E</div>
-                <div class="tracker-cell">0x61</div>
-                <div class="tracker-cell">0x5B</div>
-                <div class="tracker-cell">0x8F</div>
-                <div class="tracker-cell">0xC4</div>
-            </div>
-        </div>
-
-        <div class="hidden-message" id="hiddenMessage">VECDM</div>
+    <div class="tracker-container">
+        <pre id="tracker-output"></pre>
     </div>
 
     <script>
-        // Lista di messaggi "subliminali" variabili
-        const messages = ["VECDM", "V3C_M", "VCDM_", "_M_VC", "VEC_DM"];
-        
-        // Funzione per cambiare il contenuto delle celle con valori esadecimali
+        const trackerOutput = document.getElementById("tracker-output");
+
+        const hexChars = "0123456789ABCDEF";
+        const randomHex = () => hexChars[Math.floor(Math.random() * hexChars.length)];
+
+        const vecdmVariants = ["V3C_M", "V-CDM", "V E C D M", "VC_DM", "VEC_DM"];
+        let trackerLines = [];
+
+        function generateLine() {
+            let line = "";
+            for (let i = 0; i < 32; i++) {
+                if (Math.random() < 0.01) { // 1% di possibilità di comparire
+                    line += vecdmVariants[Math.floor(Math.random() * vecdmVariants.length)];
+                } else {
+                    line += randomHex() + randomHex() + " ";
+                }
+            }
+            return line;
+        }
+
         function updateTracker() {
-            const rows = document.querySelectorAll('.tracker-row');
-            const hiddenMessage = document.getElementById('hiddenMessage');
-            
-            rows.forEach(row => {
-                const cells = row.querySelectorAll('.tracker-cell');
-                cells.forEach(cell => {
-                    // 10% probabilità di cambiare il contenuto della cella in un messaggio subliminale
-                    if (Math.random() < 0.05) {  // 5% di probabilità
-                        // Se il messaggio appare, lo scegliamo casualmente
-                        const message = messages[Math.floor(Math.random() * messages.length)];
-                        cell.textContent = message;
-                        cell.classList.add('highlight');
-                        hiddenMessage.style.opacity = 1;  // Mostriamo il messaggio in basso a destra
-                    } else {
-                        // 95% di probabilità di mantenere un valore esadecimale
-                        cell.textContent = `0x${Math.floor(Math.random() * 255).toString(16).toUpperCase()}`;
-                        cell.classList.remove('highlight');
-                    }
-                });
-            });
+            if (trackerLines.length > 25) trackerLines.shift();
+            trackerLines.push(generateLine());
+            trackerOutput.innerText = trackerLines.join("\n");
         }
 
-        // Avvio della simulazione
-        function startTracker() {
-            setInterval(() => {
-                updateTracker();
-            }, 500); // Ogni mezzo secondo un nuovo aggiornamento
-        }
-
-        window.onload = startTracker;
+        // Aggiorna il tracker ogni 150ms per un effetto fluido
+        setInterval(updateTracker, 150);
     </script>
 </body>
 </html>
