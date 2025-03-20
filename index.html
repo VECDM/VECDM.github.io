@@ -44,13 +44,26 @@
         const consoleElement = document.getElementById("console");
         const graphElement = document.getElementById("graph");
 
+        const logMessages = [
+            "[SYS] Scanning frequencies...",
+            "[LOG] Data stream synchronized.",
+            "[INFO] Parsing input parameters...",
+            "[SYS] Cross-referencing anomaly patterns...",
+            "[WARNING] Unusual signature detected...",
+            "[LOG] Checksum validation: OK",
+            "[SYS] Signal integrity nominal.",
+            "[INFO] Searching for encrypted layers...",
+            "[SYS] Mapping temporal distortions...",
+            "[WARNING] Potential interference detected...",
+            "[LOG] No deviations in expected behavior.",
+            "[SYS] Processing waveform harmonics..."
+        ];
+
         function addLogLine() {
-            let log = "[SYS] Analyzing data... ";
-            if (Math.random() < 0.1) {
+            let log = logMessages[Math.floor(Math.random() * logMessages.length)];
+            if (Math.random() < 0.1) { 
                 let variations = ["VECDM", "V3C_M", "VC_DM", "V_ECDM"];
-                log += variations[Math.floor(Math.random() * variations.length)];
-            } else {
-                log += "No anomalies detected.";
+                log += " [ANOMALY] " + variations[Math.floor(Math.random() * variations.length)];
             }
             consoleElement.innerHTML += log + "\n";
             consoleElement.scrollTop = consoleElement.scrollHeight;
@@ -62,7 +75,7 @@
                 let bar = document.createElement("div");
                 bar.classList.add("bar");
                 bar.style.height = Math.random() * 100 + "px";
-                if (Math.random() < 0.05) bar.style.backgroundColor = "#c40"; 
+                if (Math.random() < 0.05) bar.style.backgroundColor = "#a020f0"; // Viola neon
                 graphElement.appendChild(bar);
             }
         }
