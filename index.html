@@ -45,21 +45,29 @@
         const trackerOutput = document.getElementById("tracker-output");
 
         const hexChars = "0123456789ABCDEF";
-        const randomHex = () => hexChars[Math.floor(Math.random() * hexChars.length)];
-
         const vecdmVariants = ["V3C_M", "V-CDM", "V E C D M", "VC_DM", "VEC_DM"];
         let trackerLines = [];
 
+        function randomHex() {
+            return hexChars[Math.floor(Math.random() * hexChars.length)];
+        }
+
         function generateLine() {
             let line = "";
-            for (let i = 0; i < 32; i++) {
-                if (Math.random() < 0.01) { // 1% di possibilità di comparire
-                    line += vecdmVariants[Math.floor(Math.random() * vecdmVariants.length)];
+            let insertVECDM = Math.random() < 0.1; // 10% di possibilità di comparire
+
+            for (let i = 0; i < 16; i++) {
+                if (insertVECDM && Math.random() < 0.3) { // Sostituisce casualmente alcuni caratteri con VECDM
+                    let vecdmStr = vecdmVariants[Math.floor(Math.random() * vecdmVariants.length)];
+                    let pos = Math.floor(Math.random() * (16 - vecdmStr.length));
+                    line = line.substring(0, pos) + vecdmStr + line.substring(pos + vecdmStr.length);
+                    insertVECDM = false; // Assicura che VECDM venga inserito solo una volta per riga
                 } else {
                     line += randomHex() + randomHex() + " ";
                 }
             }
-            return line;
+
+            return line.trim();
         }
 
         function updateTracker() {
@@ -68,7 +76,6 @@
             trackerOutput.innerText = trackerLines.join("\n");
         }
 
-        // Aggiorna il tracker ogni 150ms per un effetto fluido
         setInterval(updateTracker, 150);
     </script>
 </body>
