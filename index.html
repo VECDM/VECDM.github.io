@@ -9,140 +9,79 @@
             background-color: black;
             color: #ccc;
             font-family: monospace;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            padding: 20px;
         }
-
-        .terminal {
-            width: 80%;
-            max-width: 800px;
-            height: 300px;
-            background-color: #111;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(120, 30, 120, 0.4);
+        #terminal {
+            width: 80vw;
+            height: 60vh;
             overflow: hidden;
-            white-space: pre-wrap;
-        }
-
-        .text {
-            font-size: 16px;
-            line-height: 1.4;
-            color: #ccc;
-        }
-
-        /* VECDM ora è solo leggermente più viola */
-        .highlight {
-            color: rgba(180, 175, 190, 0.6);
-        }
-
-        .graph {
-            width: 80%;
-            max-width: 800px;
-            height: 100px;
+            white-space: pre;
+            font-size: 14px;
             background-color: #111;
-            margin-top: 20px;
             padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(120, 30, 120, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border: 1px solid #444;
         }
-
-        .wave {
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                to right,
-                transparent,
-                transparent 8px,
-                rgba(180, 90, 180, 0.5) 10px /* Linee più visibili */
-            );
-            animation: waveAnimation 4s linear infinite;
-        }
-
-        @keyframes waveAnimation {
-            from {
-                transform: translateX(0);
-            }
-            to {
-                transform: translateX(-20px);
-            }
+        .vecdm {
+            color: rgba(180, 130, 255, 0.5); /* Leggermente violaceo */
         }
     </style>
 </head>
 <body>
 
-<div class="terminal" id="terminal"></div>
-<div class="graph">
-    <div class="wave"></div>
-</div>
+<div id="terminal"></div>
 
 <script>
+    const terminal = document.getElementById("terminal");
+    
     const messages = [
         "Analyzing data...",
-        "Searching for anomalies...",
         "Decoding transmission...",
-        "Signal interference detected...",
-        "Processing raw information...",
-        "Cross-referencing database...",
-        "Unexpected pattern found...",
-        "Compiling encrypted logs...",
-        "SIGNAL ANOMALY DETECTED..."
+        "Running diagnostics...",
+        "Processing signals...",
+        "Interpreting waveforms...",
+        "Cross-referencing logs..."
     ];
 
-    const corruptedVECDM = [
-        "V_CDM",
-        "V3C_M",
-        "VE_DM",
-        "V_CD_",
-        "V3_DM",
-        "V3CDM",
-        "V_CD_M"
+    const vecdmVariants = [
+        "V_CDM", "V3C_M", "VE_DM", "V3_D_", "V__DM"
     ];
 
-    function typeMessage(element, message, speed, callback) {
-        let index = 0;
-        function type() {
-            if (index < message.length) {
-                element.innerHTML += message.charAt(index);
-                index++;
-                setTimeout(type, speed);
-            } else {
-                if (callback) callback();
-            }
+    function getRandomHex(length) {
+        let hexString = "";
+        const hexChars = "0123456789ABCDEF";
+        for (let i = 0; i < length; i++) {
+            hexString += hexChars[Math.floor(Math.random() * hexChars.length)];
         }
-        type();
+        return hexString;
     }
 
-    function addMessage() {
-        const terminal = document.getElementById("terminal");
-        const newLine = document.createElement("div");
-        newLine.classList.add("text");
-
+    function generateLine() {
         let message = messages[Math.floor(Math.random() * messages.length)];
+        let useVecdm = Math.random() < 0.08; // 8% di probabilità di mostrare VECDM corrotto
 
-        // Se il messaggio riguarda anomalie, sostituisce con una versione corrotta di VECDM
-        if (message.includes("ANOMALY")) {
-            const corrupted = corruptedVECDM[Math.floor(Math.random() * corruptedVECDM.length)];
-            message = message.replace("SIGNAL ANOMALY DETECTED", corrupted + " anomaly detected...");
-            newLine.classList.add("highlight");
+        if (useVecdm) {
+            message += " [" + vecdmVariants[Math.floor(Math.random() * vecdmVariants.length)] + "]";
         }
 
-        terminal.appendChild(newLine);
-        typeMessage(newLine, "> " + message, 50, () => {
-            terminal.scrollTop = terminal.scrollHeight;
-            setTimeout(addMessage, Math.random() * 4000 + 2000);
-        });
+        let hexFill = getRandomHex(30); // Riempi la riga con valori casuali
+
+        if (useVecdm) {
+            // Piccoli errori nei dati esadecimali quando appare VECDM corrotto
+            let glitchIndex = Math.floor(Math.random() * hexFill.length);
+            hexFill = hexFill.substring(0, glitchIndex) + "?" + hexFill.substring(glitchIndex + 1);
+        }
+
+        let fullLine = message.padEnd(40, ' ') + hexFill;
+        return useVecdm ? `<span class="vecdm">${fullLine}</span>` : fullLine;
     }
 
-    addMessage();
+    function updateTerminal() {
+        terminal.innerHTML += generateLine() + "\n";
+        terminal.scrollTop = terminal.scrollHeight; // Scorri automaticamente
+        setTimeout(updateTerminal, Math.random() * 1200 + 500); // Tempo casuale tra aggiornamenti
+    }
+
+    updateTerminal();
 </script>
 
 </body>
