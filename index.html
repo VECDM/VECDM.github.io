@@ -3,88 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analisi Dati</title>
+    <title>404: M3M0</title>
     <style>
         body {
             background-color: black;
             color: #ccc;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 14px;
-            padding: 20px;
-            overflow: hidden;
+            font-family: monospace;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
-        .console {
-            width: 100%;
-            height: 80vh;
+
+        .terminal {
+            width: 80%;
+            max-width: 800px;
+            height: 300px;
+            background-color: #111;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
             overflow: hidden;
             white-space: pre-wrap;
-            line-height: 1.2;
         }
+
+        .text {
+            font-size: 16px;
+            line-height: 1.4;
+            color: #ccc;
+        }
+
+        .highlight {
+            color: #ff00ff;
+        }
+
         .graph {
-            width: 100%;
-            height: 20vh;
+            width: 80%;
+            max-width: 800px;
+            height: 100px;
+            background-color: #111;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
             display: flex;
             align-items: center;
+            justify-content: center;
         }
-        .bar {
-            width: 2px;
-            background-color: #888;
-            display: inline-block;
-            margin-right: 2px;
-            transition: height 0.2s;
+
+        .wave {
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                to right,
+                transparent,
+                transparent 10px,
+                rgba(255, 0, 255, 0.2) 12px
+            );
+            animation: waveAnimation 4s linear infinite;
+        }
+
+        @keyframes waveAnimation {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-20px);
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="console" id="console"></div>
-    <div class="graph" id="graph"></div>
+<div class="terminal" id="terminal"></div>
+<div class="graph">
+    <div class="wave"></div>
+</div>
 
-    <script>
-        const consoleElement = document.getElementById("console");
-        const graphElement = document.getElementById("graph");
+<script>
+    const messages = [
+        "Analyzing data...",
+        "Searching for anomalies...",
+        "Decoding transmission...",
+        "Signal interference detected...",
+        "Processing raw information...",
+        "Cross-referencing database...",
+        "Unexpected pattern found...",
+        "Compiling encrypted logs...",
+        "VECDM anomaly detected..."
+    ];
 
-        const logMessages = [
-            "[SYS] Scanning frequencies...",
-            "[LOG] Data stream synchronized.",
-            "[INFO] Parsing input parameters...",
-            "[SYS] Cross-referencing anomaly patterns...",
-            "[WARNING] Unusual signature detected...",
-            "[LOG] Checksum validation: OK",
-            "[SYS] Signal integrity nominal.",
-            "[INFO] Searching for encrypted layers...",
-            "[SYS] Mapping temporal distortions...",
-            "[WARNING] Potential interference detected...",
-            "[LOG] No deviations in expected behavior.",
-            "[SYS] Processing waveform harmonics..."
-        ];
-
-        function addLogLine() {
-            let log = logMessages[Math.floor(Math.random() * logMessages.length)];
-            if (Math.random() < 0.1) { 
-                let variations = ["VECDM", "V3C_M", "VC_DM", "V_ECDM"];
-                log += " [ANOMALY] " + variations[Math.floor(Math.random() * variations.length)];
-            }
-            consoleElement.innerHTML += log + "\n";
-            consoleElement.scrollTop = consoleElement.scrollHeight;
-        }
-
-        function generateGraph() {
-            graphElement.innerHTML = "";
-            for (let i = 0; i < 50; i++) {
-                let bar = document.createElement("div");
-                bar.classList.add("bar");
-                bar.style.height = Math.random() * 100 + "px";
-                if (Math.random() < 0.05) bar.style.backgroundColor = "#a020f0"; // Viola neon
-                graphElement.appendChild(bar);
+    function typeMessage(element, message, speed, callback) {
+        let index = 0;
+        function type() {
+            if (index < message.length) {
+                element.innerHTML += message.charAt(index);
+                index++;
+                setTimeout(type, speed);
+            } else {
+                if (callback) callback();
             }
         }
+        type();
+    }
 
-        setInterval(() => {
-            addLogLine();
-            generateGraph();
-        }, 1000);
-    </script>
+    function addMessage() {
+        const terminal = document.getElementById("terminal");
+        const newLine = document.createElement("div");
+        newLine.classList.add("text");
+        
+        let message = messages[Math.floor(Math.random() * messages.length)];
+
+        if (message.includes("VECDM")) {
+            newLine.classList.add("highlight");
+        }
+
+        terminal.appendChild(newLine);
+        typeMessage(newLine, "> " + message, 50, () => {
+            terminal.scrollTop = terminal.scrollHeight;
+            setTimeout(addMessage, Math.random() * 4000 + 2000);
+        });
+    }
+
+    addMessage();
+</script>
 
 </body>
 </html>
