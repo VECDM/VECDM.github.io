@@ -9,79 +9,120 @@
             background-color: black;
             color: #ccc;
             font-family: monospace;
-            padding: 20px;
-        }
-        #terminal {
-            width: 80vw;
-            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
             overflow: hidden;
-            white-space: pre;
-            font-size: 14px;
+        }
+        
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80vw;
+        }
+
+        #terminal {
+            width: 100%;
+            height: 50vh;
             background-color: #111;
             padding: 10px;
             border: 1px solid #444;
+            overflow: hidden;
+            white-space: pre;
+            font-size: 14px;
         }
+
         .vecdm {
             color: rgba(180, 130, 255, 0.5); /* Leggermente violaceo */
+        }
+
+        #graph {
+            width: 100%;
+            height: 20vh;
+            background-color: #111;
+            border-top: 1px solid #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: rgba(180, 130, 255, 0.5); /* Stesso tono del VECDM */
         }
     </style>
 </head>
 <body>
 
-<div id="terminal"></div>
+<div id="container">
+    <div id="terminal"></div>
+    <div id="graph">▁ ▂ ▃ ▅ ▆ ▇ █ ▇ ▆ ▅ ▃ ▂ ▁</div>
+</div>
 
 <script>
     const terminal = document.getElementById("terminal");
-    
+    const graph = document.getElementById("graph");
+
     const messages = [
         "Analyzing data...",
+        "Processing signal...",
         "Decoding transmission...",
+        "Error detected in sector 4A...",
         "Running diagnostics...",
-        "Processing signals...",
-        "Interpreting waveforms...",
-        "Cross-referencing logs..."
+        "Searching for anomalies...",
+        "Cross-referencing data logs...",
+        "Checksum failed. Retrying...",
+        "Data stream unstable...",
+        "Running pattern recognition...",
+        "Partial decryption completed...",
+        "Possible interference detected...",
+        "Signal synchronization lost...",
+        "Unexpected data sequence identified..."
     ];
 
-    const vecdmVariants = [
-        "V_CDM", "V3C_M", "VE_DM", "V3_D_", "V__DM"
-    ];
+    const vecdmVariants = ["V_CDM", "V3C_M", "VE_DM", "VEC_M"];
 
-    function getRandomHex(length) {
-        let hexString = "";
-        const hexChars = "0123456789ABCDEF";
+    function getRandomHexBlock(length) {
+        let block = "";
         for (let i = 0; i < length; i++) {
-            hexString += hexChars[Math.floor(Math.random() * hexChars.length)];
+            block += Math.floor(Math.random() * 16).toString(16).toUpperCase();
         }
-        return hexString;
+        return block;
     }
 
-    function generateLine() {
+    function getRandomGlitchedHex(length) {
+        let block = getRandomHexBlock(length);
+        if (Math.random() < 0.2) { // 20% possibilità di errore visivo
+            let glitchPos = Math.floor(Math.random() * block.length);
+            let glitchChar = ["@", "#", "%", "&", "?"][Math.floor(Math.random() * 5)];
+            block = block.substring(0, glitchPos) + glitchChar + block.substring(glitchPos + 1);
+        }
+        return block;
+    }
+
+    function addTerminalMessage() {
         let message = messages[Math.floor(Math.random() * messages.length)];
-        let useVecdm = Math.random() < 0.08; // 8% di probabilità di mostrare VECDM corrotto
+        let corruptedIndex = Math.random() < 0.15; // 15% di possibilità di apparire
+        let fullLine = message.padEnd(30, ' ') + getRandomGlitchedHex(20);
 
-        if (useVecdm) {
-            message += " [" + vecdmVariants[Math.floor(Math.random() * vecdmVariants.length)] + "]";
+        if (corruptedIndex) {
+            let vecdm = vecdmVariants[Math.floor(Math.random() * vecdmVariants.length)];
+            fullLine = message.replace("...", ` ${vecdm} `).padEnd(30, ' ') + getRandomGlitchedHex(20);
+            fullLine = fullLine.replace(vecdm, `<span class="vecdm">${vecdm}</span>`);
         }
 
-        let hexFill = getRandomHex(30); // Riempi la riga con valori casuali
-
-        if (useVecdm) {
-            // Piccoli errori nei dati esadecimali quando appare VECDM corrotto
-            let glitchIndex = Math.floor(Math.random() * hexFill.length);
-            hexFill = hexFill.substring(0, glitchIndex) + "?" + hexFill.substring(glitchIndex + 1);
-        }
-
-        let fullLine = message.padEnd(40, ' ') + hexFill;
-        return useVecdm ? `<span class="vecdm">${fullLine}</span>` : fullLine;
+        terminal.innerHTML += fullLine + "\n";
+        terminal.scrollTop = terminal.scrollHeight;
     }
 
-    function updateTerminal() {
-        terminal.innerHTML += generateLine() + "\n";
-        terminal.scrollTop = terminal.scrollHeight; // Scorri automaticamente
-        setTimeout(updateTerminal, Math.random() * 1200 + 500); // Tempo casuale tra aggiornamenti
+    function updateGraph() {
+        let bars = "▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▃ ▂ ▁".split(" ");
+        let randomGraph = Array.from({ length: 16 }, () => bars[Math.floor(Math.random() * bars.length)]).join(" ");
+        graph.innerHTML = randomGraph;
     }
 
-    updateTerminal();
+    setInterval(addTerminalMessage, 1200);
+    setInterval(updateGraph, 1500);
 </script>
 
 </body>
