@@ -21,6 +21,11 @@
             text-align: left;
             min-width: 40%;
             max-width: 60%;
+            height: 200px; /* Altezza fissa */
+            overflow: hidden; /* Evita che si allarghi */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; /* I messaggi partono dal basso e si spostano verso l'alto */
         }
         .message {
             white-space: nowrap;
@@ -41,7 +46,7 @@
             font-size: 12px;
             white-space: pre;
             color: #505050;
-            text-align: center; /* Centra il contenuto */
+            text-align: center;
         }
         .highlight {
             color: #A090B0;
@@ -93,7 +98,7 @@
             let graph = "";
             for (let i = 0; i < 8; i++) {
                 let line = "";
-                for (let j = 0; j < 40; j++) {  // Prima era 20, ora il doppio per coprire meglio lo spazio
+                for (let j = 0; j < 40; j++) {  
                     line += (Math.random() > 0.7) ? "*" : " ";
                 }
                 graph += line + "\n";
