@@ -7,123 +7,113 @@
     <style>
         body {
             background-color: black;
-            color: #ccc;
+            color: #C0C0C0;
             font-family: monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
+            text-align: center;
+            padding-top: 50px;
         }
-        
-        #container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 80vw;
-        }
-
-        #terminal {
-            width: 100%;
-            height: 50vh;
+        .terminal {
+            display: inline-block;
             background-color: #111;
-            padding: 10px;
-            border: 1px solid #444;
-            overflow: hidden;
-            white-space: pre;
-            font-size: 14px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.2);
+            text-align: left;
+            min-width: 40%;
+            max-width: 60%;
         }
-
+        .message {
+            white-space: nowrap;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+        }
+        .message .data {
+            color: #808080;
+            flex-grow: 1;
+        }
         .vecdm {
-            color: rgba(180, 130, 255, 0.5); /* Leggermente violaceo */
+            color: #A020F0;
         }
-
-        #graph {
-            width: 100%;
-            height: 20vh;
-            background-color: #111;
-            border-top: 1px solid #444;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .graph {
+            margin-top: 10px;
             font-size: 12px;
-            color: rgba(180, 130, 255, 0.5); /* Stesso tono del VECDM */
+            white-space: pre;
+            color: #505050;
+        }
+        .highlight {
+            color: #C040F0;
         }
     </style>
 </head>
 <body>
+    <div class="terminal">
+        <div id="messages"></div>
+        <div class="graph" id="graph"></div>
+    </div>
 
-<div id="container">
-    <div id="terminal"></div>
-    <div id="graph">▁ ▂ ▃ ▅ ▆ ▇ █ ▇ ▆ ▅ ▃ ▂ ▁</div>
-</div>
+    <script>
+        const messages = [
+            "Analyzing data...",
+            "Processing input stream...",
+            "Decoding sequences...",
+            "Checking error logs...",
+            "Parsing anomalies...",
+            "Scanning memory sectors...",
+            "Retrieving lost signals...",
+            "Cross-checking logs...",
+            "Reconstructing fragments...",
+            "Searching for patterns..."
+        ];
+        const vecdmVariants = ["V_CDM", "V3C_M", "VE_DM", "VEC_M", "V_C_M"];
 
-<script>
-    const terminal = document.getElementById("terminal");
-    const graph = document.getElementById("graph");
-
-    const messages = [
-        "Analyzing data...",
-        "Processing signal...",
-        "Decoding transmission...",
-        "Error detected in sector 4A...",
-        "Running diagnostics...",
-        "Searching for anomalies...",
-        "Cross-referencing data logs...",
-        "Checksum failed. Retrying...",
-        "Data stream unstable...",
-        "Running pattern recognition...",
-        "Partial decryption completed...",
-        "Possible interference detected...",
-        "Signal synchronization lost...",
-        "Unexpected data sequence identified..."
-    ];
-
-    const vecdmVariants = ["V_CDM", "V3C_M", "VE_DM", "VEC_M"];
-
-    function getRandomHexBlock(length) {
-        let block = "";
-        for (let i = 0; i < length; i++) {
-            block += Math.floor(Math.random() * 16).toString(16).toUpperCase();
-        }
-        return block;
-    }
-
-    function getRandomGlitchedHex(length) {
-        let block = getRandomHexBlock(length);
-        if (Math.random() < 0.2) { // 20% possibilità di errore visivo
-            let glitchPos = Math.floor(Math.random() * block.length);
-            let glitchChar = ["@", "#", "%", "&", "?"][Math.floor(Math.random() * 5)];
-            block = block.substring(0, glitchPos) + glitchChar + block.substring(glitchPos + 1);
-        }
-        return block;
-    }
-
-    function addTerminalMessage() {
-        let message = messages[Math.floor(Math.random() * messages.length)];
-        let corruptedIndex = Math.random() < 0.15; // 15% di possibilità di apparire
-        let fullLine = message.padEnd(30, ' ') + getRandomGlitchedHex(20);
-
-        if (corruptedIndex) {
-            let vecdm = vecdmVariants[Math.floor(Math.random() * vecdmVariants.length)];
-            fullLine = message.replace("...", ` ${vecdm} `).padEnd(30, ' ') + getRandomGlitchedHex(20);
-            fullLine = fullLine.replace(vecdm, `<span class="vecdm">${vecdm}</span>`);
+        function getRandomHex(size) {
+            let hex = "";
+            const chars = "0123456789ABCDEF";
+            for (let i = 0; i < size; i++) {
+                hex += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return hex;
         }
 
-        terminal.innerHTML += fullLine + "\n";
-        terminal.scrollTop = terminal.scrollHeight;
-    }
+        function generateMessage() {
+            let msg = messages[Math.floor(Math.random() * messages.length)];
+            let hexData = getRandomHex(16);
+            let fullMessage = `<span class="data">${msg}</span> ${hexData}`;
+            if (Math.random() < 0.2) { 
+                let corrupted = vecdmVariants[Math.floor(Math.random() * vecdmVariants.length)];
+                fullMessage = `<span class="data">${msg}</span> <span class="vecdm">${corrupted}</span>`;
+            }
+            return fullMessage;
+        }
 
-    function updateGraph() {
-        let bars = "▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▃ ▂ ▁".split(" ");
-        let randomGraph = Array.from({ length: 16 }, () => bars[Math.floor(Math.random() * bars.length)]).join(" ");
-        graph.innerHTML = randomGraph;
-    }
+        function generateGraph() {
+            let graph = "";
+            for (let i = 0; i < 8; i++) {
+                let line = "";
+                for (let j = 0; j < 20; j++) {
+                    line += (Math.random() > 0.7) ? "*" : " ";
+                }
+                graph += line + "\n";
+            }
+            return graph;
+        }
 
-    setInterval(addTerminalMessage, 1200);
-    setInterval(updateGraph, 1500);
-</script>
+        function updateTerminal() {
+            let msgDiv = document.getElementById("messages");
+            let graphDiv = document.getElementById("graph");
 
+            let newMessage = document.createElement("div");
+            newMessage.classList.add("message");
+            newMessage.innerHTML = generateMessage();
+
+            msgDiv.appendChild(newMessage);
+            if (msgDiv.children.length > 10) msgDiv.removeChild(msgDiv.firstChild);
+
+            graphDiv.textContent = generateGraph();
+        }
+
+        setInterval(updateTerminal, 1000);
+    </script>
 </body>
 </html>
