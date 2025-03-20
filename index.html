@@ -41,6 +41,7 @@
             font-size: 12px;
             white-space: pre;
             color: #505050;
+            text-align: center; /* Centra il contenuto */
         }
         .highlight {
             color: #A090B0;
@@ -92,7 +93,7 @@
             let graph = "";
             for (let i = 0; i < 8; i++) {
                 let line = "";
-                for (let j = 0; j < 20; j++) {
+                for (let j = 0; j < 40; j++) {  // Prima era 20, ora il doppio per coprire meglio lo spazio
                     line += (Math.random() > 0.7) ? "*" : " ";
                 }
                 graph += line + "\n";
