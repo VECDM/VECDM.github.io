@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404: Terminal not Found - Under Costr_ction</title>
+    <style>
+        body {
+            background-color: black;
+            color: #c0c0c0;
+            font-family: monospace;
+            text-align: center;
+            padding-top: 20vh;
+        }
+        .terminal {
+            display: inline-block;
+            text-align: left;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border: 2px solid #444;
+            box-shadow: 0px 0px 10px rgba(255, 0, 255, 0.2);
+            min-width: 50%;
+        }
+        .glitch {
+            display: inline-block;
+            position: relative;
+        }
+        .glitch::before {
+            content: "I";
+            position: absolute;
+            left: 0;
+            opacity: 0.5;
+            color: #ff00ff;
+            animation: glitch 0.3s infinite alternate;
+        }
+        @keyframes glitch {
+            0% { transform: translateX(-1px); opacity: 0.7; }
+            100% { transform: translateX(1px); opacity: 0.3; }
+        }
+        .typing {
+            display: inline-block;
+            border-right: 2px solid #c0c0c0;
+            padding-right: 5px;
+            animation: blink 0.8s infinite;
+        }
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <p><span id="error"></span></p>
+        <p><span id="construction"></span></p>
+    </div>
+
+    <script>
+        function typeEffect(element, text, delay = 100) {
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, delay);
+                } else {
+                    element.classList.remove("typing");
+                }
+            }
+            element.classList.add("typing");
+            type();
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let errorElement = document.getElementById("error");
+            let constructionElement = document.getElementById("construction");
+
+            typeEffect(errorElement, "404: Terminal not Found", 80);
+            setTimeout(() => {
+                constructionElement.innerHTML = 'Under Costr<span class="glitch"></span>ction';
+                typeEffect(constructionElement, "Under Costr", 80);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
