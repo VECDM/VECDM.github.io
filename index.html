@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404: M3M0</title>
+    <title>V_C_M Unauthorized Access</title>
     <style>
         body {
             background-color: black;
-            color: #bbb;
-            font-family: monospace;
+            color: #aaa;
+            font-family: "Courier New", monospace;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -16,124 +16,158 @@
             height: 100vh;
             overflow: hidden;
         }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 80%;
+        }
+
         .terminal {
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 10px;
-            border: 1px solid #444;
-            width: 600px;
+            width: 80%;
+            max-width: 800px;
             height: 250px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid #444;
+            padding: 10px;
             overflow: hidden;
             white-space: nowrap;
             position: relative;
         }
-        .line {
+
+        .terminal-text {
+            font-size: 14px;
+            line-height: 1.4;
+            color: #ccc;
+            white-space: pre;
+            overflow: hidden;
+            height: 100%;
             display: flex;
-            justify-content: space-between;
-            white-space: nowrap;
+            flex-direction: column;
+            justify-content: flex-end;
         }
-        .code {
-            color: #888;
+
+        .highlight {
+            color: #7766aa;
         }
-        .glitch {
-            color: #777;
+
+        .graph {
+            width: 80%;
+            max-width: 800px;
+            height: 150px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid #444;
+            position: relative;
+            overflow: hidden;
         }
-        .veccdm {
-            color: #a08fb9;
-        }
-        .oscilloscope {
-            width: 600px;
-            height: 100px;
-            background: black;
-            border: 1px solid #444;
-            margin-top: 10px;
-        }
-        .typing::after {
-            content: "|";
-            display: inline-block;
-            animation: blink 1s infinite;
-        }
-        @keyframes blink {
-            50% { opacity: 0; }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
     </style>
 </head>
 <body>
-
-    <div class="terminal" id="terminal"></div>
-    <canvas class="oscilloscope" id="oscilloscope"></canvas>
+    <div class="container">
+        <div class="terminal">
+            <div class="terminal-text" id="terminal-output"></div>
+        </div>
+        <div class="graph">
+            <canvas id="graphCanvas"></canvas>
+        </div>
+    </div>
 
     <script>
-        const terminal = document.getElementById("terminal");
+        const terminalOutput = document.getElementById("terminal-output");
         const messages = [
-            "ANALYSIS COMPLETE...",
-            "SEARCHING DATABASE...",
-            "ERROR: DATA FRAGMENT MISSING...",
-            "SIGNAL DECAY DETECTED...",
-            "ALGORITHM EXECUTION IN PROGRESS..."
+            "Analisi dati in corso...",
+            "Decodifica pacchetti...",
+            "Rilevamento segnali anomali...",
+            "Sincronizzazione completata.",
+            "VECDM Data Fragment Detected...",
+            "Errore di checksum, ripristino...",
+            "Analisi spettrografica in corso...",
+            "Frame sincronizzati, attesa input...",
+            "Segnale instabile...ritentando...",
+            "Packet loss: 0xA3F5E9D..."
         ];
-        const glitches = ["V3C_M", "V_CDM", "VE_CD", "VEC_M"];
-        
-        function typeMessage(element, text, index = 0) {
-            if (index < text.length) {
-                element.innerHTML = text.substring(0, index + 1) + "<span class='typing'></span>";
-                setTimeout(() => typeMessage(element, text, index + 1), 50);
-            } else {
-                element.innerHTML = text; // Rimuove il cursore dopo il completamento
-            }
-        }
-        
-        function generateMessage() {
-            const line = document.createElement("div");
-            line.classList.add("line");
-            
-            const codePart = document.createElement("span");
-            codePart.classList.add("code");
-            codePart.textContent = generateHexCode();
-            
-            const textPart = document.createElement("span");
-            textPart.classList.add("glitch");
-            
-            let msg = messages[Math.floor(Math.random() * messages.length)];
-            if (Math.random() < 0.2) { // 20% di probabilità di glitch
-                msg = msg.replace("DATA", glitches[Math.floor(Math.random() * glitches.length)]);
-                textPart.classList.add("veccdm");
-            }
-            
-            line.appendChild(codePart);
-            line.appendChild(textPart);
-            terminal.appendChild(line);
-            
-            typeMessage(textPart, msg);
 
-            if (terminal.children.length > 10) {
-                terminal.removeChild(terminal.firstChild);
-            }
+        function getRandomHex() {
+            return Math.floor(Math.random() * 16).toString(16).toUpperCase();
         }
 
-        function generateHexCode() {
-            let hex = "";
-            for (let i = 0; i < 8; i++) {
-                hex += Math.random() < 0.5 ? Math.floor(Math.random() * 10) : String.fromCharCode(65 + Math.floor(Math.random() * 6));
-            }
-            return hex;
+        function getRandomCorruptedVECDM() {
+            const variants = ["V_CDM", "V3C_M", "VE_DM", "VEC_M", "V_C_M"];
+            return `<span class="highlight">${variants[Math.floor(Math.random() * variants.length)]}</span>`;
         }
 
-        function updateOscilloscope() {
-            const canvas = document.getElementById("oscilloscope");
-            const ctx = canvas.getContext("2d");
+        function typeMessage(message, callback) {
+            let i = 0;
+            function type() {
+                if (i < message.length) {
+                    terminalOutput.innerHTML += message[i];
+                    i++;
+                    setTimeout(type, Math.random() * 50 + 20);
+                } else {
+                    terminalOutput.innerHTML += "\n";
+                    callback();
+                }
+            }
+            type();
+        }
+
+        function addMessage() {
+            if (terminalOutput.children.length > 12) {
+                terminalOutput.removeChild(terminalOutput.children[0]);
+            }
+
+            let message = messages[Math.floor(Math.random() * messages.length)];
+            if (message.includes("VECDM")) {
+                message = message.replace("VECDM", getRandomCorruptedVECDM());
+            }
+
+            let hexSequence = " ";
+            for (let i = 0; i < 12; i++) {
+                hexSequence += getRandomHex() + " ";
+            }
+
+            typeMessage(message + hexSequence, () => {
+                setTimeout(addMessage, Math.random() * 2000 + 1000);
+            });
+        }
+
+        setTimeout(addMessage, 1000);
+
+        // Grafico
+        const canvas = document.getElementById("graphCanvas");
+        const ctx = canvas.getContext("2d");
+
+        function drawGraph() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.strokeStyle = "#777";
+            ctx.strokeStyle = "#7766aa";
             ctx.lineWidth = 2;
             ctx.beginPath();
-            for (let i = 0; i < canvas.width; i += 5) {
-                ctx.lineTo(i, 50 + Math.sin(i * 0.05) * 30);
+
+            let x = 0;
+            let y = canvas.height / 2;
+            let amplitude = 30;
+            let frequency = 0.02;
+            let phase = Math.random() * Math.PI * 2;
+
+            for (let i = 0; i < canvas.width; i++) {
+                y = canvas.height / 2 + Math.sin(i * frequency + phase) * amplitude;
+                ctx.lineTo(i, y);
             }
             ctx.stroke();
         }
 
-        setInterval(generateMessage, 3000);
-        setInterval(updateOscilloscope, 100);
+        setInterval(drawGraph, 100);
     </script>
 </body>
 </html>
