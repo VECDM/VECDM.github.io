@@ -3,103 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminale Analizzatore</title>
+    <title>Terminale con Griglia e Segnale</title>
     <style>
         body {
             background-color: black;
-            color: #aaa;
+            color: #ccc;
             font-family: monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            text-align: center;
             overflow: hidden;
+            margin: 0;
+        }
+
+        .grid-container {
+            position: absolute;
+            width: 100%;
+            height: 50vh;
+            overflow: hidden;
+        }
+
+        .grid {
+            position: absolute;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(black 50%, rgba(255,255,255,0.1) 50%);
+            background-size: 100% 20px;
+            animation: moveGrid 5s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            from { transform: translateY(0); }
+            to { transform: translateY(-20px); }
         }
 
         .terminal {
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 10px;
-            border: 2px solid #555;
-            width: 80%;
-            max-width: 600px;
-            text-align: left;
-            white-space: pre-wrap;
-            overflow: hidden;
             position: relative;
+            width: 60%;
+            margin: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 10px;
+            border: 2px solid #444;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .text {
+            white-space: pre;
+            font-size: 14px;
+            text-align: left;
+            padding: 10px;
         }
 
         .pulse-signal {
-            width: 100%;
+            width: 80%;
             height: 100px;
-            background-color: black;
-            border: 2px solid #555;
+            margin: auto;
+            border-top: 2px solid #666;
             position: relative;
-            overflow: hidden;
         }
 
-        .pulse {
+        .pulse-line {
             position: absolute;
-            left: 0;
-            top: 50%;
+            width: 100%;
+            height: 100%;
+        }
+
+        .pulse-line::after {
+            content: "";
+            display: block;
             width: 100%;
             height: 2px;
-            background-color: gray;
-            animation: pulse-animation 3s infinite linear;
+            background-color: #ccc;
+            animation: pulseAnimation 3s linear infinite;
         }
 
-        @keyframes pulse-animation {
-            0% { clip-path: polygon(0% 50%, 5% 50%, 10% 30%, 15% 50%, 20% 50%, 25% 50%, 30% 20%, 35% 50%, 40% 50%, 45% 50%, 50% 10%, 55% 50%, 60% 50%, 65% 30%, 70% 50%, 75% 50%, 80% 50%, 85% 70%, 90% 50%, 95% 50%, 100% 50%); }
-            100% { clip-path: polygon(0% 50%, 5% 50%, 10% 30%, 15% 50%, 20% 50%, 25% 50%, 30% 20%, 35% 50%, 40% 50%, 45% 50%, 50% 10%, 55% 50%, 60% 50%, 65% 30%, 70% 50%, 75% 50%, 80% 50%, 85% 70%, 90% 50%, 95% 50%, 100% 50%); }
+        @keyframes pulseAnimation {
+            0% { clip-path: polygon(0% 50%, 10% 50%, 10% 10%, 15% 90%, 20% 50%, 30% 50%, 30% 30%, 35% 70%, 40% 50%, 100% 50%); }
+            100% { clip-path: polygon(0% 50%, 10% 50%, 10% 10%, 15% 90%, 20% 50%, 30% 50%, 30% 30%, 35% 70%, 40% 50%, 100% 50%); }
         }
     </style>
 </head>
 <body>
-    <div class="terminal" id="terminal"></div>
-    <div class="pulse-signal">
-        <div class="pulse"></div>
+
+    <div class="grid-container" style="top: 0;">
+        <div class="grid"></div>
     </div>
 
-    <script>
-        const terminal = document.getElementById("terminal");
-        const messages = [
-            "Analyzing data...",
-            "Decoding signals...",
-            "Searching for anomalies...",
-            "Processing...",
-            "System integrity check...",
-            "Data stream active..."
-        ];
+    <div class="terminal">
+        <div class="text">
+            > Analisi in corso...<br>
+            > Ricezione dati...<br>
+            > Segnale rilevato: V3C_M...<br>
+        </div>
+    </div>
 
-        function typeMessage(message, callback) {
-            let i = 0;
-            function type() {
-                if (i < message.length) {
-                    terminal.innerHTML += message[i];
-                    i++;
-                    setTimeout(type, 50);
-                } else {
-                    terminal.innerHTML += "<br>";
-                    callback();
-                }
-            }
-            type();
-        }
+    <div class="pulse-signal">
+        <div class="pulse-line"></div>
+    </div>
 
-        function showMessages(index = 0) {
-            if (index < messages.length) {
-                typeMessage(messages[index], () => {
-                    setTimeout(() => showMessages(index + 1), 1000);
-                });
-            } else {
-                setTimeout(() => {
-                    terminal.innerHTML = "";
-                    showMessages();
-                }, 3000);
-            }
-        }
+    <div class="grid-container" style="bottom: 0;">
+        <div class="grid"></div>
+    </div>
 
-        showMessages();
-    </script>
 </body>
 </html>
