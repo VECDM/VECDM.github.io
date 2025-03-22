@@ -3,159 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminale</title>
+    <title>Terminale Analizzatore</title>
     <style>
         body {
             background-color: black;
-            color: #ccc;
+            color: #aaa;
             font-family: monospace;
-            text-align: center;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        .container {
-            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100vh;
             justify-content: center;
-        }
-
-        .grid {
-            position: absolute;
-            width: 100%;
-            height: 20%;
-            background: repeating-linear-gradient(
-                to right,
-                rgba(128, 0, 128, 0.3) 0px,
-                rgba(128, 0, 128, 0.3) 5px,
-                transparent 5px,
-                transparent 10px
-            ),
-            repeating-linear-gradient(
-                to bottom,
-                rgba(128, 0, 128, 0.3) 0px,
-                rgba(128, 0, 128, 0.3) 5px,
-                transparent 5px,
-                transparent 10px
-            );
-            animation: scrollGrid 5s linear infinite;
-        }
-
-        .grid.top {
-            top: 0;
-        }
-
-        .grid.bottom {
-            bottom: 0;
-        }
-
-        @keyframes scrollGrid {
-            from {
-                background-position: 0 0;
-            }
-            to {
-                background-position: 10px 10px;
-            }
+            height: 100vh;
+            overflow: hidden;
         }
 
         .terminal {
-            position: relative;
             background-color: rgba(0, 0, 0, 0.8);
-            border: 2px solid #444;
             padding: 10px;
-            width: 50%;
+            border: 2px solid #555;
+            width: 80%;
             max-width: 600px;
-            height: 200px;
-            overflow: hidden;
-            box-shadow: 0px 0px 10px rgba(128, 0, 128, 0.5);
-        }
-
-        .text {
-            white-space: pre-wrap;
             text-align: left;
-            font-size: 14px;
-            color: #bbb;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
+            white-space: pre-wrap;
+            overflow: hidden;
+            position: relative;
         }
 
-        .blink {
-            display: inline-block;
-            width: 8px;
-            height: 14px;
-            background-color: #bbb;
-            margin-left: 5px;
-            animation: blinkCursor 1s steps(2, start) infinite;
+        .pulse-signal {
+            width: 100%;
+            height: 100px;
+            background-color: black;
+            border: 2px solid #555;
+            position: relative;
+            overflow: hidden;
         }
 
-        @keyframes blinkCursor {
-            50% { opacity: 0; }
+        .pulse {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: gray;
+            animation: pulse-animation 3s infinite linear;
         }
 
-        .hidden {
-            visibility: hidden;
+        @keyframes pulse-animation {
+            0% { clip-path: polygon(0% 50%, 5% 50%, 10% 30%, 15% 50%, 20% 50%, 25% 50%, 30% 20%, 35% 50%, 40% 50%, 45% 50%, 50% 10%, 55% 50%, 60% 50%, 65% 30%, 70% 50%, 75% 50%, 80% 50%, 85% 70%, 90% 50%, 95% 50%, 100% 50%); }
+            100% { clip-path: polygon(0% 50%, 5% 50%, 10% 30%, 15% 50%, 20% 50%, 25% 50%, 30% 20%, 35% 50%, 40% 50%, 45% 50%, 50% 10%, 55% 50%, 60% 50%, 65% 30%, 70% 50%, 75% 50%, 80% 50%, 85% 70%, 90% 50%, 95% 50%, 100% 50%); }
         }
-
     </style>
 </head>
 <body>
-
-    <div class="grid top"></div>
-    <div class="container">
-        <div class="terminal">
-            <div class="text" id="terminal-text"></div>
-        </div>
+    <div class="terminal" id="terminal"></div>
+    <div class="pulse-signal">
+        <div class="pulse"></div>
     </div>
-    <div class="grid bottom"></div>
 
     <script>
+        const terminal = document.getElementById("terminal");
         const messages = [
-            "Initializing data analysis...",
-            "Scanning input parameters...",
-            "Cross-referencing dataset...",
-            "Error detected: VECDM anomaly...",
-            "Processing signal patterns...",
-            "Decoding encrypted layers...",
-            "Anomaly detected at sector 4F3D...",
-            "Recalibrating spectral analysis...",
-            "Signal instability detected...",
-            "Reattempting decryption sequence...",
+            "Analyzing data...",
+            "Decoding signals...",
+            "Searching for anomalies...",
+            "Processing...",
+            "System integrity check...",
+            "Data stream active..."
         ];
 
-        let index = 0;
-        const terminalText = document.getElementById("terminal-text");
-
-        function typeMessage(msg, callback) {
+        function typeMessage(message, callback) {
             let i = 0;
-            const interval = setInterval(() => {
-                if (i < msg.length) {
-                    terminalText.innerHTML += msg[i];
+            function type() {
+                if (i < message.length) {
+                    terminal.innerHTML += message[i];
                     i++;
+                    setTimeout(type, 50);
                 } else {
-                    clearInterval(interval);
-                    terminalText.innerHTML += "<br>";
+                    terminal.innerHTML += "<br>";
                     callback();
                 }
-            }, 50);
-        }
-
-        function loopMessages() {
-            if (index >= messages.length) {
-                index = 0;
             }
-            typeMessage(messages[index], () => {
-                index++;
-                setTimeout(loopMessages, 1000);
-            });
+            type();
         }
 
-        loopMessages();
-    </script>
+        function showMessages(index = 0) {
+            if (index < messages.length) {
+                typeMessage(messages[index], () => {
+                    setTimeout(() => showMessages(index + 1), 1000);
+                });
+            } else {
+                setTimeout(() => {
+                    terminal.innerHTML = "";
+                    showMessages();
+                }, 3000);
+            }
+        }
 
+        showMessages();
+    </script>
 </body>
 </html>
