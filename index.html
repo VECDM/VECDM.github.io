@@ -3,171 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V_C_M Unauthorized Access</title>
+    <title>Terminale</title>
     <style>
         body {
             background-color: black;
-            color: #aaa;
-            font-family: "Courier New", monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            color: #ccc;
+            font-family: monospace;
+            text-align: center;
+            margin: 0;
             overflow: hidden;
         }
 
         .container {
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
+            height: 100vh;
             justify-content: center;
-            width: 80%;
+        }
+
+        .grid {
+            position: absolute;
+            width: 100%;
+            height: 20%;
+            background: repeating-linear-gradient(
+                to right,
+                rgba(128, 0, 128, 0.3) 0px,
+                rgba(128, 0, 128, 0.3) 5px,
+                transparent 5px,
+                transparent 10px
+            ),
+            repeating-linear-gradient(
+                to bottom,
+                rgba(128, 0, 128, 0.3) 0px,
+                rgba(128, 0, 128, 0.3) 5px,
+                transparent 5px,
+                transparent 10px
+            );
+            animation: scrollGrid 5s linear infinite;
+        }
+
+        .grid.top {
+            top: 0;
+        }
+
+        .grid.bottom {
+            bottom: 0;
+        }
+
+        @keyframes scrollGrid {
+            from {
+                background-position: 0 0;
+            }
+            to {
+                background-position: 10px 10px;
+            }
         }
 
         .terminal {
-            width: 80%;
-            max-width: 800px;
-            height: 250px;
+            position: relative;
             background-color: rgba(0, 0, 0, 0.8);
             border: 2px solid #444;
             padding: 10px;
+            width: 50%;
+            max-width: 600px;
+            height: 200px;
             overflow: hidden;
-            white-space: nowrap;
-            position: relative;
+            box-shadow: 0px 0px 10px rgba(128, 0, 128, 0.5);
         }
 
-        .terminal-text {
+        .text {
+            white-space: pre-wrap;
+            text-align: left;
             font-size: 14px;
-            line-height: 1.4;
-            color: #ccc;
-            white-space: pre;
-            overflow: hidden;
+            color: #bbb;
             height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
         }
 
-        .highlight {
-            color: #7766aa;
+        .blink {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background-color: #bbb;
+            margin-left: 5px;
+            animation: blinkCursor 1s steps(2, start) infinite;
         }
 
-        .graph {
-            width: 80%;
-            max-width: 800px;
-            height: 150px;
-            background-color: rgba(0, 0, 0, 0.8);
-            border: 2px solid #444;
-            position: relative;
-            overflow: hidden;
+        @keyframes blinkCursor {
+            50% { opacity: 0; }
         }
 
-        canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
+        .hidden {
+            visibility: hidden;
         }
+
     </style>
 </head>
 <body>
+
+    <div class="grid top"></div>
     <div class="container">
         <div class="terminal">
-            <div class="terminal-text" id="terminal-output"></div>
-        </div>
-        <div class="graph">
-            <canvas id="graphCanvas"></canvas>
+            <div class="text" id="terminal-text"></div>
         </div>
     </div>
+    <div class="grid bottom"></div>
 
     <script>
-        const terminalOutput = document.getElementById("terminal-output");
         const messages = [
-            "Run Data Analysis...",
-            "Packs Decoding...",
-            "Detection Unphasing Data...",
-            "Syncro Done.",
-            "VECDM Data Fragment Detected...",
-            "Checksum error, reboot...",
-            "Making Spectro Analysis...",
-            "Synchro Frames, wait input...",
-            "Unstable Signal, run test...",
-            "Packet loss: 0xA3F5E9D..."
+            "Initializing data analysis...",
+            "Scanning input parameters...",
+            "Cross-referencing dataset...",
+            "Error detected: VECDM anomaly...",
+            "Processing signal patterns...",
+            "Decoding encrypted layers...",
+            "Anomaly detected at sector 4F3D...",
+            "Recalibrating spectral analysis...",
+            "Signal instability detected...",
+            "Reattempting decryption sequence...",
         ];
 
-        function getRandomHex() {
-            return Math.floor(Math.random() * 16).toString(16).toUpperCase();
-        }
+        let index = 0;
+        const terminalText = document.getElementById("terminal-text");
 
-        function getRandomCorruptedVECDM() {
-            const variants = ["V_CDM", "V3C_M", "VE_DM", "VEC_M", "V_C_M"];
-            return `<span class="highlight">${variants[Math.floor(Math.random() * variants.length)]}</span>`;
-        }
-
-        function typeMessage(message, callback) {
+        function typeMessage(msg, callback) {
             let i = 0;
-            function type() {
-                if (i < message.length) {
-                    terminalOutput.innerHTML += message[i];
+            const interval = setInterval(() => {
+                if (i < msg.length) {
+                    terminalText.innerHTML += msg[i];
                     i++;
-                    setTimeout(type, Math.random() * 50 + 20);
                 } else {
-                    terminalOutput.innerHTML += "\n";
+                    clearInterval(interval);
+                    terminalText.innerHTML += "<br>";
                     callback();
                 }
-            }
-            type();
+            }, 50);
         }
 
-        function addMessage() {
-            if (terminalOutput.children.length > 12) {
-                terminalOutput.removeChild(terminalOutput.children[0]);
+        function loopMessages() {
+            if (index >= messages.length) {
+                index = 0;
             }
-
-            let message = messages[Math.floor(Math.random() * messages.length)];
-            if (message.includes("VECDM")) {
-                message = message.replace("VECDM", getRandomCorruptedVECDM());
-            }
-
-            let hexSequence = " ";
-            for (let i = 0; i < 12; i++) {
-                hexSequence += getRandomHex() + " ";
-            }
-
-            typeMessage(message + hexSequence, () => {
-                setTimeout(addMessage, Math.random() * 2000 + 1000);
+            typeMessage(messages[index], () => {
+                index++;
+                setTimeout(loopMessages, 1000);
             });
         }
 
-        setTimeout(addMessage, 1000);
-
-        // Grafico
-        const canvas = document.getElementById("graphCanvas");
-        const ctx = canvas.getContext("2d");
-
-        function drawGraph() {
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = "#7766aa";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-
-            let x = 0;
-            let y = canvas.height / 2;
-            let amplitude = 30;
-            let frequency = 0.02;
-            let phase = Math.random() * Math.PI * 2;
-
-            for (let i = 0; i < canvas.width; i++) {
-                y = canvas.height / 2 + Math.sin(i * frequency + phase) * amplitude;
-                ctx.lineTo(i, y);
-            }
-            ctx.stroke();
-        }
-
-        setInterval(drawGraph, 100);
+        loopMessages();
     </script>
+
 </body>
 </html>
