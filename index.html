@@ -3,106 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminale con Griglia e Segnale</title>
+    <title>Terminal Analyzer</title>
     <style>
         body {
             background-color: black;
-            color: #ccc;
+            color: #d3d3d3;
             font-family: monospace;
-            text-align: center;
-            overflow: hidden;
             margin: 0;
-        }
-
-        .grid-container {
-            position: absolute;
-            width: 100%;
-            height: 50vh;
+            padding: 0;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
 
         .grid {
             position: absolute;
-            width: 200%;
-            height: 100%;
-            background: linear-gradient(black 50%, rgba(255,255,255,0.1) 50%);
-            background-size: 100% 20px;
-            animation: moveGrid 5s linear infinite;
+            width: 100%;
+            height: 20vh;
+            background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.2) 0px, rgba(255, 255, 255, 0.2) 2px, transparent 2px, transparent 20px),
+                        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.2) 0px, rgba(255, 255, 255, 0.2) 2px, transparent 2px, transparent 20px);
+            animation: moveGrid 4s linear infinite;
         }
+
+        .grid.top { top: 0; }
+        .grid.bottom { bottom: 0; }
 
         @keyframes moveGrid {
             from { transform: translateY(0); }
-            to { transform: translateY(-20px); }
+            to { transform: translateY(10px); }
         }
 
         .terminal {
-            position: relative;
-            width: 60%;
-            margin: auto;
-            background-color: rgba(0, 0, 0, 0.9);
-            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
             border: 2px solid #444;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            width: 80%;
+            height: 30vh;
             overflow: hidden;
+            white-space: nowrap;
+            text-align: left;
         }
 
         .text {
-            white-space: pre;
-            font-size: 14px;
-            text-align: left;
-            padding: 10px;
+            overflow: hidden;
+            display: inline-block;
+            border-right: 2px solid #d3d3d3;
+            white-space: nowrap;
+            animation: typing 3s steps(30, end) infinite;
         }
 
-        .pulse-signal {
+        @keyframes typing {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        .graph {
             width: 80%;
-            height: 100px;
-            margin: auto;
-            border-top: 2px solid #666;
+            height: 15vh;
+            border: 2px solid #444;
+            background-color: black;
             position: relative;
+            overflow: hidden;
         }
 
-        .pulse-line {
+        .line {
             position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-
-        .pulse-line::after {
-            content: "";
-            display: block;
+            bottom: 50%;
             width: 100%;
             height: 2px;
-            background-color: #ccc;
-            animation: pulseAnimation 3s linear infinite;
+            background-color: #888;
+            animation: pulse 2s linear infinite;
         }
 
-        @keyframes pulseAnimation {
-            0% { clip-path: polygon(0% 50%, 10% 50%, 10% 10%, 15% 90%, 20% 50%, 30% 50%, 30% 30%, 35% 70%, 40% 50%, 100% 50%); }
-            100% { clip-path: polygon(0% 50%, 10% 50%, 10% 10%, 15% 90%, 20% 50%, 30% 50%, 30% 30%, 35% 70%, 40% 50%, 100% 50%); }
+        @keyframes pulse {
+            0% { transform: scaleX(1); }
+            50% { transform: scaleX(0.3); }
+            100% { transform: scaleX(1); }
         }
     </style>
 </head>
 <body>
 
-    <div class="grid-container" style="top: 0;">
-        <div class="grid"></div>
-    </div>
+    <div class="grid top"></div>
 
     <div class="terminal">
-        <div class="text">
-            > Analisi in corso...<br>
-            > Ricezione dati...<br>
-            > Segnale rilevato: V3C_M...<br>
-        </div>
+        <span class="text">[SYSTEM] Analyzing data... </span>
     </div>
 
-    <div class="pulse-signal">
-        <div class="pulse-line"></div>
+    <div class="graph">
+        <div class="line"></div>
     </div>
 
-    <div class="grid-container" style="bottom: 0;">
-        <div class="grid"></div>
-    </div>
+    <div class="grid bottom"></div>
 
 </body>
 </html>
