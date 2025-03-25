@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminale Analisi</title>
+    <title>Terminale con Grafico</title>
     <style>
         body {
             background-color: black;
@@ -31,14 +31,14 @@
 
         .terminal {
             position: absolute;
-            top: 50%;
+            top: 10%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8);
             padding: 20px;
             border: 1px solid gray;
             width: 600px;
-            height: 300px;
+            height: 250px;
             overflow: hidden;
             z-index: 10;
         }
@@ -49,13 +49,13 @@
             font-size: 14px;
         }
 
-        /* Grafico impulso dentro il terminale */
+        /* Grafico impulso */
         .impulse-container {
             position: absolute;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            width: 100%;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
             height: 100px;
             z-index: 5;
             border-top: 1px solid gray;
@@ -77,15 +77,14 @@
 
 <div class="terminal">
     <div class="terminal-text" id="terminal-output"></div>
+</div>
 
-    <!-- Grafico impulso all'interno del terminale -->
-    <div class="impulse-container">
-        <canvas id="impulseCanvas"></canvas>
-    </div>
+<div class="impulse-container">
+    <canvas id="impulseCanvas"></canvas>
 </div>
 
 <script>
-    // Griglia prospettica
+    // Funzione per disegnare la griglia prospettica
     function drawGrid() {
         const canvas = document.getElementById("gridCanvas");
         const ctx = canvas.getContext("2d");
@@ -120,7 +119,7 @@
     drawGrid();
     window.addEventListener("resize", drawGrid);
 
-    // Impulso grafico (simulazione ECG)
+    // Grafico impulso (simulazione ECG)
     function drawImpulse() {
         const canvas = document.getElementById("impulseCanvas");
         const ctx = canvas.getContext("2d");
@@ -156,7 +155,7 @@
 
     drawImpulse();
 
-    // Effetto terminale
+    // Effetto terminale con digitazione
     const messages = [
         "Analizzando dati...",
         "Decodifica in corso...",
@@ -167,14 +166,30 @@
     ];
 
     let index = 0;
-    function updateTerminal() {
+    let messageIndex = 0;
+    let currentMessage = '';
+    
+    function typeMessage() {
         const output = document.getElementById("terminal-output");
-        output.innerHTML += messages[index] + "\n";
-        index = (index + 1) % messages.length;
-        setTimeout(updateTerminal, 2000);
+        currentMessage = messages[index];
+        output.innerHTML = '';
+
+        function typeChar() {
+            if (messageIndex < currentMessage.length) {
+                output.innerHTML += currentMessage.charAt(messageIndex);
+                messageIndex++;
+                setTimeout(typeChar, Math.random() * 100 + 50); // Velocità di digitazione casuale
+            } else {
+                messageIndex = 0;
+                index = (index + 1) % messages.length;
+                setTimeout(typeMessage, 2000); // Pausa prima di iniziare il prossimo messaggio
+            }
+        }
+
+        typeChar();
     }
 
-    updateTerminal();
+    typeMessage();
 </script>
 
 </body>
