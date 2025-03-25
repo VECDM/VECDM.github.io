@@ -39,7 +39,7 @@
             border: 1px solid gray;
             width: 600px;
             height: 250px;
-            overflow: hidden;
+            overflow-y: auto;
             z-index: 10;
         }
 
@@ -172,7 +172,6 @@
     function typeMessage() {
         const output = document.getElementById("terminal-output");
         currentMessage = messages[index];
-        output.innerHTML = '';
 
         function typeChar() {
             if (messageIndex < currentMessage.length) {
