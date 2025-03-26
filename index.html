@@ -3,13 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analizzatore Dati</title>
+    <title>Terminale Retro</title>
     <style>
         body {
             background-color: black;
-            color: #bbb;
+            color: #cfcfcf;
             font-family: monospace;
             overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Nebbia */
+        .fog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(150, 150, 150, 0.2) 10%, rgba(0, 0, 0, 0.9) 90%);
+            pointer-events: none;
+        }
+
+        /* Contenitore */
+        .container {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -17,137 +34,122 @@
             height: 100vh;
         }
 
-        .grid-container {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            overflow: hidden;
-            z-index: -1;
-        }
-
-        .grid {
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(transparent 90%, rgba(100, 100, 100, 0.2) 100%) 0px 0px / 20px 20px,
-                        linear-gradient(90deg, transparent 90%, rgba(100, 100, 100, 0.2) 100%) 0px 0px / 20px 20px;
-            animation: moveGrid 5s linear infinite;
-        }
-
-        @keyframes moveGrid {
-            from {
-                transform: perspective(300px) rotateX(60deg) translateY(0);
-            }
-            to {
-                transform: perspective(300px) rotateX(60deg) translateY(-20px);
-            }
-        }
-
+        /* Terminale */
         .terminal {
-            background-color: rgba(0, 0, 0, 0.8);
-            border: 1px solid #555;
-            padding: 10px;
-            width: 600px;
+            width: 60%;
             height: 200px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        .graph-container {
-            background-color: rgba(0, 0, 0, 0.8);
-            border: 1px solid #555;
+            background-color: rgba(30, 30, 30, 0.9);
+            border: 2px solid #666;
             padding: 10px;
-            width: 600px;
-            height: 150px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .graph-line {
-            width: 100%;
-            height: 50px;
-            border-bottom: 1px solid #888;
+            box-shadow: 0px 0px 10px rgba(150, 150, 150, 0.5);
+            overflow: hidden;
             position: relative;
         }
 
-        .graph-line::before {
-            content: '';
+        .terminal-text {
+            white-space: pre-line;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        /* Grafico ECG */
+        .graph-container {
+            width: 60%;
+            height: 100px;
+            background-color: rgba(30, 30, 30, 0.9);
+            border: 2px solid #666;
+            margin-top: 10px;
+            box-shadow: 0px 0px 10px rgba(150, 150, 150, 0.5);
+            position: relative;
+        }
+
+        canvas {
             width: 100%;
-            height: 2px;
-            background: #888;
-            position: absolute;
-            top: 50%;
-            left: 0;
-            animation: pulseGraph 2s infinite;
+            height: 100%;
         }
 
-        @keyframes pulseGraph {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .typed-text {
-            color: #bbb;
-        }
     </style>
 </head>
 <body>
 
-    <div class="grid-container">
-        <div class="grid"></div>
-    </div>
+    <div class="fog"></div>
 
-    <div class="terminal" id="terminal"></div>
+    <div class="container">
+        <div class="terminal">
+            <div class="terminal-text" id="terminal-text"></div>
+        </div>
 
-    <div class="graph-container">
-        <div class="graph-line"></div>
+        <div class="graph-container">
+            <canvas id="graphCanvas"></canvas>
+        </div>
     </div>
 
     <script>
-        const terminal = document.getElementById('terminal');
         const messages = [
-            "Analyzing data...",
+            "Initializing system...",
+            "Loading data...",
+            "Scanning memory...",
+            "Analyzing input...",
+            "VECDM anomaly detected",
             "Processing request...",
-            "Checking system integrity...",
-            "Decoding sequence...",
-            "Calibrating parameters...",
-            "Scanning memory blocks...",
-            "Synchronizing modules...",
-            "Compiling reports...",
-            "Decrypting transmission...",
-            "Verifying checksum..."
+            "System check complete.",
+            "Executing sequence..."
         ];
 
-        function getRandomMessage() {
-            return messages[Math.floor(Math.random() * messages.length)];
-        }
-
-        function typeMessage(message) {
-            let index = 0;
-            const interval = setInterval(() => {
-                terminal.innerHTML += message[index];
-                index++;
-                if (index === message.length) {
+        function typeMessage(index) {
+            let terminal = document.getElementById("terminal-text");
+            let text = messages[index];
+            let i = 0;
+            let interval = setInterval(() => {
+                if (i < text.length) {
+                    terminal.innerHTML += text[i];
+                    i++;
+                } else {
                     clearInterval(interval);
-                    terminal.innerHTML += "<br>";
+                    setTimeout(() => {
+                        terminal.innerHTML = ""; // Cancella il messaggio dopo un po'
+                        typeMessage((index + 1) % messages.length); // Passa al successivo
+                    }, 2000);
                 }
-            }, 50);
+            }, 100);
         }
 
-        function startTypingLoop() {
-            setInterval(() => {
-                const newMessage = getRandomMessage();
-                typeMessage(newMessage);
-                terminal.scrollTop = terminal.scrollHeight;
-            }, 3000);
+        typeMessage(0);
+
+        // Grafico ECG
+        function drawECG() {
+            let canvas = document.getElementById("graphCanvas");
+            let ctx = canvas.getContext("2d");
+
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+
+            let width = canvas.width;
+            let height = canvas.height;
+            let x = 0;
+
+            function draw() {
+                ctx.clearRect(0, 0, width, height);
+                ctx.strokeStyle = "#cfcfcf";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x, height / 2);
+
+                for (let i = 0; i < width; i++) {
+                    let y = height / 2 + Math.sin((x + i) * 0.05) * 20;
+                    if ((i + x) % 100 < 5) y -= 30; // Impulsi ECG
+                    ctx.lineTo(i, y);
+                }
+
+                ctx.stroke();
+                x -= 2;
+                requestAnimationFrame(draw);
+            }
+
+            draw();
         }
 
-        startTypingLoop();
+        drawECG();
     </script>
 
 </body>
