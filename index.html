@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analizzatore di Dati</title>
+    <title>Analizzatore Dati</title>
     <style>
         body {
             background-color: black;
-            color: #ccc;
+            color: #bbb;
             font-family: monospace;
-            margin: 0;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -18,169 +17,137 @@
             height: 100vh;
         }
 
-        /* Contenitore principale */
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            width: 80%;
-            max-width: 900px;
-        }
-
-        /* Terminale */
-        .terminal {
-            background-color: rgba(0, 0, 0, 0.8);
-            border: 2px solid #666;
-            padding: 10px;
-            width: 100%;
-            height: 200px;
-            overflow: hidden;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-        }
-
-        /* Stile del testo del terminale */
-        .text {
-            white-space: pre-wrap;
-            overflow: hidden;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        /* Animazione di digitazione */
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-
-        /* Contenitore del grafico */
-        .graph-container {
-            background-color: rgba(0, 0, 0, 0.8);
-            border: 2px solid #666;
-            padding: 10px;
-            width: 100%;
-            height: 150px;
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        /* Stile del canvas per il grafico */
-        canvas {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Griglia prospettica */
-        .grid {
+        .grid-container {
             position: absolute;
             width: 100%;
-            height: 30%;
+            height: 100%;
             top: 0;
             left: 0;
-            background: repeating-linear-gradient(
-                rgba(100, 100, 100, 0.2) 0px,
-                rgba(100, 100, 100, 0.2) 1px,
-                transparent 2px,
-                transparent 30px
-            );
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .grid {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(transparent 90%, rgba(100, 100, 100, 0.2) 100%) 0px 0px / 20px 20px,
+                        linear-gradient(90deg, transparent 90%, rgba(100, 100, 100, 0.2) 100%) 0px 0px / 20px 20px;
             animation: moveGrid 5s linear infinite;
         }
 
-        .grid-bottom {
-            top: auto;
-            bottom: 0;
+        @keyframes moveGrid {
+            from {
+                transform: perspective(300px) rotateX(60deg) translateY(0);
+            }
+            to {
+                transform: perspective(300px) rotateX(60deg) translateY(-20px);
+            }
         }
 
-        /* Animazione della griglia */
-        @keyframes moveGrid {
-            from { transform: translateY(0); }
-            to { transform: translateY(30px); }
+        .terminal {
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 1px solid #555;
+            padding: 10px;
+            width: 600px;
+            height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .graph-container {
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 1px solid #555;
+            padding: 10px;
+            width: 600px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .graph-line {
+            width: 100%;
+            height: 50px;
+            border-bottom: 1px solid #888;
+            position: relative;
+        }
+
+        .graph-line::before {
+            content: '';
+            width: 100%;
+            height: 2px;
+            background: #888;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            animation: pulseGraph 2s infinite;
+        }
+
+        @keyframes pulseGraph {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .typed-text {
+            color: #bbb;
         }
     </style>
 </head>
 <body>
 
-    <!-- Griglia in alto -->
-    <div class="grid"></div>
-
-    <div class="container">
-        <!-- Terminale con messaggi -->
-        <div class="terminal">
-            <div class="text" id="terminalText"></div>
-        </div>
-
-        <!-- Grafico del segnale -->
-        <div class="graph-container">
-            <canvas id="signalGraph"></canvas>
-        </div>
+    <div class="grid-container">
+        <div class="grid"></div>
     </div>
 
-    <!-- Griglia in basso -->
-    <div class="grid grid-bottom"></div>
+    <div class="terminal" id="terminal"></div>
+
+    <div class="graph-container">
+        <div class="graph-line"></div>
+    </div>
 
     <script>
-        // Messaggi casuali
+        const terminal = document.getElementById('terminal');
         const messages = [
             "Analyzing data...",
-            "Fetching signal response...",
-            "Processing waveforms...",
-            "Decoding hex patterns...",
-            "Mapping neural pathways...",
-            "Calibrating frequency range...",
-            "Processing anomalies...",
-            "Loading encrypted sectors...",
-            "V_CDM checksum error...",
-            "V3C_M protocol mismatch..."
+            "Processing request...",
+            "Checking system integrity...",
+            "Decoding sequence...",
+            "Calibrating parameters...",
+            "Scanning memory blocks...",
+            "Synchronizing modules...",
+            "Compiling reports...",
+            "Decrypting transmission...",
+            "Verifying checksum..."
         ];
 
-        let index = 0;
-        const terminal = document.getElementById("terminalText");
+        function getRandomMessage() {
+            return messages[Math.floor(Math.random() * messages.length)];
+        }
 
-        function typeMessage() {
-            let message = messages[Math.floor(Math.random() * messages.length)];
-            let i = 0;
-            terminal.innerHTML = ''; // Cancella il precedente testo
-            function type() {
-                if (i < message.length) {
-                    terminal.innerHTML += message[i];
-                    i++;
-                    setTimeout(type, 50);
-                } else {
-                    setTimeout(typeMessage, 2000);
+        function typeMessage(message) {
+            let index = 0;
+            const interval = setInterval(() => {
+                terminal.innerHTML += message[index];
+                index++;
+                if (index === message.length) {
+                    clearInterval(interval);
+                    terminal.innerHTML += "<br>";
                 }
-            }
-            type();
+            }, 50);
         }
-        typeMessage();
 
-        // Grafico del segnale ECG
-        const canvas = document.getElementById("signalGraph");
-        const ctx = canvas.getContext("2d");
-
-        function drawSignal() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = "#888";
-            ctx.lineWidth = 2;
-
-            ctx.beginPath();
-            let x = 0;
-            let y = canvas.height / 2;
-            let step = canvas.width / 50;
-
-            for (let i = 0; i < 50; i++) {
-                let randomHeight = (Math.random() * 20) - 10;
-                y = canvas.height / 2 + randomHeight;
-                ctx.lineTo(x, y);
-                x += step;
-            }
-
-            ctx.stroke();
-            setTimeout(drawSignal, 200);
+        function startTypingLoop() {
+            setInterval(() => {
+                const newMessage = getRandomMessage();
+                typeMessage(newMessage);
+                terminal.scrollTop = terminal.scrollHeight;
+            }, 3000);
         }
-        drawSignal();
+
+        startTypingLoop();
     </script>
 
 </body>
