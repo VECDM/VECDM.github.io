@@ -126,4 +126,62 @@
         const messages = [
             "Analyzing data...",
             "Fetching signal response...",
-            "Processing waveforms
+            "Processing waveforms...",
+            "Decoding hex patterns...",
+            "Mapping neural pathways...",
+            "Calibrating frequency range...",
+            "Processing anomalies...",
+            "Loading encrypted sectors...",
+            "V_CDM checksum error...",
+            "V3C_M protocol mismatch..."
+        ];
+
+        let index = 0;
+        const terminal = document.getElementById("terminalText");
+
+        function typeMessage() {
+            let message = messages[Math.floor(Math.random() * messages.length)];
+            let i = 0;
+            terminal.innerHTML = ''; // Cancella il precedente testo
+            function type() {
+                if (i < message.length) {
+                    terminal.innerHTML += message[i];
+                    i++;
+                    setTimeout(type, 50);
+                } else {
+                    setTimeout(typeMessage, 2000);
+                }
+            }
+            type();
+        }
+        typeMessage();
+
+        // Grafico del segnale ECG
+        const canvas = document.getElementById("signalGraph");
+        const ctx = canvas.getContext("2d");
+
+        function drawSignal() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "#888";
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            let x = 0;
+            let y = canvas.height / 2;
+            let step = canvas.width / 50;
+
+            for (let i = 0; i < 50; i++) {
+                let randomHeight = (Math.random() * 20) - 10;
+                y = canvas.height / 2 + randomHeight;
+                ctx.lineTo(x, y);
+                x += step;
+            }
+
+            ctx.stroke();
+            setTimeout(drawSignal, 200);
+        }
+        drawSignal();
+    </script>
+
+</body>
+</html>
