@@ -3,153 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminale Retro</title>
+    <title>Terminale Analisi Dati</title>
     <style>
         body {
             background-color: black;
-            color: #cfcfcf;
+            color: lightgray;
             font-family: monospace;
-            overflow: hidden;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Nebbia */
-        .fog {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(150, 150, 150, 0.2) 10%, rgba(0, 0, 0, 0.9) 90%);
-            pointer-events: none;
-        }
-
-        /* Contenitore */
-        .container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-        }
-
-        /* Terminale */
-        .terminal {
-            width: 60%;
-            height: 200px;
-            background-color: rgba(30, 30, 30, 0.9);
-            border: 2px solid #666;
-            padding: 10px;
-            box-shadow: 0px 0px 10px rgba(150, 150, 150, 0.5);
             overflow: hidden;
-            position: relative;
         }
 
-        .terminal-text {
-            white-space: pre-line;
-            font-size: 16px;
-            line-height: 1.4;
-        }
-
-        /* Grafico ECG */
-        .graph-container {
-            width: 60%;
-            height: 100px;
-            background-color: rgba(30, 30, 30, 0.9);
-            border: 2px solid #666;
-            margin-top: 10px;
-            box-shadow: 0px 0px 10px rgba(150, 150, 150, 0.5);
-            position: relative;
-        }
-
-        canvas {
+        .grid {
+            position: absolute;
             width: 100%;
             height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 10%, transparent 60%);
+            animation: gridMove 5s linear infinite;
+        }
+
+        @keyframes gridMove {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .terminal {
+            background-color: rgba(20, 20, 20, 0.9);
+            padding: 10px;
+            width: 60%;
+            height: 30%;
+            border: 1px solid gray;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .output {
+            white-space: pre-wrap;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .highlight {
+            color: #9e76ff; /* Colore per "VECDM" e le sue varianti */
+        }
+
+        .spectrogram {
+            width: 80%;
+            height: 100px;
+            background: black;
+            border: 1px solid gray;
+            margin-top: 10px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .bar {
+            width: 5px;
+            background-color: lightgray;
+            transition: height 0.2s;
         }
 
     </style>
 </head>
 <body>
 
-    <div class="fog"></div>
+    <div class="grid"></div>
 
-    <div class="container">
-        <div class="terminal">
-            <div class="terminal-text" id="terminal-text"></div>
-        </div>
-
-        <div class="graph-container">
-            <canvas id="graphCanvas"></canvas>
-        </div>
+    <div class="terminal">
+        <div class="output" id="output"></div>
     </div>
+
+    <div class="spectrogram" id="spectrogram"></div>
 
     <script>
         const messages = [
-            "Initializing system...",
-            "Loading data...",
-            "Scanning memory...",
-            "Analyzing input...",
-            "VECDM anomaly detected",
-            "Processing request...",
-            "System check complete.",
-            "Executing sequence..."
+            "Analyzing Data...",
+            "Processing input signals...",
+            "Decoding transmission...",
+            "Checking anomalies...",
+            "Running diagnostic...",
+            "Scanning logs...",
+            "V_CDM signal detected...",
+            "V3C_M error found...",
+            "Extracting VE_DM data...",
         ];
 
-        function typeMessage(index) {
-            let terminal = document.getElementById("terminal-text");
-            let text = messages[index];
-            let i = 0;
-            let interval = setInterval(() => {
-                if (i < text.length) {
-                    terminal.innerHTML += text[i];
-                    i++;
-                } else {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        terminal.innerHTML = ""; // Cancella il messaggio dopo un po'
-                        typeMessage((index + 1) % messages.length); // Passa al successivo
-                    }, 2000);
-                }
-            }, 100);
+        function getRandomMessage() {
+            return messages[Math.floor(Math.random() * messages.length)];
         }
 
-        typeMessage(0);
+        function printToTerminal() {
+            const output = document.getElementById("output");
 
-        // Grafico ECG
-        function drawECG() {
-            let canvas = document.getElementById("graphCanvas");
-            let ctx = canvas.getContext("2d");
+            // Crea un nuovo messaggio casuale e aggiungilo
+            const message = getRandomMessage();
+            const newLine = document.createElement("div");
 
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-
-            let width = canvas.width;
-            let height = canvas.height;
-            let x = 0;
-
-            function draw() {
-                ctx.clearRect(0, 0, width, height);
-                ctx.strokeStyle = "#cfcfcf";
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(x, height / 2);
-
-                for (let i = 0; i < width; i++) {
-                    let y = height / 2 + Math.sin((x + i) * 0.05) * 20;
-                    if ((i + x) % 100 < 5) y -= 30; // Impulsi ECG
-                    ctx.lineTo(i, y);
-                }
-
-                ctx.stroke();
-                x -= 2;
-                requestAnimationFrame(draw);
+            if (message.includes("V") || message.includes("_")) {
+                newLine.innerHTML = `<span class="highlight">${message}</span>`;
+            } else {
+                newLine.textContent = message;
             }
 
-            draw();
+            output.appendChild(newLine);
+
+            // Limita il numero di messaggi nel terminale per evitare overflow
+            if (output.children.length > 15) {
+                output.removeChild(output.children[0]);
+            }
+
+            setTimeout(printToTerminal, Math.random() * 2000 + 1000);
         }
 
-        drawECG();
+        function generateSpectrogram() {
+            const spectrogram = document.getElementById("spectrogram");
+
+            // Cancella il vecchio contenuto
+            spectrogram.innerHTML = "";
+
+            // Genera 30 barre
+            for (let i = 0; i < 30; i++) {
+                let bar = document.createElement("div");
+                bar.classList.add("bar");
+                // Altezza della barra con movimento casuale
+                bar.style.height = `${Math.random() * 100}%`;
+                spectrogram.appendChild(bar);
+            }
+        }
+
+        // Funzione per aggiornare continuamente le barre
+        setInterval(generateSpectrogram, 300);
+
+        // Avvio del terminale
+        printToTerminal();
     </script>
 
 </body>
