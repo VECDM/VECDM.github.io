@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V_C*M Analyzing Data...</title>
+    <title>V_C*M Terminal Analyzer</title>
     <style>
         body {
             background-color: black;
@@ -92,9 +92,13 @@
             "Checking anomalies...",
             "Running diagnostic...",
             "Scanning logs...",
-            "V_CDM signal detected...",
+            "V_C_M signal detected...",
             "V3C_M error found...",
-            "Extracting VE_DM data...",
+            "Division Owerflow...",
+            "Detected NaN...",
+            "S_UNd Anomaly...",
+            "Freq De-Syncro...",
+            "Extracting V**DM data...",
         ];
 
         function getRandomMessage() {
@@ -136,6 +140,12 @@
                 bar.classList.add("bar");
                 // Altezza della barra con movimento casuale
                 bar.style.height = `${Math.random() * 100}%`;
+
+                // Randomly make one bar purple (the same color as the "VECDM" variant)
+                if (Math.random() < 0.05) { // 5% chance to become purple
+                    bar.style.backgroundColor = '#9e76ff'; // Purple color
+                }
+                
                 spectrogram.appendChild(bar);
             }
         }
