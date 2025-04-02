@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V_C*M Terminal Analyzer</title>
+    <style>
+        body {
+            background-color: black;
+            color: lightgray;
+            font-family: monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        .grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 10%, transparent 60%);
+            animation: gridMove 5s linear infinite;
+        }
+
+        @keyframes gridMove {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .terminal {
+            background-color: rgba(20, 20, 20, 0.9);
+            padding: 10px;
+            width: 50%; /* Imposto la larghezza a 50% per entrambi i terminali */
+            height: 30%;
+            border: 1px solid gray;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .output {
+            white-space: pre-wrap;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .highlight {
+            color: #9e76ff; /* Colore per "VECDM" e le sue varianti */
+        }
+
+        .spectrogram {
+            width: 50%; /* Imposto la larghezza dello spettrogramma a 50% */
+            height: 100px;
+            background: black;
+            border: 1px solid gray;
+            margin-top: 10px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .bar {
+            width: 5px;
+            background-color: lightgray;
+            transition: height 0.2s;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="grid"></div>
+
+    <div class="terminal">
+        <div class="output" id="output"></div>
+    </div>
+
+    <div class="spectrogram" id="spectrogram"></div>
+
+    <script>
+        const messages = [
+            "Analyzing Data...",
+            "Processing input signals...",
+            "Decoding transmission...",
+            "Checking anomalies...",
+            "System Runtime...",
+            "DB Found...",
+            "Running diagnostic...",
+            "Run*ime error!*1",
+            "CRC Correction...",
+            "I/O Corruption...",
+            "Scanning logs...",
+            "V_C_M signal detected...",
+            "V3C_M error found...",
+            "Division Owerflow...",
+            "Detected NaN...",
+            "S_UNd Anomaly...",
+            "Freq Syncro...",
+            "Trasmission Anomaly...",
+            "Freq Conflicts...",
+            "Extracting V**DM data...",
+            "Boot sector: [ OK ]",  
+            "Memory allocation...  [ Warning: VE_CdM @ 0x5F3A1C ]",  
+            "Stack overflow detected in module 0x3A_VE*DM2F",
+        ];
+
+        function getRandomMessage() {
+            return messages[Math.floor(Math.random() * messages.length)];
+        }
+
+        function printToTerminal() {
+            const output = document.getElementById("output");
+
+            // Crea un nuovo messaggio casuale e aggiungilo
+            const message = getRandomMessage();
+            const newLine = document.createElement("div");
+
+            if (message.includes("V") || message.includes("_")) {
+                newLine.innerHTML = `<span class="highlight">${message}</span>`;
+            } else {
+                newLine.textContent = message;
+            }
+
+            output.appendChild(newLine);
+
+            // Limita il numero di messaggi nel terminale per evitare overflow
+            if (output.children.length > 15) {
+                output.removeChild(output.children[0]);
+            }
+
+            setTimeout(printToTerminal, Math.random() * 2000 + 1000);
+        }
+
+        function generateSpectrogram() {
+            const spectrogram = document.getElementById("spectrogram");
+
+            // Cancella il vecchio contenuto
+            spectrogram.innerHTML = "";
+
+            // Genera 30 barre
+            for (let i = 0; i < 30; i++) {
+                let bar = document.createElement("div");
+                bar.classList.add("bar");
+                // Altezza della barra con movimento casuale
+                bar.style.height = `${Math.random() * 100}%`;
+
+                // Randomly make one bar purple (the same color as the "VECDM" variant)
+                if (Math.random() < 0.05) { // 5% chance to become purple
+                    bar.style.backgroundColor = '#9e76ff'; // Purple color
+                }
+                
+                spectrogram.appendChild(bar);
+            }
+        }
+
+        // Funzione per aggiornare continuamente le barre
+        setInterval(generateSpectrogram, 300);
+
+        // Avvio del terminale
+        printToTerminal();
+    </script>
+
+</body>
+</html>
