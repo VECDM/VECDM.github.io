@@ -31,30 +31,6 @@
             to { transform: translateY(-10px); }
         }
 
-        /* AREA PIXEL DISPLAY */
-        .pixel-display {
-            display: grid;
-            grid-template-columns: repeat(50, 5px);
-            grid-template-rows: repeat(10, 5px);
-            gap: 1px;
-            margin-bottom: 20px;
-        }
-
-        .pixel {
-            width: 5px;
-            height: 5px;
-            background-color: black;
-            transition: background-color 0.2s;
-        }
-
-        .active {
-            background-color: lightgray;  /* Pixel accesi in grigio chiaro */
-        }
-
-        .glitch {
-            background-color: black !important; /* Pixel "difettosi" spenti */
-        }
-
         .terminal {
             background-color: rgba(20, 20, 20, 0.9);
             padding: 10px;
@@ -96,27 +72,58 @@
             transition: height 0.2s;
         }
 
-        /* Aggiungi effetto di fosforo e alone viola */
-        .pixel.active {
-            box-shadow: 0 0 5px 3px rgba(158, 118, 255, 0.6); /* alone viola intorno ai pixel accesi */
-            animation: phosphorBurn 0.5s infinite alternate; /* animazione che simula il consumarsi dei fosfori */
+        /* Pixel Display per VECDM */
+        .pixel-display {
+            display: grid;
+            grid-template-columns: repeat(50, 8px);  /* 50 colonne di pixel */
+            grid-template-rows: repeat(10, 8px);     /* 10 righe di pixel */
+            gap: 1px;
+            margin-bottom: 20px;
         }
 
-        @keyframes phosphorBurn {
+        .pixel {
+            width: 8px;
+            height: 8px;
+            background-color: black;
+            transition: background-color 0.2s;
+        }
+
+        .active {
+            background-color: #9e76ff;  /* Pixel accesi in viola */
+        }
+
+        .glitch {
+            background-color: black !important; /* Pixel "difettosi" spenti */
+        }
+
+        .halo {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(158, 118, 255, 0.5);
+            pointer-events: none;
+            animation: haloEffect 3s infinite;
+        }
+
+        @keyframes haloEffect {
             0% {
-                box-shadow: 0 0 5px 3px rgba(158, 118, 255, 0.6);
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 0.9;
             }
             100% {
-                box-shadow: 0 0 10px 6px rgba(158, 118, 255, 0.3); /* il colore dell'alone si dissolve gradualmente */
+                opacity: 0.6;
             }
         }
+
     </style>
 </head>
 <body>
 
     <div class="grid"></div>
 
-    <!-- PIXEL DISPLAY -->
+    <!-- PIXEL DISPLAY per VECDM -->
     <div class="pixel-display" id="pixelDisplay"></div>
 
     <div class="terminal">
@@ -200,15 +207,13 @@
         setInterval(generateSpectrogram, 300);
         printToTerminal();
 
-        // PIXEL MATRIX FOR VECDM (More detailed)
+        // PIXEL MATRIX per VECDM (display a 7x5 per letter, con un effetto di glitch)
         const pixelMatrix = [
-            " 1111   11  1111  1111  1    1  ",
-            "1    1  11 1    1 1      1  1   ",
-            "1       11 1    1 1       11    ",
-            "1  111  11 1    1 1111     1    ",
-            "1    1  11 1    1 1        1    ",
-            "1    1  11 1    1 1        1    ",
-            " 1111   11  1111  1        1    "
+            "11111000010001110101100011111000", // V
+            "10000011111100010101000111111110", // E
+            "10001011111100000101000111111010", // C
+            "10001011111100000101000010000000", // D
+            "10001011111100000101000111111000", // M
         ];
 
         const pixelDisplay = document.getElementById("pixelDisplay");
