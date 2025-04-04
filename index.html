@@ -34,15 +34,15 @@
         /* AREA PIXEL DISPLAY */
         .pixel-display {
             display: grid;
-            grid-template-columns: repeat(50, 5px);
-            grid-template-rows: repeat(10, 5px);
+            grid-template-columns: repeat(60, 6px); /* Più larga per maggior dettaglio */
+            grid-template-rows: repeat(8, 6px);
             gap: 1px;
             margin-bottom: 20px;
         }
 
         .pixel {
-            width: 5px;
-            height: 5px;
+            width: 6px;
+            height: 6px;
             background-color: black;
             transition: background-color 0.2s;
         }
@@ -188,13 +188,13 @@
 
         // PIXEL MATRIX FOR VECDM (More detailed)
         const pixelMatrix = [
-            " 1111   11  1111  1111  1    1  ",
-            "1    1  11 1    1 1      1  1   ",
-            "1       11 1    1 1       11    ",
-            "1  111  11 1    1 1111     1    ",
-            "1    1  11 1    1 1        1    ",
-            "1    1  11 1    1 1        1    ",
-            " 1111   11  1111  1        1    "
+            "111111 111 111111 111111 1     1  ",
+            "1     1 11 1     1 1     1 1   1  ",
+            "1     1 11 1     1 1      11    1 ",
+            "111111 111 1     1 111111 1     1 ",
+            "1     1 11 1     1 1     1 1     1",
+            "1     1 11 1     1 1     1 1     1",
+            "111111 111 111111 1     1 1     1 "
         ];
 
         const pixelDisplay = document.getElementById("pixelDisplay");
