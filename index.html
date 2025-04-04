@@ -18,19 +18,38 @@
             margin: 0;
         }
 
-        .grid {
+        /* Nebbia statica sullo sfondo */
+        .fog {
             position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 10%, transparent 60%);
-            animation: gridMove 5s linear infinite;
+            background: rgba(158, 118, 255, 0.2);
+            pointer-events: none;
         }
 
-        @keyframes gridMove {
-            from { transform: translateY(0); }
-            to { transform: translateY(-10px); }
+        /* Scritta VECDM */
+        .pixel-display {
+            display: grid;
+            grid-template-columns: repeat(7, 20px); /* 7 lettere, ognuna larga circa 2 cm */
+            grid-template-rows: repeat(7, 20px);   /* Altezze di 20px */
+            gap: 2px;
+            margin-bottom: 20px;
+            position: relative;
         }
 
+        .pixel {
+            width: 20px;
+            height: 20px;
+            background-color: black;
+        }
+
+        .active {
+            background-color: #9e76ff;  /* Pixel accesi in viola */
+        }
+
+        /* Terminale */
         .terminal {
             background-color: rgba(20, 20, 20, 0.9);
             padding: 10px;
@@ -55,84 +74,46 @@
             color: #9e76ff; /* Colore per "VECDM" e le sue varianti */
         }
 
-        .spectrogram {
-            width: 50%;
-            height: 100px;
-            background: black;
-            border: 1px solid gray;
-            margin-top: 10px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-        }
-
-        .bar {
-            width: 5px;
-            background-color: lightgray;
-            transition: height 0.2s;
-        }
-
-        /* Pixel Display per VECDM */
-        .pixel-display {
-            display: grid;
-            grid-template-columns: repeat(50, 8px);  /* 50 colonne di pixel */
-            grid-template-rows: repeat(10, 8px);     /* 10 righe di pixel */
-            gap: 1px;
-            margin-bottom: 20px;
-        }
-
-        .pixel {
-            width: 8px;
-            height: 8px;
-            background-color: black;
-            transition: background-color 0.2s;
-        }
-
-        .active {
-            background-color: #9e76ff;  /* Pixel accesi in viola */
-        }
-
-        .glitch {
-            background-color: black !important; /* Pixel "difettosi" spenti */
-        }
-
-        .halo {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: rgba(158, 118, 255, 0.5);
-            pointer-events: none;
-            animation: haloEffect 3s infinite;
-        }
-
-        @keyframes haloEffect {
-            0% {
-                opacity: 0.6;
-            }
-            50% {
-                opacity: 0.9;
-            }
-            100% {
-                opacity: 0.6;
-            }
-        }
-
     </style>
 </head>
 <body>
 
-    <div class="grid"></div>
+    <!-- Nebbia statica -->
+    <div class="fog"></div>
 
-    <!-- PIXEL DISPLAY per VECDM -->
+    <!-- Scritta VECDM (display dei pixel) -->
     <div class="pixel-display" id="pixelDisplay"></div>
 
     <div class="terminal">
         <div class="output" id="output"></div>
     </div>
 
-    <div class="spectrogram" id="spectrogram"></div>
-
     <script>
+        const pixelMatrix = [
+            "1111100", // V
+            "1000001", // E
+            "1110000", // C
+            "1001001", // D
+            "1110001", // M
+        ];
+
+        const pixelDisplay = document.getElementById("pixelDisplay");
+
+        // Crea la griglia di pixel per la scritta VECDM
+        function createPixelGrid() {
+            pixelMatrix.forEach(row => {
+                row.split("").forEach(char => {
+                    const pixel = document.createElement("div");
+                    pixel.classList.add("pixel");
+                    if (char === "1") pixel.classList.add("active");
+                    pixelDisplay.appendChild(pixel);
+                });
+            });
+        }
+
+        createPixelGrid();
+
+        // Funzione per simulare l'output del terminale
         const messages = [
             "Analyzing Data...",
             "Processing input signals...",
@@ -186,61 +167,7 @@
             setTimeout(printToTerminal, Math.random() * 2000 + 1000);
         }
 
-        function generateSpectrogram() {
-            const spectrogram = document.getElementById("spectrogram");
-
-            spectrogram.innerHTML = "";
-
-            for (let i = 0; i < 30; i++) {
-                let bar = document.createElement("div");
-                bar.classList.add("bar");
-                bar.style.height = `${Math.random() * 100}%`;
-
-                if (Math.random() < 0.05) {
-                    bar.style.backgroundColor = '#9e76ff';
-                }
-                
-                spectrogram.appendChild(bar);
-            }
-        }
-
-        setInterval(generateSpectrogram, 300);
         printToTerminal();
-
-        // PIXEL MATRIX per VECDM (display a 7x5 per letter, con un effetto di glitch)
-        const pixelMatrix = [
-            "11111000010001110101100011111000", // V
-            "10000011111100010101000111111110", // E
-            "10001011111100000101000111111010", // C
-            "10001011111100000101000010000000", // D
-            "10001011111100000101000111111000", // M
-        ];
-
-        const pixelDisplay = document.getElementById("pixelDisplay");
-
-        function createPixelGrid() {
-            pixelMatrix.forEach(row => {
-                row.split("").forEach(char => {
-                    const pixel = document.createElement("div");
-                    pixel.classList.add("pixel");
-                    if (char === "1") pixel.classList.add("active");
-                    pixelDisplay.appendChild(pixel);
-                });
-            });
-        }
-
-        function glitchPixels() {
-            const pixels = document.querySelectorAll(".pixel.active");
-            pixels.forEach(pixel => {
-                if (Math.random() < 0.05) { // 5% di probabilità di spegnersi
-                    pixel.classList.toggle("glitch");
-                    setTimeout(() => pixel.classList.toggle("glitch"), Math.random() * 500);
-                }
-            });
-        }
-
-        createPixelGrid();
-        setInterval(glitchPixels, 300);
     </script>
 
 </body>
