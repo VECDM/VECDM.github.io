@@ -31,30 +31,6 @@
             to { transform: translateY(-10px); }
         }
 
-        /* AREA PIXEL DISPLAY */
-        .pixel-display {
-            display: grid;
-            grid-template-columns: repeat(50, 5px);
-            grid-template-rows: repeat(10, 5px);
-            gap: 1px;
-            margin-bottom: 20px;
-        }
-
-        .pixel {
-            width: 5px;
-            height: 5px;
-            background-color: black;
-            transition: background-color 0.2s;
-        }
-
-        .active {
-            background-color: lightgray;  /* Pixel accesi in grigio chiaro */
-        }
-
-        .glitch {
-            background-color: black !important; /* Pixel "difettosi" spenti */
-        }
-
         .terminal {
             background-color: rgba(20, 20, 20, 0.9);
             padding: 10px;
@@ -101,9 +77,6 @@
 <body>
 
     <div class="grid"></div>
-
-    <!-- PIXEL DISPLAY -->
-    <div class="pixel-display" id="pixelDisplay"></div>
 
     <div class="terminal">
         <div class="output" id="output"></div>
@@ -185,43 +158,6 @@
 
         setInterval(generateSpectrogram, 300);
         printToTerminal();
-
-        // PIXEL MATRIX FOR VECDM (More detailed)
-        const pixelMatrix = [
-            " 1111   11  1111  1111  1    1  ",
-            "1    1  11 1    1 1      1  1   ",
-            "1       11 1    1 1       11    ",
-            "1  111  11 1    1 1111     1    ",
-            "1    1  11 1    1 1        1    ",
-            "1    1  11 1    1 1        1    ",
-            " 1111   11  1111  1        1    "
-        ];
-
-        const pixelDisplay = document.getElementById("pixelDisplay");
-
-        function createPixelGrid() {
-            pixelMatrix.forEach(row => {
-                row.split("").forEach(char => {
-                    const pixel = document.createElement("div");
-                    pixel.classList.add("pixel");
-                    if (char === "1") pixel.classList.add("active");
-                    pixelDisplay.appendChild(pixel);
-                });
-            });
-        }
-
-        function glitchPixels() {
-            const pixels = document.querySelectorAll(".pixel.active");
-            pixels.forEach(pixel => {
-                if (Math.random() < 0.05) { // 5% di probabilità di spegnersi
-                    pixel.classList.toggle("glitch");
-                    setTimeout(() => pixel.classList.toggle("glitch"), Math.random() * 500);
-                }
-            });
-        }
-
-        createPixelGrid();
-        setInterval(glitchPixels, 300);
     </script>
 
 </body>
