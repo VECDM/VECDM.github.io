@@ -18,41 +18,13 @@
             margin: 0;
         }
 
-        .grid {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 10%, transparent 60%);
-            animation: gridMove 5s linear infinite;
-        }
-
-        @keyframes gridMove {
-            from { transform: translateY(0); }
-            to { transform: translateY(-10px); }
-        }
-
-        /* AREA PIXEL DISPLAY */
         .pixel-display {
-            display: grid;
-            grid-template-columns: repeat(7, 20px); /* Maggiore dimensione dei pixel */
-            grid-template-rows: repeat(7, 20px);   /* Maggiore altezza dei pixel */
-            gap: 2px;
+            font-size: 32px;
+            letter-spacing: 5px;
             margin-bottom: 20px;
-        }
-
-        .pixel {
-            width: 20px;
-            height: 20px;
-            background-color: black;
-            transition: background-color 0.2s;
-        }
-
-        .active {
-            background-color: lightgray;  /* Pixel accesi in grigio chiaro */
-        }
-
-        .glitch {
-            background-color: black !important; /* Pixel "difettosi" spenti */
+            white-space: pre;
+            display: flex;
+            flex-wrap: wrap;
         }
 
         .terminal {
@@ -100,9 +72,6 @@
 </head>
 <body>
 
-    <div class="grid"></div>
-
-    <!-- PIXEL DISPLAY -->
     <div class="pixel-display" id="pixelDisplay"></div>
 
     <div class="terminal">
@@ -145,7 +114,6 @@
         function printToTerminal() {
             const output = document.getElementById("output");
 
-            // Crea un nuovo messaggio casuale e aggiungilo
             const message = getRandomMessage();
             const newLine = document.createElement("div");
 
@@ -157,7 +125,6 @@
 
             output.appendChild(newLine);
 
-            // Limita il numero di messaggi nel terminale per evitare overflow
             if (output.children.length > 15) {
                 output.removeChild(output.children[0]);
             }
@@ -186,42 +153,39 @@
         setInterval(generateSpectrogram, 300);
         printToTerminal();
 
-        // PIXEL MATRIX FOR VECDM (More detailed)
-        const pixelMatrix = [
-            "1111111 111 1111111 1111111 1     1",
-            "1     1 111 1     1 1     1 1   1",
-            "1     1 111 1     1 1      111111",
-            "1111111 111 1     1 1111111 1   1",
-            "1     1 111 1     1 1     1 1   1",
-            "1     1 111 1     1 1     1 1   1",
-            "1111111 111 1111111 1     1 1   1"
-        ];
-
+        // --- LETTER DISPLAY EFFECT FOR VECDM ---
+        const text = "VECDM";
         const pixelDisplay = document.getElementById("pixelDisplay");
 
-        function createPixelGrid() {
-            pixelMatrix.forEach(row => {
-                row.split("").forEach(char => {
-                    const pixel = document.createElement("div");
-                    pixel.classList.add("pixel");
-                    if (char === "1") pixel.classList.add("active");
-                    pixelDisplay.appendChild(pixel);
-                });
-            });
+        function createLetter(letter) {
+            // Creiamo la lettera con un contenitore di caratteri
+            const letterDiv = document.createElement("div");
+            letterDiv.textContent = letter;
+            letterDiv.style.fontSize = '32px';
+            letterDiv.style.transition = 'opacity 0.1s';
+            return letterDiv;
         }
 
-        function glitchPixels() {
-            const pixels = document.querySelectorAll(".pixel.active");
-            pixels.forEach(pixel => {
-                if (Math.random() < 0.05) { // 5% di probabilità di spegnersi
-                    pixel.classList.toggle("glitch");
-                    setTimeout(() => pixel.classList.toggle("glitch"), Math.random() * 500);
+        function glitchLetter() {
+            const letters = pixelDisplay.querySelectorAll("div");
+            letters.forEach(letter => {
+                // 10% probabilità di glitch (cambiare la visibilità della lettera)
+                if (Math.random() < 0.1) {
+                    letter.style.opacity = letter.style.opacity === "0" ? "1" : "0";
                 }
             });
         }
 
-        createPixelGrid();
-        setInterval(glitchPixels, 300);
+        // Visualizziamo le lettere
+        function displayText() {
+            pixelDisplay.innerHTML = ""; // Pulisce il contenuto
+            text.split("").forEach(letter => {
+                pixelDisplay.appendChild(createLetter(letter));
+            });
+        }
+
+        setInterval(glitchLetter, 300);
+        displayText();
     </script>
 
 </body>
