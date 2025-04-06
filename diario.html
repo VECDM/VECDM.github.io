@@ -3,114 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frasi Hackerabili</title>
+    <title>Diario - Hacking Test</title>
     <style>
         body {
             background-color: black;
             color: lightgray;
             font-family: monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            padding: 20px;
             margin: 0;
         }
 
-        .container {
-            width: 80%;
+        h1 {
             text-align: center;
+            color: #9e76ff;
         }
 
-        .message {
-            margin-bottom: 20px;
+        .phrase-container {
+            margin-top: 20px;
         }
 
-        .message span {
+        .phrase {
+            background-color: rgba(20, 20, 20, 0.9);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid gray;
             color: lightgray;
         }
 
-        .hidden-message {
+        .phrase .full-text {
             display: none;
             color: #9e76ff;
         }
 
-        .hacking-button {
-            background-color: #333;
-            color: #9e76ff;
+        .hack-button {
+            background-color: #9e76ff;
+            color: black;
             padding: 10px 20px;
             border: none;
             cursor: pointer;
             font-size: 16px;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
-        .hacking-button:hover {
+        .hack-button:hover {
+            background-color: #7a4ec1;
+        }
+
+        .hack-button:disabled {
             background-color: #444;
-        }
-
-        .error-message {
-            color: red;
-            display: none;
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Frasi Hackerabili</h1>
+    <h1>Diario - Hacking Test</h1>
 
-        <!-- Frase 1 -->
-        <div class="message">
-            <p>Frase 1: <span id="msg001">L'errore è dentro di te... ...e continua a vivere.</span></p>
-            <p class="hidden-message" id="fullMsg001">L'errore è dentro di te, ma se lo riconosci, diventa forza. Non farti sopraffare dalla paura.</p>
-            <button class="hacking-button" onclick="hackMessage('msg001')">Prova ad hackerare la frase</button>
-            <p class="error-message" id="errorMsg001">La versione completa non è ancora disponibile!</p>
-        </div>
-
-        <!-- Frase 2 -->
-        <div class="message">
-            <p>Frase 2: <span id="msg002">Dove c'è oscurità... ...la luce si nasconde.</span></p>
-            <p class="hidden-message" id="fullMsg002">Dove c'è oscurità, la luce si nasconde in silenzio, pronta a emergere quando meno te lo aspetti.</p>
-            <button class="hacking-button" onclick="hackMessage('msg002')">Prova ad hackerare la frase</button>
-            <p class="error-message" id="errorMsg002">La versione completa non è ancora disponibile!</p>
-        </div>
-
+    <div class="phrase-container" id="phrases">
+        <!-- Le frasi verranno caricate dinamicamente qui -->
     </div>
 
     <script>
-        const phrases = {
-            msg001: {
-                short: "L'errore è dentro di te... ...e continua a vivere.",
-                full: "L'errore è dentro di te, ma se lo riconosci, diventa forza. Non farti sopraffare dalla paura.",
-                releaseDate: new Date("2025-04-10T15:00:00")
+        const phrases = [
+            {
+                text: "Ecco una frase a tre punti...",
+                releaseDate: "2025-04-07 12:00", // Data di rilascio
+                fullText: "Ecco la versione completa della frase che verrà rivelata quando l'utente tenta l'hacking!"
             },
-            msg002: {
-                short: "Dove c'è oscurità... ...la luce si nasconde.",
-                full: "Dove c'è oscurità, la luce si nasconde in silenzio, pronta a emergere quando meno te lo aspetti.",
-                releaseDate: new Date("2025-04-15T09:30:00")
+            {
+                text: "Un'altra frase misteriosa...",
+                releaseDate: "2025-04-07 12:05", // Altra data di rilascio
+                fullText: "Versione completa di questa seconda frase, disponibile solo dopo il tentativo di hacking!"
             }
-        };
+        ];
 
-        function hackMessage(messageId) {
+        // Funzione per verificare se una data è passata
+        function isDatePassed(releaseDate) {
             const currentDate = new Date();
-            const releaseDate = phrases[messageId].releaseDate;
-
-            // Se la data di rilascio è passata, mostra la versione completa
-            if (currentDate >= releaseDate) {
-                document.getElementById(messageId).textContent = phrases[messageId].full;
-                document.getElementById("full" + messageId).style.display = 'block';
-                document.getElementById("errorMsg" + messageId).style.display = 'none';
-            } else {
-                document.getElementById("errorMsg" + messageId).style.display = 'block';
-            }
+            const release = new Date(releaseDate);
+            return currentDate >= release;
         }
 
-        // Imposta le frasi per visualizzare quelle a tre periodi
-        window.onload = function() {
-            document.getElementById("msg001").textContent = phrases.msg001.short;
-            document.getElementById("msg002").textContent = phrases.msg002.short;
-        };
+        // Funzione per creare e visualizzare le frasi
+        function displayPhrases() {
+            const phrasesContainer = document.getElementById('phrases');
+            
+            phrases.forEach(phrase => {
+                const phraseElement = document.createElement('div');
+                phraseElement.classList.add('phrase');
+
+                const textElement = document.createElement('p');
+                textElement.textContent = phrase.text;
+                phraseElement.appendChild(textElement);
+
+                const fullTextElement = document.createElement('p');
+                fullTextElement.classList.add('full-text');
+                fullTextElement.textContent = phrase.fullText;
+                phraseElement.appendChild(fullTextElement);
+
+                const hackButton = document.createElement('button');
+                hackButton.classList.add('hack-button');
+                hackButton.textContent = 'Hack to reveal full message';
+                
+                // Disabilita il pulsante se la data non è ancora passata
+                if (!isDatePassed(phrase.releaseDate)) {
+                    hackButton.disabled = true;
+                }
+
+                hackButton.addEventListener('click', () => {
+                    if (isDatePassed(phrase.releaseDate)) {
+                        fullTextElement.style.display = 'block'; // Sblocca il testo completo
+                        hackButton.disabled = true; // Disabilita il pulsante dopo l'uso
+                        hackButton.textContent = 'Message revealed!';
+                    } else {
+                        alert('La versione completa non è ancora disponibile!');
+                    }
+                });
+
+                phraseElement.appendChild(hackButton);
+                phrasesContainer.appendChild(phraseElement);
+            });
+        }
+
+        // Carica le frasi
+        displayPhrases();
     </script>
 
 </body>
