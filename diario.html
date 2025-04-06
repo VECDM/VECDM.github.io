@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frasi Hackerabili</title>
+    <style>
+        body {
+            background-color: black;
+            color: lightgray;
+            font-family: monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            width: 80%;
+            text-align: center;
+        }
+
+        .message {
+            margin-bottom: 20px;
+        }
+
+        .message span {
+            color: lightgray;
+        }
+
+        .hidden-message {
+            display: none;
+            color: #9e76ff;
+        }
+
+        .hacking-button {
+            background-color: #333;
+            color: #9e76ff;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .hacking-button:hover {
+            background-color: #444;
+        }
+
+        .error-message {
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Frasi Hackerabili</h1>
+
+        <!-- Frase 1 -->
+        <div class="message">
+            <p>Frase 1: <span id="msg001">L'errore è dentro di te... ...e continua a vivere.</span></p>
+            <p class="hidden-message" id="fullMsg001">L'errore è dentro di te, ma se lo riconosci, diventa forza. Non farti sopraffare dalla paura.</p>
+            <button class="hacking-button" onclick="hackMessage('msg001')">Prova ad hackerare la frase</button>
+            <p class="error-message" id="errorMsg001">La versione completa non è ancora disponibile!</p>
+        </div>
+
+        <!-- Frase 2 -->
+        <div class="message">
+            <p>Frase 2: <span id="msg002">Dove c'è oscurità... ...la luce si nasconde.</span></p>
+            <p class="hidden-message" id="fullMsg002">Dove c'è oscurità, la luce si nasconde in silenzio, pronta a emergere quando meno te lo aspetti.</p>
+            <button class="hacking-button" onclick="hackMessage('msg002')">Prova ad hackerare la frase</button>
+            <p class="error-message" id="errorMsg002">La versione completa non è ancora disponibile!</p>
+        </div>
+
+    </div>
+
+    <script>
+        const phrases = {
+            msg001: {
+                short: "L'errore è dentro di te... ...e continua a vivere.",
+                full: "L'errore è dentro di te, ma se lo riconosci, diventa forza. Non farti sopraffare dalla paura.",
+                releaseDate: new Date("2025-04-10T15:00:00")
+            },
+            msg002: {
+                short: "Dove c'è oscurità... ...la luce si nasconde.",
+                full: "Dove c'è oscurità, la luce si nasconde in silenzio, pronta a emergere quando meno te lo aspetti.",
+                releaseDate: new Date("2025-04-15T09:30:00")
+            }
+        };
+
+        function hackMessage(messageId) {
+            const currentDate = new Date();
+            const releaseDate = phrases[messageId].releaseDate;
+
+            // Se la data di rilascio è passata, mostra la versione completa
+            if (currentDate >= releaseDate) {
+                document.getElementById(messageId).textContent = phrases[messageId].full;
+                document.getElementById("full" + messageId).style.display = 'block';
+                document.getElementById("errorMsg" + messageId).style.display = 'none';
+            } else {
+                document.getElementById("errorMsg" + messageId).style.display = 'block';
+            }
+        }
+
+        // Imposta le frasi per visualizzare quelle a tre periodi
+        window.onload = function() {
+            document.getElementById("msg001").textContent = phrases.msg001.short;
+            document.getElementById("msg002").textContent = phrases.msg002.short;
+        };
+    </script>
+
+</body>
+</html>
