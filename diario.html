@@ -3,130 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diario - Hacking Test</title>
+    <title>Frasi Segrete - Diario</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
             background-color: black;
-            color: lightgray;
-            font-family: monospace;
+            color: white;
             padding: 20px;
-            margin: 0;
         }
 
-        h1 {
-            text-align: center;
-            color: #9e76ff;
+        .message {
+            margin-bottom: 20px;
         }
 
-        .phrase-container {
-            margin-top: 20px;
-        }
-
-        .phrase {
-            background-color: rgba(20, 20, 20, 0.9);
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid gray;
-            color: lightgray;
-        }
-
-        .phrase .full-text {
-            display: none;
-            color: #9e76ff;
-        }
-
-        .hack-button {
-            background-color: #9e76ff;
-            color: black;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
+        .message button {
             margin-top: 10px;
-        }
-
-        .hack-button:hover {
-            background-color: #7a4ec1;
-        }
-
-        .hack-button:disabled {
+            padding: 10px;
             background-color: #444;
+            color: white;
+            border: 1px solid #888;
+            cursor: pointer;
+        }
+
+        .message button:disabled {
+            background-color: #666;
             cursor: not-allowed;
+        }
+
+        .message span {
+            display: block;
+            margin-top: 10px;
+            color: #999;
+        }
+
+        .full-message {
+            color: #ccc;
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        .hacked-message {
+            color: #9e76ff;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <h1>Diario - Hacking Test</h1>
+    <h1>Diario - Tentativo di Hacking</h1>
+    
+    <div class="message" id="message1">
+        <p class="text">Messaggio a tre periodi: "Cerco una via, una soluzione, in un mondo che non riesco a comprendere..."</p>
+        <button id="btn1">Tentativo di hacking</button>
+        <span id="release1" class="release-date">Data di rilascio: 2025-04-06 12:00</span>
+        <p id="fullMessage1" class="full-message"></p>
+    </div>
 
-    <div class="phrase-container" id="phrases">
-        <!-- Le frasi verranno caricate dinamicamente qui -->
+    <div class="message" id="message2">
+        <p class="text">Messaggio a tre periodi: "Le linee di codice scorrono, ma la verità si nasconde nei dettagli..."</p>
+        <button id="btn2">Tentativo di hacking</button>
+        <span id="release2" class="release-date">Data di rilascio: 2025-04-06 14:00</span>
+        <p id="fullMessage2" class="full-message"></p>
     </div>
 
     <script>
-        const phrases = [
-            {
-                text: "Ecco una frase a tre punti...",
-                releaseDate: "2025-04-06 12:00", // Data di rilascio
-                fullText: "Ecco la versione completa della frase che verrà rivelata quando l'utente tenta l'hacking!"
-            },
-            {
-                text: "Un'altra frase misteriosa...",
-                releaseDate: "2025-04-06 12:05", // Altra data di rilascio
-                fullText: "Versione completa di questa seconda frase, disponibile solo dopo il tentativo di hacking!"
-            }
-        ];
-
-        // Funzione per verificare se una data è passata
+        // Funzione per verificare se la data di rilascio è passata
         function isDatePassed(releaseDate) {
             const currentDate = new Date();
             const release = new Date(releaseDate);
+            console.log(`Data attuale: ${currentDate}, Data di rilascio: ${releaseDate}`); // Debug
             return currentDate >= release;
         }
 
-        // Funzione per creare e visualizzare le frasi
-        function displayPhrases() {
-            const phrasesContainer = document.getElementById('phrases');
+        // Funzione per abilitare/disabilitare i pulsanti in base alla data di rilascio
+        function handleButtonClick(buttonId, releaseDate, fullMessageId) {
+            const button = document.getElementById(buttonId);
+            const fullMessage = document.getElementById(fullMessageId);
             
-            phrases.forEach(phrase => {
-                const phraseElement = document.createElement('div');
-                phraseElement.classList.add('phrase');
+            // Verifica se la data di rilascio è passata
+            if (isDatePassed(releaseDate)) {
+                button.disabled = false;
+            } else {
+                button.disabled = true;
+            }
 
-                const textElement = document.createElement('p');
-                textElement.textContent = phrase.text;
-                phraseElement.appendChild(textElement);
-
-                const fullTextElement = document.createElement('p');
-                fullTextElement.classList.add('full-text');
-                fullTextElement.textContent = phrase.fullText;
-                phraseElement.appendChild(fullTextElement);
-
-                const hackButton = document.createElement('button');
-                hackButton.classList.add('hack-button');
-                hackButton.textContent = 'Hack to reveal full message';
-                
-                // Disabilita il pulsante se la data non è ancora passata
-                if (!isDatePassed(phrase.releaseDate)) {
-                    hackButton.disabled = true;
-                }
-
-                hackButton.addEventListener('click', () => {
-                    if (isDatePassed(phrase.releaseDate)) {
-                        fullTextElement.style.display = 'block'; // Sblocca il testo completo
-                        hackButton.disabled = true; // Disabilita il pulsante dopo l'uso
-                        hackButton.textContent = 'Message revealed!';
-                    } else {
-                        alert('La versione completa non è ancora disponibile!');
-                    }
-                });
-
-                phraseElement.appendChild(hackButton);
-                phrasesContainer.appendChild(phraseElement);
-            });
+            // Funzione per "hackerare" e sbloccare il messaggio completo
+            button.onclick = function() {
+                fullMessage.textContent = "Messaggio completo: (Questa è la versione completa del messaggio)";
+                fullMessage.classList.add('hacked-message');
+            };
         }
 
-        // Carica le frasi
-        displayPhrases();
+        // Attiva il controllo per ogni frase
+        handleButtonClick("btn1", "2025-04-06 12:00", "fullMessage1");
+        handleButtonClick("btn2", "2025-04-06 14:00", "fullMessage2");
     </script>
 
 </body>
