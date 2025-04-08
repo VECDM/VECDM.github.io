@@ -3,66 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagina Diario</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Frasi Hacking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #fff;
+            padding: 20px;
+        }
+        .frase {
+            margin-bottom: 20px;
+        }
+        .decifra-btn {
+            background-color: #444;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .decifra-btn:hover {
+            background-color: #555;
+        }
+        #messaggioBenvenuto {
+            font-size: 24px;
+        }
+    </style>
 </head>
 <body>
-    <div id="welcome">
-        <h1>Benvenuto nel Diario</h1>
-        <p>Esplora il passato e scopri messaggi nascosti...</p>
-    </div>
 
-    <div id="contenuto"></div>
+    <h1 id="messaggioBenvenuto">Benvenuto nel sistema... Caricamento in corso...</h1>
+
+    <div id="contenutoFrasi"></div>
 
     <script>
-        // Funzione per caricare il file XML
-        function caricaXML() {
-            fetch('frasi.xml')
-                .then(response => response.text())
-                .then(str => {
-                    let parser = new DOMParser();
-                    let xmlDoc = parser.parseFromString(str, "text/xml");
-                    mostraFrasi(xmlDoc);
-                })
-                .catch(error => console.log("Errore nel caricamento del file XML:", error));
-        }
-
-        // Funzione per mostrare le frasi
+        // Funzione per mostrare le frasi dalla data e ora specificata
         function mostraFrasi(xmlDoc) {
-            let frasi = xmlDoc.getElementsByTagName('frase');
-            let currentDate = new Date();
-            let contenutoDiv = document.getElementById('contenuto');
+            const frasiDiv = document.getElementById("contenutoFrasi");
+            const dataCorrente = new Date();
+            const tutteLeFrasi = xmlDoc.getElementsByTagName("frase");
 
-            // Iteriamo sulle frasi nel file XML
-            for (let i = 0; i < frasi.length; i++) {
-                let frase = frasi[i];
-                let data = frase.getElementsByTagName('data')[0].textContent;
-                let ora = frase.getElementsByTagName('ora')[0].textContent;
+            // Nascondi il messaggio di benvenuto
+            document.getElementById("messaggioBenvenuto").style.display = 'none';
 
-                // Creiamo una data/ora per confrontare
-                let fraseDate = new Date(data + ' ' + ora);
+            // Itera su ogni frase nel file XML
+            for (let i = 0; i < tutteLeFrasi.length; i++) {
+                const dataOra = new Date(tutteLeFrasi[i].getElementsByTagName("data")[0].textContent);
+                const trePeriodi = tutteLeFrasi[i].getElementsByTagName("trePeriodi")[0].textContent;
+                const fraseCompleta = tutteLeFrasi[i].getElementsByTagName("completa")[0].textContent;
 
-                // Se la data/ora è passata, mostriamo la frase
-                if (currentDate >= fraseDate) {
-                    let trePeriodi = frase.getElementsByTagName('tre_periodi')[0].textContent;
-                    let completa = frase.getElementsByTagName('completa')[0].textContent;
-
-                    // Aggiungiamo la frase alla pagina
-                    let divFrase = document.createElement('div');
+                // Se la data e ora è quella giusta, mostra la frase
+                if (dataCorrente >= dataOra) {
+                    const divFrase = document.createElement('div');
                     divFrase.classList.add('frase');
-                    divFrase.innerHTML = `<p>${trePeriodi}</p><button onclick="svelaFrase('${completa}')">Decifra</button>`;
-                    contenutoDiv.appendChild(divFrase);
+                    divFrase.innerHTML = `
+                        <p>${trePeriodi}</p>
+                        <button class="decifra-btn" id="decifra${i}">Decifra</button>
+                    `;
+                    frasiDiv.appendChild(divFrase);
+
+                    // Aggiungi un event listener al pulsante "Decifra"
+                    document.getElementById(`decifra${i}`).addEventListener('click', function() {
+                        alert(fraseCompleta);  // Mostra la frase completa con un alert
+                    });
                 }
             }
         }
 
-        // Funzione per mostrare la frase completa quando si clicca sul bottone
-        function svelaFrase(completa) {
-            alert(completa);
-        }
-
-        // Carichiamo le frasi quando la pagina è pronta
-        window.onload = caricaXML;
+        // Carica il file XML e processalo
+        fetch('https://raw.githubusercontent.com/username/repository/main/frasi.xml')
+            .then(response => response.text())
+            .then(str => {
+                let parser = new DOMParser();
+                let xmlDoc = parser.parseFromString(str, "text/xml");
+                mostraFrasi(xmlDoc);
+            })
+            .catch(error => console.log("Errore nel caricamento del file XML:", error));
     </script>
+
 </body>
 </html>
