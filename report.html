@@ -67,61 +67,43 @@
   const xmlDoc = parser.parseFromString(xmlData, "text/xml");
   const frasi = xmlDoc.getElementsByTagName("frase");
 
-  // Seleziona la prima frase sbloccabile per test
-  const now = new Date();
-  let fraseAttiva = null;
+  // Forza la prima frase per test
+  const fraseAttiva = frasi[0];
 
-  for (let i = 0; i < frasi.length; i++) {
-    const dataTesto = frasi[i].getElementsByTagName("data")[0].textContent;
-    const [d, m, yh] = dataTesto.split("/");
-    const [y, hms] = yh.split(" ");
-    const [hh, mm] = hms.split(":");
-    const dataFrase = new Date(`${y}-${m}-${d}T${hh}:${mm}:00`);
-    if (now >= dataFrase) {
-      fraseAttiva = frasi[i];
-      break;
-    }
-  }
+  const trePeriodi = fraseAttiva.getElementsByTagName("trePeriodi")[0].textContent;
+  const completa = fraseAttiva.getElementsByTagName("completa")[0].textContent;
+  const tentativiRichiesti = parseInt(fraseAttiva.getElementsByTagName("tentativi")[0].textContent);
 
-  if (!fraseAttiva) {
-    terminal.textContent += "\n> Nessuna frase disponibile in questo momento.";
-    cmdInput.disabled = true;
-  } else {
-    const trePeriodi = fraseAttiva.getElementsByTagName("trePeriodi")[0].textContent;
-    const completa = fraseAttiva.getElementsByTagName("completa")[0].textContent;
-    const tentativiRichiesti = parseInt(fraseAttiva.getElementsByTagName("tentativi")[0].textContent);
+  terminal.textContent += `\n> ${trePeriodi}`;
+  terminal.textContent += `\n> Inizia sequenza di accesso...`;
 
-    terminal.textContent += `\n> ${trePeriodi}`;
-    terminal.textContent += `\n> Inizia sequenza di accesso...`;
+  let validi = 0;
 
-    let validi = 0;
+  cmdInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      const comando = cmdInput.value.trim();
+      cmdInput.value = "";
 
-    cmdInput.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") {
-        const comando = cmdInput.value.trim();
-        cmdInput.value = "";
+      const successo = Math.random() < 0.7; // 70% probabilità di comando accettato
 
-        const successo = Math.random() < 0.7; // 70% che il comando sia accettato
-
-        terminal.textContent += `\n> ${comando}`;
-        if (successo) {
-          validi++;
-          terminal.textContent += `\n> Comando accettato. Elaborazione in corso... (${validi}/${tentativiRichiesti})`;
-        } else {
-          terminal.textContent += `\n> Errore: comando sconosciuto o sintassi non valida.`;
-        }
-
-        // Scorrimento automatico in fondo
-        terminal.scrollTop = terminal.scrollHeight;
-
-        if (validi >= tentativiRichiesti) {
-          terminal.textContent += `\n> Accesso ottenuto. Frase completa:`;
-          terminal.textContent += `\n"${completa}"`;
-          cmdInput.disabled = true;
-        }
+      terminal.textContent += `\n> ${comando}`;
+      if (successo) {
+        validi++;
+        terminal.textContent += `\n> Comando accettato. Elaborazione in corso... (${validi}/${tentativiRichiesti})`;
+      } else {
+        terminal.textContent += `\n> Errore: comando sconosciuto o sintassi non valida.`;
       }
-    });
-  }
+
+      // Scorrimento automatico
+      terminal.scrollTop = terminal.scrollHeight;
+
+      if (validi >= tentativiRichiesti) {
+        terminal.textContent += `\n> Accesso ottenuto. Frase completa:`;
+        terminal.textContent += `\n"${completa}"`;
+        cmdInput.disabled = true;
+      }
+    }
+  });
 </script>
 
 </body>
