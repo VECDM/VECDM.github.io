@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Frasi</title>
+    <title>Test Frasi con Hacking</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,6 +37,52 @@
         .decifra-btn:hover {
             background-color: #666;
         }
+
+        /* Modale */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #222;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            color: #f0f0f0;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: #f0f0f0;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .input-hack {
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #333;
+            border: none;
+            color: white;
+            font-size: 14px;
+            border-radius: 3px;
+        }
+        .input-hack:focus {
+            outline: none;
+        }
     </style>
 </head>
 <body>
@@ -47,6 +93,14 @@
 
     <div id="contenutoFrasi"></div>
 
+    <!-- Modale -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="modalFrase"></p>
+        </div>
+    </div>
+
     <script>
         // Esempio di contenuto XML direttamente nel file HTML
         const xmlContent = `
@@ -55,11 +109,13 @@
                 <data>08/04/2025 22:20</data>
                 <trePeriodi>Trovato un vecchio nastro magnetico.</trePeriodi>
                 <completa>Il suono è deformato, sporco, ma c’è qualcosa lì dentro. Qualcosa che non appartiene solo al passato.</completa>
+                <hackcode>12345</hackcode>
             </frase>
             <frase>
-                <data>08/04/2025 22:59</data>
+                <data>08/04/2025 22:25</data>
                 <trePeriodi>Il rumore bianco della metropoli si mescola ai bassi profondi.</trePeriodi>
                 <completa>Ogni passo nell’ombra è scandito da un suono che non appartiene a questo tempo. Nessuno sa da dove provenga, ma ormai è ovunque.</completa>
+                <hackcode>abcde</hackcode>
             </frase>
         </frasi>`;
 
@@ -78,6 +134,7 @@
                 const dataFrase = tutteLeFrasi[i].getElementsByTagName("data")[0].textContent;
                 const trePeriodi = tutteLeFrasi[i].getElementsByTagName("trePeriodi")[0].textContent;
                 const fraseCompleta = tutteLeFrasi[i].getElementsByTagName("completa")[0].textContent;
+                const hackcode = tutteLeFrasi[i].getElementsByTagName("hackcode")[0].textContent;
 
                 const [dataStr, orarioStr] = dataFrase.split(" ");
                 const [giorno, mese, anno] = dataStr.split("/");
@@ -90,15 +147,44 @@
                     divFrase.classList.add('frase');
                     divFrase.innerHTML = `
                         <p>${trePeriodi}</p>
+                        <input type="text" id="hackcode${i}" class="input-hack" placeholder="Inserisci codice di hacking">
                         <button class="decifra-btn" id="decifra${i}">Decifra</button>
                     `;
                     frasiDiv.appendChild(divFrase);
 
                     // Aggiungi un event listener al pulsante "Decifra"
                     document.getElementById(`decifra${i}`).addEventListener('click', function() {
-                        alert(fraseCompleta);  // Mostra la frase completa con un alert
+                        const userCode = document.getElementById(`hackcode${i}`).value;
+                        if (userCode === hackcode) {
+                            mostraModale(fraseCompleta);  // Mostra la frase completa nella modale
+                        } else {
+                            alert("Codice di hacking errato.");
+                        }
                     });
                 }
+            }
+        }
+
+        // Funzione per mostrare la modale con la frase completa
+        function mostraModale(frase) {
+            const modal = document.getElementById("myModal");
+            const modalFrase = document.getElementById("modalFrase");
+            modalFrase.textContent = frase;
+            modal.style.display = "block";
+        }
+
+        // Funzione per chiudere la modale
+        const closeModal = document.getElementsByClassName("close")[0];
+        closeModal.onclick = function() {
+            const modal = document.getElementById("myModal");
+            modal.style.display = "none";
+        }
+
+        // Chiudere la modale anche cliccando fuori di essa
+        window.onclick = function(event) {
+            const modal = document.getElementById("myModal");
+            if (event.target == modal) {
+                modal.style.display = "none";
             }
         }
 
