@@ -52,12 +52,21 @@
       <trePeriodi>Trovato un vecchio nastro magnetico.</trePeriodi>
       <completa>Il suono è deformato, sporco, ma c’è qualcosa lì dentro. Qualcosa che non appartiene solo al passato.</completa>
       <tentativi>3</tentativi>
+      <id>202504082230</id> <!-- ID creato dalla data e ora -->
     </frase>
     <frase>
       <data>08/04/2025 22:21</data>
       <trePeriodi>Il rumore bianco della metropoli si mescola ai bassi profondi.</trePeriodi>
       <completa>Ogni passo nell’ombra è scandito da un suono che non appartiene a questo tempo. Nessuno sa da dove provenga, ma ormai è ovunque.</completa>
       <tentativi>4</tentativi>
+      <id>202504082231</id> <!-- ID creato dalla data e ora -->
+    </frase>
+    <frase>
+      <data>08/04/2025 22:22</data>
+      <trePeriodi>Il segnale si interrompe.</trePeriodi>
+      <completa>Qualcosa interferisce con la trasmissione. Forse è solo il suono di un sistema che si spegne, forse è qualcuno che lo riaccende, forse è sempre stato acceso.</completa>
+      <tentativi>2</tentativi>
+      <id>202504082232</id> <!-- ID creato dalla data e ora -->
     </frase>
   </frasi>
   `;
@@ -67,43 +76,93 @@
   const xmlDoc = parser.parseFromString(xmlData, "text/xml");
   const frasi = xmlDoc.getElementsByTagName("frase");
 
-  // Forza la prima frase per test
-  const fraseAttiva = frasi[0];
+  // Filtro frasi disponibili in base alla data
+  const now = new Date();
+  let frasiAttive = [];
 
-  const trePeriodi = fraseAttiva.getElementsByTagName("trePeriodi")[0].textContent;
-  const completa = fraseAttiva.getElementsByTagName("completa")[0].textContent;
-  const tentativiRichiesti = parseInt(fraseAttiva.getElementsByTagName("tentativi")[0].textContent);
+  for (let i = 0; i < frasi.length; i++) {
+    const dataTesto = frasi[i].getElementsByTagName("data")[0].textContent;
+    const [d, m, yh] = dataTesto.split("/");
+    const [y, hms] = yh.split(" ");
+    const [hh, mm] = hms.split(":");
+    const dataFrase = new Date(`${y}-${m}-${d}T${hh}:${mm}:00`);
+    if (now >= dataFrase) {
+      frasiAttive.push(frasi[i]);
+    }
+  }
 
-  terminal.textContent += `\n> ${trePeriodi}`;
-  terminal.textContent += `\n> Inizia sequenza di accesso...`;
+  // Ordinamento delle frasi attive in base all'ID (numerico)
+  frasiAttive = frasiAttive.sort((a, b) => {
+    const idA = a.getElementsByTagName("id")[0].textContent;
+    const idB = b.getElementsByTagName("id")[0].textContent;
+    return parseInt(idB) - parseInt(idA);  // Ordinamento decrescente (più recente per prima)
+  });
 
-  let validi = 0;
+  // Mostra la prima frase disponibile
+  let fraseIndex = 0;
+  const mostraFrase = (index) => {
+    const frase = frasiAttive[index];
+    const trePeriodi = frase.getElementsByTagName("trePeriodi")[0].textContent;
+    const completa = frase.getElementsByTagName("completa")[0].textContent;
+    const tentativiRichiesti = parseInt(frase.getElementsByTagName("tentativi")[0].textContent);
 
+    terminal.textContent += `\n> ${trePeriodi}`;
+    terminal.textContent += `\n> Inizia sequenza di accesso...`;
+
+    let validi = 0;
+
+    // Comandi utente
+    cmdInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        const comando = cmdInput.value.trim();
+        cmdInput.value = "";
+
+        const successo = Math.random() < 0.7; // 70% probabilità di comando accettato
+
+        terminal.textContent += `\n> ${comando}`;
+        if (successo) {
+          validi++;
+          terminal.textContent += `\n> Comando accettato. Elaborazione in corso... (${validi}/${tentativiRichiesti})`;
+        } else {
+          terminal.textContent += `\n> Errore: comando sconosciuto o sintassi non valida.`;
+        }
+
+        // Scorrimento automatico
+        terminal.scrollTop = terminal.scrollHeight;
+
+        if (validi >= tentativiRichiesti) {
+          terminal.textContent += `\n> Accesso ottenuto. Frase completa:`;
+          terminal.textContent += `\n"${completa}"`;
+          cmdInput.disabled = true;
+        }
+      }
+    });
+  };
+
+  // Comandi per navigazione
   cmdInput.addEventListener("keydown", function (e) {
     if (e.key === "Enter") {
       const comando = cmdInput.value.trim();
-      cmdInput.value = "";
-
-      const successo = Math.random() < 0.7; // 70% probabilità di comando accettato
-
-      terminal.textContent += `\n> ${comando}`;
-      if (successo) {
-        validi++;
-        terminal.textContent += `\n> Comando accettato. Elaborazione in corso... (${validi}/${tentativiRichiesti})`;
-      } else {
-        terminal.textContent += `\n> Errore: comando sconosciuto o sintassi non valida.`;
-      }
-
-      // Scorrimento automatico
-      terminal.scrollTop = terminal.scrollHeight;
-
-      if (validi >= tentativiRichiesti) {
-        terminal.textContent += `\n> Accesso ottenuto. Frase completa:`;
-        terminal.textContent += `\n"${completa}"`;
-        cmdInput.disabled = true;
+      if (comando === "next" && fraseIndex < frasiAttive.length - 1) {
+        fraseIndex++;
+        terminal.textContent += `\n> Passaggio alla frase successiva...`;
+        mostraFrase(fraseIndex);
+      } else if (comando === "prev" && fraseIndex > 0) {
+        fraseIndex--;
+        terminal.textContent += `\n> Torna alla frase precedente...`;
+        mostraFrase(fraseIndex);
+      } else if (comando === "list") {
+        terminal.textContent += `\n> Frasi disponibili:`;
+        for (let i = 0; i < Math.min(5, frasiAttive.length); i++) {
+          terminal.textContent += `\n${i + 1}: ${frasiAttive[i].getElementsByTagName("trePeriodi")[0].textContent}`;
+        }
       }
     }
   });
+
+  // Mostra la prima frase disponibile per test
+  mostraFrase(fraseIndex);
+
 </script>
 
 </body>
