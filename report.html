@@ -1,198 +1,128 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Frasi con Hacking</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #111;
-            color: #f0f0f0;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-        #messaggioBenvenuto {
-            font-size: 24px;
-            margin-top: 50px;
-        }
-        .frase {
-            background-color: #222;
-            margin: 20px;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
-        }
-        .decifra-btn {
-            margin-top: 10px;
-            padding: 8px 20px;
-            background-color: #444;
-            border: none;
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 3px;
-        }
-        .decifra-btn:hover {
-            background-color: #666;
-        }
-
-        /* Modale */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.8);
-            padding-top: 60px;
-        }
-        .modal-content {
-            background-color: #222;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            color: #f0f0f0;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: #f0f0f0;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .input-hack {
-            margin-top: 10px;
-            padding: 8px;
-            background-color: #333;
-            border: none;
-            color: white;
-            font-size: 14px;
-            border-radius: 3px;
-        }
-        .input-hack:focus {
-            outline: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Terminale</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #0f0;
+      font-family: monospace;
+      padding: 20px;
+    }
+    #terminal {
+      border: 2px solid #0f0;
+      padding: 15px;
+      min-height: 300px;
+      white-space: pre-wrap;
+      overflow-y: auto;
+    }
+    #inputArea {
+      margin-top: 10px;
+    }
+    #cmdInput {
+      background: none;
+      border: none;
+      color: #0f0;
+      font-family: monospace;
+      font-size: 16px;
+      width: 90%;
+      outline: none;
+    }
+  </style>
 </head>
 <body>
 
-    <div id="messaggioBenvenuto">
-        Benvenuto nel sistema. Le frasi appariranno quando il tempo sarà giusto...
-    </div>
+<h2>Accesso Terminale</h2>
+<div id="terminal">> Inizializzazione terminale...\n> Caricamento pacchetti...</div>
 
-    <div id="contenutoFrasi"></div>
+<div id="inputArea">
+  <span>&gt; </span><input type="text" id="cmdInput" autocomplete="off" />
+</div>
 
-    <!-- Modale -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <p id="modalFrase"></p>
-        </div>
-    </div>
+<script>
+  const terminal = document.getElementById("terminal");
+  const cmdInput = document.getElementById("cmdInput");
 
-    <script>
-        // Esempio di contenuto XML direttamente nel file HTML
-        const xmlContent = `
-        <frasi>
-            <frase>
-                <data>08/04/2025 22:20</data>
-                <trePeriodi>Trovato un vecchio nastro magnetico.</trePeriodi>
-                <completa>Il suono è deformato, sporco, ma c’è qualcosa lì dentro. Qualcosa che non appartiene solo al passato.</completa>
-                <hackcode>12345</hackcode>
-            </frase>
-            <frase>
-                <data>08/04/2025 22:25</data>
-                <trePeriodi>Il rumore bianco della metropoli si mescola ai bassi profondi.</trePeriodi>
-                <completa>Ogni passo nell’ombra è scandito da un suono che non appartiene a questo tempo. Nessuno sa da dove provenga, ma ormai è ovunque.</completa>
-                <hackcode>abcde</hackcode>
-            </frase>
-        </frasi>`;
+  // Frasi simulate in XML
+  const xmlData = `
+  <frasi>
+    <frase>
+      <data>08/04/2025 22:20</data>
+      <trePeriodi>Trovato un vecchio nastro magnetico.</trePeriodi>
+      <completa>Il suono è deformato, sporco, ma c’è qualcosa lì dentro. Qualcosa che non appartiene solo al passato.</completa>
+      <tentativi>3</tentativi>
+    </frase>
+    <frase>
+      <data>08/04/2025 22:21</data>
+      <trePeriodi>Il rumore bianco della metropoli si mescola ai bassi profondi.</trePeriodi>
+      <completa>Ogni passo nell’ombra è scandito da un suono che non appartiene a questo tempo. Nessuno sa da dove provenga, ma ormai è ovunque.</completa>
+      <tentativi>4</tentativi>
+    </frase>
+  </frasi>
+  `;
 
-        // Funzione per mostrare le frasi in base alla data e ora correnti
-        function mostraFrasi(xmlDoc) {
-            const frasiDiv = document.getElementById("contenutoFrasi");
+  // Parser XML interno
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlData, "text/xml");
+  const frasi = xmlDoc.getElementsByTagName("frase");
 
-            // Nascondi il messaggio di benvenuto
-            document.getElementById("messaggioBenvenuto").style.display = 'none';
+  // Seleziona la prima frase sbloccabile per test
+  const now = new Date();
+  let fraseAttiva = null;
 
-            const tutteLeFrasi = xmlDoc.getElementsByTagName("frase");
+  for (let i = 0; i < frasi.length; i++) {
+    const dataTesto = frasi[i].getElementsByTagName("data")[0].textContent;
+    const [d, m, yh] = dataTesto.split("/");
+    const [y, hms] = yh.split(" ");
+    const [hh, mm] = hms.split(":");
+    const dataFrase = new Date(`${y}-${m}-${d}T${hh}:${mm}:00`);
+    if (now >= dataFrase) {
+      fraseAttiva = frasi[i];
+      break;
+    }
+  }
 
-            const dataCorrente = new Date();
+  if (!fraseAttiva) {
+    terminal.textContent += "\n> Nessuna frase disponibile in questo momento.";
+    cmdInput.disabled = true;
+  } else {
+    const trePeriodi = fraseAttiva.getElementsByTagName("trePeriodi")[0].textContent;
+    const completa = fraseAttiva.getElementsByTagName("completa")[0].textContent;
+    const tentativiRichiesti = parseInt(fraseAttiva.getElementsByTagName("tentativi")[0].textContent);
 
-            for (let i = 0; i < tutteLeFrasi.length; i++) {
-                const dataFrase = tutteLeFrasi[i].getElementsByTagName("data")[0].textContent;
-                const trePeriodi = tutteLeFrasi[i].getElementsByTagName("trePeriodi")[0].textContent;
-                const fraseCompleta = tutteLeFrasi[i].getElementsByTagName("completa")[0].textContent;
-                const hackcode = tutteLeFrasi[i].getElementsByTagName("hackcode")[0].textContent;
+    terminal.textContent += `\n> ${trePeriodi}`;
+    terminal.textContent += `\n> Inizia sequenza di accesso...`;
 
-                const [dataStr, orarioStr] = dataFrase.split(" ");
-                const [giorno, mese, anno] = dataStr.split("/");
-                const [ora, minuti] = orarioStr.split(":");
-                const dataFraseObj = new Date(anno, mese - 1, giorno, ora, minuti);
+    let validi = 0;
 
-                // Controllo se la data della frase è passata o se è il momento giusto per visualizzarla
-                if (dataFraseObj <= dataCorrente) {
-                    const divFrase = document.createElement('div');
-                    divFrase.classList.add('frase');
-                    divFrase.innerHTML = `
-                        <p>${trePeriodi}</p>
-                        <input type="text" id="hackcode${i}" class="input-hack" placeholder="Inserisci codice di hacking">
-                        <button class="decifra-btn" id="decifra${i}">Decifra</button>
-                    `;
-                    frasiDiv.appendChild(divFrase);
+    cmdInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        const comando = cmdInput.value.trim();
+        cmdInput.value = "";
 
-                    // Aggiungi un event listener al pulsante "Decifra"
-                    document.getElementById(`decifra${i}`).addEventListener('click', function() {
-                        const userCode = document.getElementById(`hackcode${i}`).value;
-                        if (userCode === hackcode) {
-                            mostraModale(fraseCompleta);  // Mostra la frase completa nella modale
-                        } else {
-                            alert("Codice di hacking errato.");
-                        }
-                    });
-                }
-            }
+        const successo = Math.random() < 0.7; // 70% che il comando sia accettato
+
+        terminal.textContent += `\n> ${comando}`;
+        if (successo) {
+          validi++;
+          terminal.textContent += `\n> Comando accettato. Elaborazione in corso... (${validi}/${tentativiRichiesti})`;
+        } else {
+          terminal.textContent += `\n> Errore: comando sconosciuto o sintassi non valida.`;
         }
 
-        // Funzione per mostrare la modale con la frase completa
-        function mostraModale(frase) {
-            const modal = document.getElementById("myModal");
-            const modalFrase = document.getElementById("modalFrase");
-            modalFrase.textContent = frase;
-            modal.style.display = "block";
-        }
+        // Scorrimento automatico in fondo
+        terminal.scrollTop = terminal.scrollHeight;
 
-        // Funzione per chiudere la modale
-        const closeModal = document.getElementsByClassName("close")[0];
-        closeModal.onclick = function() {
-            const modal = document.getElementById("myModal");
-            modal.style.display = "none";
+        if (validi >= tentativiRichiesti) {
+          terminal.textContent += `\n> Accesso ottenuto. Frase completa:`;
+          terminal.textContent += `\n"${completa}"`;
+          cmdInput.disabled = true;
         }
-
-        // Chiudere la modale anche cliccando fuori di essa
-        window.onclick = function(event) {
-            const modal = document.getElementById("myModal");
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-
-        // Parse the XML content and pass it to the function
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlContent, "text/xml");
-        mostraFrasi(xmlDoc);
-    </script>
+      }
+    });
+  }
+</script>
 
 </body>
 </html>
