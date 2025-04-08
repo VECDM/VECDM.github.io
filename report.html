@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VE_DM Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #111;
+            color: #00FF00;
+            padding: 20px;
+            text-align: center;
+        }
+        .frase {
+            margin: 20px;
+            padding: 15px;
+            border: 1px solid #00FF00;
+            background-color: #222;
+        }
+        .frase p {
+            font-size: 18px;
+        }
+        .frase button {
+            background-color: #00FF00;
+            color: #111;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .frase button:hover {
+            background-color: #FF0000;
+        }
+    </style>
+</head>
+<body>
+    <h1>Benvenuto nel Gioco Hacking</h1>
+    <div id="contenuto"></div>
+
+    <script>
+        // Funzione per caricare il file XML
+        function caricaXML() {
+            fetch('frasi.xml')  // Percorso del tuo file XML
+                .then(response => response.text())
+                .then(str => {
+                    let parser = new DOMParser();
+                    let xmlDoc = parser.parseFromString(str, "text/xml");
+                    mostraFrasi(xmlDoc);
+                })
+                .catch(error => console.log("Errore nel caricamento del file XML:", error));
+        }
+
+        // Funzione per mostrare le frasi
+        function mostraFrasi(xmlDoc) {
+            let frasi = xmlDoc.getElementsByTagName('frase');
+            let currentDate = new Date();
+            let contenutoDiv = document.getElementById('contenuto');
+
+            // Iteriamo su tutte le frasi nel file XML
+            for (let i = 0; i < frasi.length; i++) {
+                let frase = frasi[i];
+                let data = frase.getElementsByTagName('data')[0].textContent;
+                let ora = frase.getElementsByTagName('ora')[0].textContent;
+
+                // Creiamo un oggetto Date con la data e ora dell'XML
+                let fraseDate = new Date(data + ' ' + ora);
+
+                // Confrontiamo l'ora attuale con la data/ora della frase
+                if (currentDate >= fraseDate) {
+                    let trePeriodi = frase.getElementsByTagName('tre_periodi')[0].textContent;
+                    let completa = frase.getElementsByTagName('completa')[0].textContent;
+
+                    // Creiamo la struttura per la frase e il pulsante per "decifrarla"
+                    let divFrase = document.createElement('div');
+                    divFrase.classList.add('frase');
+                    divFrase.innerHTML = `<p>${trePeriodi}</p><button onclick="svelaFrase('${completa}')">Decifra</button>`;
+                    contenutoDiv.appendChild(divFrase);
+                }
+            }
+        }
+
+        // Funzione per svelare la frase completa
+        function svelaFrase(completa) {
+            alert(completa);  // Puoi usare un altro metodo per visualizzare la frase completa, come una finestra o un pop-up personalizzato
+        }
+
+        // Carica l'XML quando la pagina è pronta
+        window.onload = caricaXML;
+    </script>
+</body>
+</html>
