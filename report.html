@@ -29,6 +29,10 @@
       width: 90%;
       outline: none;
     }
+    .frase-lista {
+      color: #0f0;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -40,9 +44,13 @@
   <span>&gt; </span><input type="text" id="cmdInput" autocomplete="off" />
 </div>
 
+<!-- Sezione per la lista delle frasi -->
+<div id="fraseList" class="frase-lista"></div>
+
 <script>
   const terminal = document.getElementById("terminal");
   const cmdInput = document.getElementById("cmdInput");
+  const fraseList = document.getElementById("fraseList");
 
   // Frasi simulate in XML
   const xmlData = `
@@ -98,15 +106,25 @@
     return parseInt(idB) - parseInt(idA);  // Ordinamento decrescente (più recente per prima)
   });
 
-  // Mostra la prima frase disponibile
+  // Mostra la lista delle frasi attive
+  const mostraListaFrasi = () => {
+    fraseList.innerHTML = "";
+    frasiAttive.forEach((frase, index) => {
+      const trePeriodi = frase.getElementsByTagName("trePeriodi")[0].textContent;
+      fraseList.innerHTML += `<p>Frase ${index + 1}: ${trePeriodi} <button onclick="selezionaFrase(${index})">Hackerala</button></p>`;
+    });
+  };
+
+  // Selezione della frase
   let fraseIndex = 0;
-  const mostraFrase = (index) => {
-    const frase = frasiAttive[index];
+  const selezionaFrase = (index) => {
+    fraseIndex = index;
+    const frase = frasiAttive[fraseIndex];
     const trePeriodi = frase.getElementsByTagName("trePeriodi")[0].textContent;
     const completa = frase.getElementsByTagName("completa")[0].textContent;
     const tentativiRichiesti = parseInt(frase.getElementsByTagName("tentativi")[0].textContent);
 
-    terminal.textContent += `\n> ${trePeriodi}`;
+    terminal.textContent = `> ${trePeriodi}`;
     terminal.textContent += `\n> Inizia sequenza di accesso...`;
 
     let validi = 0;
@@ -139,29 +157,8 @@
     });
   };
 
-  // Comandi per navigazione
-  cmdInput.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") {
-      const comando = cmdInput.value.trim();
-      if (comando === "next" && fraseIndex < frasiAttive.length - 1) {
-        fraseIndex++;
-        terminal.textContent += `\n> Passaggio alla frase successiva...`;
-        mostraFrase(fraseIndex);
-      } else if (comando === "prev" && fraseIndex > 0) {
-        fraseIndex--;
-        terminal.textContent += `\n> Torna alla frase precedente...`;
-        mostraFrase(fraseIndex);
-      } else if (comando === "list") {
-        terminal.textContent += `\n> Frasi disponibili:`;
-        for (let i = 0; i < Math.min(5, frasiAttive.length); i++) {
-          terminal.textContent += `\n${i + 1}: ${frasiAttive[i].getElementsByTagName("trePeriodi")[0].textContent}`;
-        }
-      }
-    }
-  });
-
-  // Mostra la prima frase disponibile per test
-  mostraFrase(fraseIndex);
+  // Mostra la lista delle frasi quando caricate
+  mostraListaFrasi();
 
 </script>
 
