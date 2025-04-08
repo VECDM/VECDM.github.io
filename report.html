@@ -2,24 +2,38 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <title>Terminale</title>
+  <title>Terminale di Hacking</title>
   <style>
     body {
       background-color: #000;
       color: #0f0;
       font-family: monospace;
+      display: flex;
       padding: 20px;
     }
-    #terminal {
+
+    #fraseWindow {
+      width: 300px;
+      height: 500px;
+      margin-right: 20px;
+      overflow-y: scroll;
       border: 2px solid #0f0;
       padding: 15px;
-      min-height: 300px;
+    }
+
+    #terminalWindow {
+      width: 600px;
+      height: 500px;
+      border: 2px solid #0f0;
+      padding: 15px;
       white-space: pre-wrap;
       overflow-y: auto;
     }
+
     #inputArea {
       margin-top: 10px;
     }
+
     #cmdInput {
       background: none;
       border: none;
@@ -29,23 +43,38 @@
       width: 90%;
       outline: none;
     }
-    .frase-lista {
+
+    .frase-button {
+      background: none;
       color: #0f0;
+      border: none;
+      cursor: pointer;
       font-size: 14px;
+      padding: 5px;
+      margin-bottom: 5px;
+    }
+
+    .frase-button:hover {
+      background-color: #1a1a1a;
     }
   </style>
 </head>
 <body>
 
-<h2>Accesso Terminale</h2>
-<div id="terminal">> Inizializzazione terminale...\n> Caricamento pacchetti...</div>
-
-<div id="inputArea">
-  <span>&gt; </span><input type="text" id="cmdInput" autocomplete="off" />
+<!-- Finestra per la lista delle frasi -->
+<div id="fraseWindow">
+  <h3>Frasi Disponibili</h3>
+  <div id="fraseList"></div>
 </div>
 
-<!-- Sezione per la lista delle frasi -->
-<div id="fraseList" class="frase-lista"></div>
+<!-- Finestra per il terminale -->
+<div id="terminalWindow">
+  <h3>Terminale</h3>
+  <div id="terminal">> Inizializzazione terminale...\n> Caricamento pacchetti...</div>
+  <div id="inputArea">
+    <span>&gt; </span><input type="text" id="cmdInput" autocomplete="off" />
+  </div>
+</div>
 
 <script>
   const terminal = document.getElementById("terminal");
@@ -111,11 +140,11 @@
     fraseList.innerHTML = "";
     frasiAttive.forEach((frase, index) => {
       const trePeriodi = frase.getElementsByTagName("trePeriodi")[0].textContent;
-      fraseList.innerHTML += `<p>Frase ${index + 1}: ${trePeriodi} <button onclick="selezionaFrase(${index})">Hackerala</button></p>`;
+      fraseList.innerHTML += `<button class="frase-button" onclick="selezionaFrase(${index})">Frase ${index + 1}: ${trePeriodi}</button>`;
     });
   };
 
-  // Selezione della frase
+  // Seleziona la frase
   let fraseIndex = 0;
   const selezionaFrase = (index) => {
     fraseIndex = index;
@@ -157,7 +186,7 @@
     });
   };
 
-  // Mostra la lista delle frasi quando caricate
+  // Mostra la lista delle frasi
   mostraListaFrasi();
 
 </script>
