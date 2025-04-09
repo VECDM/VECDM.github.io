@@ -1,9 +1,11 @@
 <frasi>
-    <frase id="202504082230">
-        <data>08/04/2025</data>
-        <ora>22:30</ora>
-        <testo>Il rumore bianco della metropoli...</testo>
-        <completa>Il rumore bianco della metropoli si mescola ai bassi profondi...</completa>
-    </frase>
-    <!-- Altre frasi -->
+  <frase id="202504082230" data="2025-04-08T22:30:00" tentativi="3">
+    <testo>Trovato un vecchio nastro magnetico. Il suono è deformato, sporco, ma c’è qualcosa lì dentro.</testo>
+    <completa>Qualcosa che non appartiene solo al passato, ma che torna a vivere in un mondo dove il tempo è solo un'illusione. Il nastro riemerge, come una traccia di ciò che è stato e di ciò che sarà. Le parole, i suoni, sono ricordi intrappolati in un flusso di dati che non smettono mai di evolversi.</completa>
+  </frase>
+
+  <frase id="202504092130" data="2025-04-09T21:30:00" tentativi="4">
+    <testo>Il rumore bianco della metropoli si mescola ai bassi profondi. Ogni passo nell’ombra è scandito da un suono che non appartiene a questo tempo.</testo>
+    <completa>Il futuro è una distorsione del passato, un'eco che vibra tra gli edifici decadenti. Eppure, sotto la superficie, qualcosa resiste, qualcosa che il tempo non ha mai cancellato, e che ora prende forma nei bassi pulsanti e nelle ombre che attraversano la città. È il battito del futuro che nasce dal cuore del passato.</completa>
+  </frase>
 </frasi>
