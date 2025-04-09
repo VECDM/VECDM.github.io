@@ -7,10 +7,11 @@
     body {
       background-color: #000;
       color: #ccc;
-      font-family: monospace;
+      font-family: 'Courier New', monospace;
       display: flex;
       flex-direction: column;
       padding: 20px;
+      font-size: 18px;
     }
 
     .container {
@@ -19,41 +20,71 @@
       gap: 20px;
     }
 
+    /* Finestra per la lista delle frasi */
     #fraseWindow {
       width: 100%;
       height: 300px;
       overflow: hidden;
-      border: 2px solid #ccc;
+      border: 2px solid #00ff00;
       padding: 20px;
       box-sizing: border-box;
       background-color: #111;
+      color: #00ff00; /* Colore del testo in verde fosforescente */
+      text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00; /* Effetto luminoso sul testo */
     }
 
+    /* Finestra del terminale */
     #terminalWindow {
       width: 100%;
       height: 300px;
-      border: 2px solid #ccc;
+      border: 2px solid #00ff00;
       padding: 20px;
       background-color: #111;
-      color: #ccc;
+      color: #00ff00;
       white-space: pre-wrap;
       overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 16px;
+      text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00; /* Effetto luminoso sul testo */
+      animation: flicker 0.1s infinite alternate; /* Effetto di flicker per l'animazione retro */
     }
 
+    /* Effetto flicker del terminale */
+    @keyframes flicker {
+      0% {
+        opacity: 1;
+        transform: translateY(0px);
+      }
+      50% {
+        opacity: 0.8;
+        transform: translateY(2px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0px);
+      }
+    }
+
+    /* Input del comando */
     #inputArea {
       margin-top: 10px;
+      display: flex;
+      justify-content: flex-start;
     }
 
     #cmdInput {
       background: none;
       border: none;
-      color: #ccc;
-      font-family: monospace;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
       font-size: 16px;
       width: 90%;
       outline: none;
+      caret-color: #00ff00; /* Caret verde fosforescente */
+      text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00; /* Effetto luminoso sul testo inserito */
     }
 
+    /* Pulsanti di navigazione */
     .button-container {
       display: flex;
       justify-content: space-between;
@@ -62,12 +93,13 @@
 
     .frase-button {
       background: none;
-      color: #ccc;
+      color: #00ff00;
       border: none;
       cursor: pointer;
       font-size: 14px;
       padding: 5px;
       margin-bottom: 5px;
+      text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00; /* Effetto luminoso sul testo */
     }
 
     .frase-button:hover {
@@ -78,7 +110,6 @@
       color: #666;
       cursor: not-allowed;
     }
-
   </style>
 </head>
 <body>
@@ -173,65 +204,46 @@
     const frase = frasiAttive[fraseIndex];
     const trePeriodi = frase.getElementsByTagName("trePeriodi")[0].textContent;
     fraseContent.innerHTML = `<p>${trePeriodi}</p>`;
-    
-    // Abilita/disabilita i pulsanti
-    prevButton.disabled = fraseIndex === 0;
-    nextButton.disabled = fraseIndex === frasiAttive.length - 1;
+    cmdInput.value = "";
+    terminal.innerHTML = `> Inizia l'hacking... scrivi i comandi!`;
   };
 
-  // Naviga tra le frasi
-  const navigaFrase = (direction) => {
-    fraseIndex += direction;
-    mostraFrase();
-    resetTerminal();  // Reset del terminale ogni volta che cambia la frase
-  };
-
-  // Funzione per resettare il terminale
-  const resetTerminal = () => {
-    terminal.textContent = "> Inizializzazione terminale...\n> Caricamento pacchetti...";
-    cmdInput.disabled = false;
-    validi = 0;
-  };
-
-  // Comandi utente per il terminale
-  const selezionaFrase = () => {
+  // Funzione per il controllo dei comandi nel terminale
+  const checkComando = () => {
     const frase = frasiAttive[fraseIndex];
     const completa = frase.getElementsByTagName("completa")[0].textContent;
-    const tentativiRichiesti = parseInt(frase.getElementsByTagName("tentativi")[0].textContent);
+    const tentativi = parseInt(frase.getElementsByTagName("tentativi")[0].textContent);
 
-    terminal.textContent = "> Inizia sequenza di accesso...";
-
-    cmdInput.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") {
-        const comando = cmdInput.value.trim();
-        cmdInput.value = "";
-
-        const successo = Math.random() < 0.7; // 70% probabilità di comando accettato
-
-        terminal.textContent += `\n> ${comando}`;
-        if (successo) {
-          validi++;
-          terminal.textContent += `\n> Comando accettato. Elaborazione in corso... (${validi}/${tentativiRichiesti})`;
-        } else {
-          terminal.textContent += `\n> Errore: comando sconosciuto o sintassi non valida.`;
-        }
-
-        // Scorrimento automatico
-        terminal.scrollTop = terminal.scrollHeight;
-
-        if (validi >= tentativiRichiesti) {
-          terminal.textContent += `\n> Accesso ottenuto. Frase completa:`;
-          terminal.textContent += `\n"${completa}"`;
-          cmdInput.disabled = true;  // Disabilita input
-        }
+    if (cmdInput.value.trim().toLowerCase()) {
+      validi++;
+      if (validi >= tentativi) {
+        terminal.innerHTML = `> Frase hackerata!\n\n${completa}`;
+        setTimeout(() => {
+          terminal.innerHTML += "\n> Per hackerare un'altra frase, usa 'next'...";
+        }, 500);
+      } else {
+        terminal.innerHTML = `> Comando valido, tentativo ${validi} su ${tentativi}.`;
       }
-    });
+    }
   };
 
-  // Inizializzazione
-  mostraFrase();
-  selezionaFrase();
+  // Navigazione tra le frasi
+  const navigaFrase = (direction) => {
+    fraseIndex += direction;
+    if (fraseIndex < 0) fraseIndex = frasiAttive.length - 1;
+    if (fraseIndex >= frasiAttive.length) fraseIndex = 0;
+    mostraFrase();
+  };
 
+  cmdInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      checkComando();
+      e.preventDefault();
+    }
+  });
+
+  // Inizializzazione della pagina
+  mostraFrase();
 </script>
 
 </body>
