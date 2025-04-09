@@ -166,6 +166,7 @@
   });
 
   let fraseIndex = 0;
+  let validi = 0;
 
   // Mostra la frase corrente
   const mostraFrase = () => {
@@ -182,16 +183,23 @@
   const navigaFrase = (direction) => {
     fraseIndex += direction;
     mostraFrase();
+    resetTerminal();  // Reset del terminale
+  };
+
+  // Funzione per resettare il terminale
+  const resetTerminal = () => {
+    terminal.textContent = "> Inizializzazione terminale...\n> Caricamento pacchetti...";
+    cmdInput.disabled = false;
+    validi = 0;
   };
 
   // Comandi utente per il terminale
-  let validi = 0;
-  const selezionaFrase = (fraseIndex) => {
+  const selezionaFrase = () => {
     const frase = frasiAttive[fraseIndex];
     const completa = frase.getElementsByTagName("completa")[0].textContent;
     const tentativiRichiesti = parseInt(frase.getElementsByTagName("tentativi")[0].textContent);
 
-    terminal.textContent = `> Inizia sequenza di accesso...`;
+    terminal.textContent = "> Inizia sequenza di accesso...";
 
     cmdInput.addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
@@ -214,16 +222,15 @@
         if (validi >= tentativiRichiesti) {
           terminal.textContent += `\n> Accesso ottenuto. Frase completa:`;
           terminal.textContent += `\n"${completa}"`;
-          cmdInput.disabled = true;
+          cmdInput.disabled = true;  // Disabilita input
         }
       }
     });
   };
 
-  // Mostra la prima frase all'inizio
+  // Inizializzazione
   mostraFrase();
-  selezionaFrase(fraseIndex);
-
+  selezionaFrase();
 </script>
 
 </body>
