@@ -1,152 +1,181 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>V_CDM Report</title>
-  <style>
-    body {
-      font-family: 'Courier New', monospace;
-      background-color: black;
-      color: #B0B0B0; /* Grigio chiaro per lo schermo */
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      display: flex;
-      height: 100vh;
-      flex-direction: column;
-    }
-    .frase-container {
-      flex: 1;
-      overflow: hidden;
-      margin-bottom: 20px;
-    }
-    #terminal {
-      flex: 1;
-      background-color: black;
-      color: #B0B0B0; /* Grigio per il testo */
-      padding: 20px;
-      margin-top: 20px;
-      height: 200px;
-      border: 1px solid #B0B0B0; /* Bordo grigio chiaro */
-    }
-    input {
-      color: #B0B0B0; /* Grigio per il testo nell'input */
-      background-color: black;
-      border: none;
-      width: 100%;
-      font-size: 16px;
-    }
-    input:focus {
-      outline: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminale Hacking</title>
+    <style>
+        body {
+            font-family: "Courier New", monospace;
+            background-color: #000;
+            color: #A9A9A9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            height: 100vh;
+        }
+
+        .terminal {
+            width: 48%;
+            height: 90%;
+            background-color: #111;
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 15px;
+            overflow-y: auto;
+            font-size: 16px;
+        }
+
+        .terminal input {
+            width: 100%;
+            background: #111;
+            color: #0f0;
+            border: none;
+            outline: none;
+            font-family: "Courier New", monospace;
+            font-size: 16px;
+        }
+
+        .output {
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .frase {
+            padding: 15px;
+            width: 100%;
+            height: 90%;
+            background-color: #222;
+            color: #A9A9A9;
+            border: 1px solid #0f0;
+            overflow-y: auto;
+            font-size: 18px;
+        }
+
+        button {
+            padding: 5px 10px;
+            background-color: #333;
+            border: none;
+            color: #0f0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #444;
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="frase-container">
-    <p id="frase"></p>
-    <div>
-      <button id="prev">Previous</button>
-      <button id="next">Next</button>
+<div class="frase">
+    <div id="fraseVisibile"></div>
+    <div class="controls">
+        <button id="prevFrase">Prev</button>
+        <button id="nextFrase">Next</button>
     </div>
-  </div>
+</div>
 
-  <div id="terminal">
-    <p>Welcome to the terminal. Type 'hack' to start the hacking process.</p>
-    <input id="userInput" type="text" placeholder="Enter command...>" />
-  </div>
+<div class="terminal">
+    <div id="terminalOutput" class="output"></div>
+    <input type="text" id="comandoInput" placeholder="Scrivi il comando e premi Invio...">
 </div>
 
 <script>
-  const fraseElement = document.getElementById("frase");
-  const userInput = document.getElementById("userInput");
-  const prevButton = document.getElementById("prev");
-  const nextButton = document.getElementById("next");
-
-  let frasi = [];
-  let currentFraseIndex = 0;
-
-  // Simula tentativi di hacking
-  let attempts = 0;
-  const maxAttempts = 3; // Numero di tentativi consentiti per hackerare
-
-  // Carica il file XML con le frasi
-  fetch("https://raw.githubusercontent.com/VECDM/VECDM.github.io/main/frasi.xml")
-    .then(response => response.text())
-    .then(data => {
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(data, "text/xml");
-
-      // Carica tutte le frasi dal file XML
-      frasi = Array.from(xmlDoc.getElementsByTagName("frase")).map(frase => ({
-        id: frase.getAttribute("id"),
-        testo: frase.getElementsByTagName("testo")[0].textContent,
-        completa: frase.getElementsByTagName("completa")[0].textContent,
-        tentativi: parseInt(frase.getAttribute("tentativi")),
-        data: frase.getAttribute("data") // Aggiunto per la data
-      }));
-
-      // Filtra le frasi che devono essere visibili in base alla data
-      const currentDate = new Date();
-      frasi = frasi.filter(frase => {
-        const fraseDate = new Date(frase.data);
-        return fraseDate <= currentDate;
-      });
-
-      // Visualizza la prima frase
-      showFrase();
-    })
-    .catch(error => console.error("Errore nel caricamento del file XML:", error));
-
-  // Mostra la frase corrente
-  function showFrase() {
-    const currentFrase = frasi[currentFraseIndex];
-    fraseElement.textContent = currentFrase.testo;
-    attempts = 0;
-    userInput.value = "";
-  }
-
-  // Gestisci l'input dell'utente nel terminale
-  userInput.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") {
-      const currentFrase = frasi[currentFraseIndex];
-
-      if (attempts < currentFrase.tentativi) {
-        if (userInput.value.toLowerCase() === "hack") {
-          attempts++;
-          if (attempts >= currentFrase.tentativi) {
-            fraseElement.textContent = currentFrase.completa;
-            userInput.value = "";
-          } else {
-            userInput.value = "";
-          }
-        } else {
-          userInput.value = "";
+    const frasi = [
+        {
+            id: "202504082230",
+            data: "2025-04-08 22:30",
+            a3p: "Il rumore bianco della metropoli si mescola ai bassi profondi. Ogni passo nell’ombra è scandito da un suono che non appartiene a questo tempo. Nessuno sa da dove provenga, ma ormai è ovunque.",
+            completa: "Il rumore bianco della metropoli si mescola ai bassi profondi. Ogni passo nell’ombra è scandito da un suono che non appartiene a questo tempo. Nessuno sa da dove provenga, ma ormai è ovunque. Ogni angolo, ogni edificio, sembra essere stato costruito con la stessa meticolosità che si trova in un labirinto di metallo e luci. La città vive, ma non respira. Sotto la superficie, l’aria è pregna di segreti, e solo chi sa ascoltare riesce a cogliere la verità nascosta nelle sue pieghe oscure.",
+            tentativi: 2
+        },
+        {
+            id: "202504092100",
+            data: "2025-04-09 21:00",
+            a3p: "Un vecchio nastro magnetico. Il suono è deformato, sporco, ma c’è qualcosa lì dentro. Qualcosa che non appartiene solo al passato.",
+            completa: "Un vecchio nastro magnetico. Il suono è deformato, sporco, ma c’è qualcosa lì dentro. Qualcosa che non appartiene solo al passato. Quando il nastro si avvolge nel lettore, un fruscio sovrasta ogni altro suono. Poi, quasi impercettibile, una voce distorta emerge dalle onde del rumore. C’è qualcosa che si nasconde dietro quella distorsione, qualcosa che non dovrebbe esserci, eppure è lì, chiara come il suono di una verità dimenticata.",
+            tentativi: 3
         }
-      } else {
-        fraseElement.textContent = currentFrase.completa;
-      }
-    }
-  });
+    ];
 
-  // Navigazione tra le frasi
-  prevButton.addEventListener("click", () => {
-    if (currentFraseIndex > 0) {
-      currentFraseIndex--;
-      showFrase();
-    }
-  });
+    let currentIndex = 0;
+    let tentativi = 0;
+    let fraseSbloccata = false;
 
-  nextButton.addEventListener("click", () => {
-    if (currentFraseIndex < frasi.length - 1) {
-      currentFraseIndex++;
-      showFrase();
+    // Carica la frase corrente
+    function caricaFrase() {
+        const frase = frasi[currentIndex];
+        document.getElementById('fraseVisibile').innerText = frase.a3p;
     }
-  });
+
+    // Gestione del terminale
+    function terminalOutput(text) {
+        const terminal = document.getElementById('terminalOutput');
+        terminal.innerHTML += `<div>${text}</div>`;
+        terminal.scrollTop = terminal.scrollHeight; // Scrolla verso il basso
+    }
+
+    function verificaComando() {
+        const comando = document.getElementById("comandoInput").value;
+        if (fraseSbloccata) {
+            terminalOutput("Frase già sbloccata. Passa alla successiva.");
+            return;
+        }
+
+        // Incrementa tentativi indipendentemente dal comando
+        tentativi++;
+
+        const frase = frasi[currentIndex];
+        if (tentativi >= frase.tentativi) {
+            document.getElementById("fraseVisibile").innerText = frase.completa;
+            terminalOutput(`Frase completa sbloccata! Tentativi: ${tentativi}`);
+            fraseSbloccata = true;
+        } else {
+            terminalOutput(`Tentativo ${tentativi} / ${frase.tentativi}`);
+        }
+        document.getElementById("comandoInput").value = ""; // Resetta il campo
+    }
+
+    // Gestisce i pulsanti "Prev" e "Next"
+    document.getElementById('prevFrase').addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            fraseSbloccata = false;  // Resetta lo stato di sblocco
+            tentativi = 0;  // Resetta i tentativi
+            caricaFrase();
+            document.getElementById("terminalOutput").innerHTML = ""; // Resetta il terminale
+        }
+    });
+
+    document.getElementById('nextFrase').addEventListener('click', () => {
+        if (currentIndex < frasi.length - 1) {
+            currentIndex++;
+            fraseSbloccata = false;  // Resetta lo stato di sblocco
+            tentativi = 0;  // Resetta i tentativi
+            caricaFrase();
+            document.getElementById("terminalOutput").innerHTML = ""; // Resetta il terminale
+        }
+    });
+
+    // Gestisce la scrittura nel terminale
+    document.getElementById('comandoInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            verificaComando();
+        }
+    });
+
+    // Carica la prima frase al caricamento della pagina
+    caricaFrase();
 </script>
 
 </body>
 </html>
+
