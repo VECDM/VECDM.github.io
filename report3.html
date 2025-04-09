@@ -85,8 +85,16 @@
         id: frase.getAttribute("id"),
         testo: frase.getElementsByTagName("testo")[0].textContent,
         completa: frase.getElementsByTagName("completa")[0].textContent,
-        tentativi: parseInt(frase.getAttribute("tentativi"))
+        tentativi: parseInt(frase.getAttribute("tentativi")),
+        data: frase.getAttribute("data") // Aggiunto per la data
       }));
+
+      // Filtra le frasi che devono essere visibili in base alla data
+      const currentDate = new Date();
+      frasi = frasi.filter(frase => {
+        const fraseDate = new Date(frase.data);
+        return fraseDate <= currentDate;
+      });
 
       // Visualizza la prima frase
       showFrase();
