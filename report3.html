@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione di Hackeraggio</title>
+    <style>
+        /* Stilizzazione del terminale */
+        body {
+            font-family: monospace;
+            background-color: #000;
+            color: #a8a8a8;
+            margin: 0;
+            padding: 0;
+        }
+        #terminal {
+            background-color: #2b2b2b;
+            color: #a8a8a8;
+            padding: 10px;
+            width: 100%;
+            height: 300px;
+            overflow-y: scroll;
+            font-size: 16px;
+            border: 1px solid #555;
+        }
+        #frasi-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+        #frasi-container p {
+            width: 45%;
+            margin-top: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="frasi-container">
+    <div id="frase">
+        <p>Caricamento in corso...</p>
+    </div>
+    <div id="terminal">
+        <p><strong>Terminale</strong> (Digitare <code>help</code> per vedere i comandi):</p>
+    </div>
+</div>
+
+<button id="next">Next</button>
+<button id="prev">Prev</button>
+
+<script>
+    let currentFraseIndex = 0;
+    let frasi = [];
+
+    // Funzione per caricare il file XML
+    function loadXML() {
+        fetch('https://raw.githubusercontent.com/VECDM/VECDM.github.io/main/frasi.xml')
+            .then(response => response.text())
+            .then(data => {
+                parseXML(data);
+            })
+            .catch(error => {
+                console.error('Errore nel caricamento del file XML:', error);
+            });
+    }
+
+    // Funzione per analizzare il file XML
+    function parseXML(data) {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(data, "application/xml");
+        const frasiNodes = xmlDoc.getElementsByTagName('frase');
+
+        for (let i = 0; i < frasiNodes.length; i++) {
+            const fraseElement = frasiNodes[i];
+            const frase = {
+                id: fraseElement.getAttribute('id'),
+                data: fraseElement.getElementsByTagName('data')[0].textContent,
+                ora: fraseElement.getElementsByTagName('ora')[0].textContent,
+                testo: fraseElement.getElementsByTagName('testo')[0].textContent,
+                versioneCompleta: fraseElement.getElementsByTagName('completa')[0].textContent
+            };
+            frasi.push(frase);
+        }
+
+        // Carica la prima frase
+        loadFrase();
+    }
+
+    // Funzione per caricare e mostrare una frase
+    function loadFrase() {
+        if (frasi.length === 0) return;
+
+        const frase = frasi[currentFraseIndex];
+        document.getElementById('frase').innerHTML = `
+            <p><strong>${frase.data} ${frase.ora}</strong></p>
+            <p>${frase.testo}</p>
+        `;
+    }
+
+    // Funzione per caricare la prossima frase
+    function nextFrase() {
+        if (currentFraseIndex < frasi.length - 1) {
+            currentFraseIndex++;
+            loadFrase();
+        }
+    }
+
+    // Funzione per caricare la frase precedente
+    function prevFrase() {
+        if (currentFraseIndex > 0) {
+            currentFraseIndex--;
+            loadFrase();
+        }
+    }
+
+    // Event listener per i pulsanti "Next" e "Prev"
+    document.getElementById('next').addEventListener('click', nextFrase);
+    document.getElementById('prev').addEventListener('click', prevFrase);
+
+    // Inizializza caricando il file XML
+    loadXML();
+</script>
+
+</body>
+</html>
