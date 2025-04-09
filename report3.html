@@ -41,9 +41,6 @@
     input:focus {
       outline: none;
     }
-    .hidden {
-      display: none;
-    }
   </style>
 </head>
 <body>
@@ -72,9 +69,9 @@
   let frasi = [];
   let currentFraseIndex = 0;
 
-  // Simulate hacking attempts
+  // Simula tentativi di hacking
   let attempts = 0;
-  const maxAttempts = 3; // Number of allowed attempts to hack
+  const maxAttempts = 3; // Numero di tentativi consentiti per hackerare
 
   // Carica il file XML con le frasi
   fetch("https://raw.githubusercontent.com/VECDM/VECDM.github.io/main/frasi.xml")
@@ -96,7 +93,7 @@
     })
     .catch(error => console.error("Errore nel caricamento del file XML:", error));
 
-  // Mostra la frase attuale
+  // Mostra la frase corrente
   function showFrase() {
     const currentFrase = frasi[currentFraseIndex];
     fraseElement.textContent = currentFrase.testo;
@@ -117,20 +114,17 @@
             userInput.value = "";
           } else {
             userInput.value = "";
-            alert("Tentativo non riuscito, prova di nuovo!");
           }
         } else {
-          alert("Comando non valido! Riprova.");
           userInput.value = "";
         }
       } else {
         fraseElement.textContent = currentFrase.completa;
-        alert("Hacking completato!");
       }
     }
   });
 
-  // Naviga tra le frasi
+  // Navigazione tra le frasi
   prevButton.addEventListener("click", () => {
     if (currentFraseIndex > 0) {
       currentFraseIndex--;
